@@ -2131,6 +2131,11 @@ asAtom asAtom::fromString(SystemState* sys, const tiny_string& s)
 asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool args_refcounted)
 {
 	assert_and_throw(type == T_FUNCTION);
+
+    //LOG(LOG_INFO, _("callFunction"));
+
+    int refcount = -1024;
+    bool set = false;
 		
 	ASObject* closure = closure_this;
 	if ((obj.type == T_FUNCTION && obj.closure_this) || obj.is<XML>() || obj.is<XMLList>())
@@ -2142,7 +2147,14 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 		c=asAtom::fromObject(closure);
 		if (args_refcounted)
 		{
-			ASATOM_INCREF(c);
+            refcount = c.getObject()->getRefCount();
+            set = true;
+
+            if(c.getObject()->getRefCount() > 1000) {
+               LOG(LOG_INFO, _("Callfunction increment"));
+            }
+
+            ASATOM_INCREF(c);
 			ASATOM_DECREF(obj);
 		}
 	}
@@ -2154,8 +2166,30 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 		{
 			for (uint32_t i = 0; i < num_args; i++)
 				ASATOM_INCREF(args[i]);
-		}
-		return objval->as<SyntheticFunction>()->call(c, args, num_args);
+        }
+        asAtom returnValue = objval->as<SyntheticFunction>()->call(c, args, num_args);
+        if (args_refcounted)
+        {
+            if(c.getObject()->getRefCount() > 1000) {
+               LOG(LOG_INFO, _("Callfunction decrement"));
+            }
+            ASATOM_DECREF(c);
+            ASATOM_DECREF(c);
+            if(set) {
+                LOG(LOG_INFO, _("Callfunction decrement: ") << refcount << "<" << c.getObject()->getRefCount());
+                //what is getObject()->getRefCount()?
+            }
+            /*while(refcount > 1000 && refcount < getObject()->getRefCount()) {
+                ASATOM_DECREF(c);
+            }*/
+            if(set && (refcount != c.getObject()->getRefCount()) && c.getObject()->getRefCount() > 1000) {
+                //while(refcount < c.getObject()->getRefCount()) {
+               //     ASATOM_DECREF(c);
+               // }
+                //LOG(LOG_INFO, _("RDecrement: ") << c.getObject()->getRefCount() << _(" Before: ") << refcount << _(" diff:") << (c.getObject()->getRefCount() - refcount));
+            }
+        }
+        return returnValue;
 	}
 	// when calling builtin functions, normally no refcounting is needed
 	// if it is, it has to be done inside the called function
@@ -2165,6 +2199,9 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 		for (uint32_t i = 0; i < num_args; i++)
 			ASATOM_DECREF(args[i]);
 		ASATOM_DECREF(c);
+        if(c.getObject()->getRefCount() > 100) {
+            //LOG(LOG_INFO, _("Decrement: ") << c.getObject()->getRefCount());
+        }
 	}
 	return ret;
 }

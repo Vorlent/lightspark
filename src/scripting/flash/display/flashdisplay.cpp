@@ -1113,6 +1113,39 @@ void FrameContainer::addFrameLabel(uint32_t frame, const tiny_string& label)
 	scenes.back().addFrameLabel(frame,label);
 }
 
+void MovieClip::incRef()
+{
+    if(ref_count > 1000) {
+        LOG(LOG_INFO, _("movieclip incref:") << ref_count << _(" depth: ") << this->getDepth());
+    }
+    if (!isConstant)
+        ++ref_count;
+}
+
+bool MovieClip::decRef()
+{
+    assert(ref_count>0);
+    if (!isConstant)
+    {
+        if (ref_count == 1)
+        {
+            if (destruct())
+            {
+                //Let's make refcount very invalid
+                ref_count=-1024;
+                delete this;
+            }
+            return true;
+        }
+        else
+            --ref_count;
+    }
+    if(ref_count > 1000) {
+        LOG(LOG_INFO, _("movieclip decref:") << ref_count << _(" depth: ") << this->getDepth());
+    }
+    return false;
+}
+
 void MovieClip::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, Sprite, _constructor, CLASS_DYNAMIC_NOT_FINAL);

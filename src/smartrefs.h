@@ -23,22 +23,23 @@
 #include <stdexcept>
 #include "compat.h"
 
+static int useless1 = 0;
+static int useless2 = 0;
+
 namespace lightspark
 {
 
 class RefCountable {
-private:
+public:
 	ATOMIC_INT32(ref_count);
 	ACQUIRE_RELEASE_FLAG(isConstant);
-protected:
+//protected:
 	RefCountable() : ref_count(1),isConstant(false) {}
 
-public:
+//public:
 	virtual ~RefCountable() {}
 
-#ifndef NDEBUG
 	int getRefCount() const { return ref_count; }
-#endif
 	inline bool isLastRef() const { return !isConstant && ref_count == 1; }
 	inline void setConstant()
 	{
@@ -46,12 +47,16 @@ public:
 	}
 	inline bool getConstant() const { return isConstant; }
 	
-	inline void incRef()
+    virtual void incRef()
 	{
+        if(ref_count > 1000) {
+            useless1++;
+            useless2--;
+        }
 		if (!isConstant)
 			++ref_count;
 	}
-	inline bool decRef()
+    virtual bool decRef()
 	{
 		assert(ref_count>0);
 		if (!isConstant)

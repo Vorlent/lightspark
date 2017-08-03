@@ -323,7 +323,7 @@ public:
 	virtual ~Prototype() {}
 	_NR<Prototype> prevPrototype;
 	inline void incRef() { obj->incRef(); }
-	inline void decRef() { obj->decRef(); }
+    inline bool decRef() { return obj->decRef(); }
 	inline ASObject* getObj() {return obj; }
 	bool isSealed;
 	/*
@@ -357,8 +357,8 @@ class ObjectConstructor: public ASObject
 	uint32_t _length;
 public:
 	ObjectConstructor(Class_base* c,uint32_t length);
-	void incRef() { getClass()->incRef(); }
-	void decRef() { getClass()->decRef(); }
+    virtual void incRef() { getClass()->incRef(); }
+    virtual bool decRef() { return getClass()->decRef(); }
 	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
 	bool isEqual(ASObject* r);
 };

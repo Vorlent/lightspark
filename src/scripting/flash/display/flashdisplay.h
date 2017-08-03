@@ -481,6 +481,8 @@ protected:
 	uint32_t totalFrames_unreliable;
 	ASPROPERTY_GETTER_SETTER(bool, enabled);
 public:
+    virtual void incRef();
+    virtual bool decRef();
 	void constructionComplete();
 	RunState state;
 	MovieClip(Class_base* c);
