@@ -33,16 +33,14 @@ void Timer::tick()
 {
 	//This will be executed once if repeatCount was originally 1
 	//Otherwise it's executed until stopMe is set to true
-	this->incRef();
-	getVm(getSystemState())->addEvent(_MR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timer")));
+	getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timer")));
 
 	currentCount++;
 	if(repeatCount!=0)
 	{
 		if(currentCount==repeatCount)
 		{
-			this->incRef();
-			getVm(getSystemState())->addEvent(_MR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timerComplete")));
+			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timerComplete")));
 			stopMe=true;
 			running=false;
 		}
@@ -140,8 +138,7 @@ ASFUNCTIONBODY(Timer,start)
 		return NULL;
 	th->running=true;
 	th->stopMe=false;
-	th->incRef();
-	th->tickJobInstance = _MNR(th);
+	th->tickJobInstance = _IAMNR(th);
 	// according to spec Adobe handles timers 60 times per second, so minimum delay is 17 ms
 	if(th->repeatCount==1)
 		getSys()->addWait(th->delay < 17 ? 17 : th->delay,th);

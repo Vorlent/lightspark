@@ -190,8 +190,7 @@ ASFUNCTIONBODY(URLStream,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		th->incRef();
-		getSys()->currentVm->addEvent(_MR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
+		getSys()->currentVm->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
 		return NULL;
 	}
 
@@ -200,8 +199,7 @@ ASFUNCTIONBODY(URLStream,load)
 	SecurityManager::checkURLStaticAndThrow(th->url, ~(SecurityManager::LOCAL_WITH_FILE),
 		SecurityManager::LOCAL_WITH_FILE | SecurityManager::LOCAL_TRUSTED, true);
 
-	th->incRef();
-	URLStreamThread *job=new URLStreamThread(urlRequest, _MR(th), th->data);
+	URLStreamThread *job=new URLStreamThread(urlRequest, _IAMR(th), th->data);
 	getSys()->addJob(job);
 	th->job=job;
 	th->connected = true;

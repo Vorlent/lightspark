@@ -279,8 +279,7 @@ ASFUNCTIONBODY(URLRequest,_setData)
 	URLRequest* th=static_cast<URLRequest*>(obj);
 	assert_and_throw(argslen==1);
 
-	args[0]->incRef();
-	th->data=_MR(args[0]);
+	th->data=_IAMR(args[0]);
 
 	return NULL;
 }
@@ -482,8 +481,7 @@ void URLLoader::setBytesLoaded(uint32_t b)
 	if (cur > timestamp_last_progress+ 40*1000)
 	{
 		timestamp_last_progress = cur;
-		this->incRef();
-		getVm(getSystemState())->addEvent(_MR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal)));
 	}
 }
 
@@ -515,8 +513,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	if(!url.isValid())
 	{
 		//Notify an error during loading
-		th->incRef();
-		th->getSystemState()->currentVm->addEvent(_MR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		th->getSystemState()->currentVm->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 		return asAtom::invalidAtom;
 	}
 
@@ -528,9 +525,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	//TODO: should we disallow accessing local files in a directory above 
 	//the current one like we do with NetStream.play?
 
-	th->incRef();
-	urlRequest->incRef();
-	URLLoaderThread *job=new URLLoaderThread(_MR(urlRequest), _MR(th));
+	URLLoaderThread *job=new URLLoaderThread(_IAMR(urlRequest), _IAMR(th));
 	getSys()->addJob(job);
 	th->job=job;
 	return asAtom::invalidAtom;
@@ -582,8 +577,7 @@ ASFUNCTIONBODY(URLLoader,_setData)
 	URLLoader* th = obj->as<URLLoader>();
 	if(argslen != 1)
 		throw Class<ArgumentError>::getInstanceS(obj->getSystemState(),"Wrong number of arguments in setter");
-	args[0]->incRef();
-	th->setData(_MR(args[0]));
+	th->setData(_IAMR(args[0]));
 	return NULL;
 }
 
@@ -686,8 +680,7 @@ ASFUNCTIONBODY(SharedObject,getLocal)
 		sharedobjectmap.insert(make_pair(fullname,Class<ASObject>::getInstanceS(obj->getSystemState())));
 		it = sharedobjectmap.find(fullname);
 	}
-	it->second->incRef();
-	res->data = _NR<ASObject>(it->second);
+	res->data = _IAMNR<ASObject>(it->second);
 	res->incRef();
 	return res;
 }
@@ -980,8 +973,7 @@ ASFUNCTIONBODY(NetConnection,connect)
 	//When the URI is undefined the connect is successful (tested on Adobe player)
 	if(isNull || isRTMP)
 	{
-		th->incRef();
-		getVm(obj->getSystemState())->addEvent(_MR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success")));
+		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success")));
 	}
 	return NULL;
 }
@@ -1275,8 +1267,7 @@ ASFUNCTIONBODY(NetStream,_setClient)
 
 	NetStream* th=Class<NetStream>::cast(obj);
 
-	args[0]->incRef();
-	th->client = _MR(args[0]);
+	th->client = _IAMR(args[0]);
 	return NULL;
 }
 
@@ -1313,10 +1304,9 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 	else
 		th->peerID = CONNECT_TO_FMS;
 
-	th->incRef();
 	netConnection->incRef();
 	th->connection=netConnection;
-	th->client = _NR<ASObject>(th);
+	th->client = _IAMNR<ASObject>(th);
 
 	return asAtom::invalidAtom;
 }
@@ -1396,8 +1386,7 @@ ASFUNCTIONBODY(NetStream,play)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		th->incRef();
-		getVm(obj->getSystemState())->addEvent(_MR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
+		getVm(obj->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
 	}
 	else //The URL is valid so we can start the download and add ourself as a job
 	{
@@ -1427,8 +1416,7 @@ ASFUNCTIONBODY(NetStream,resume)
 			if(th->audioStream)
 				th->audioStream->resume();
 		}
-		th->incRef();
-		getVm(obj->getSystemState())->addEvent(_MR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify")));
 	}
 	return NULL;
 }
@@ -1444,8 +1432,7 @@ ASFUNCTIONBODY(NetStream,pause)
 			if(th->audioStream)
 				th->audioStream->pause();
 		}
-		th->incRef();
-		getVm(obj->getSystemState())->addEvent(_MR(th),_MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IAMR(th),_MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify")));
 	}
 	return NULL;
 }
@@ -1781,8 +1768,7 @@ void NetStream::execute()
 			return;
 		if(downloader->hasFailed())
 		{
-			this->incRef();
-			getVm(getSystemState())->addEvent(_MR(this),_MR(Class<IOErrorEvent>::getInstanceS(getSystemState())));
+			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<IOErrorEvent>::getInstanceS(getSystemState())));
 			getSystemState()->downloadManager->destroy(downloader);
 			downloader = NULL;
 			return;
@@ -1873,8 +1859,7 @@ void NetStream::execute()
 						{
 							bufferfull = false;
 							this->bufferLength=0;
-							this->incRef();
-							getVm(getSystemState())->addEvent(_MR(this),_MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty")));
+							getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty")));
 						}
 					}
 				}
@@ -1883,8 +1868,7 @@ void NetStream::execute()
 			if(videoDecoder==NULL && streamDecoder->videoDecoder)
 			{
 				videoDecoder=streamDecoder->videoDecoder;
-				this->incRef();
-				getVm(getSystemState())->addEvent(_MR(this),
+				getVm(getSystemState())->addEvent(_IAMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Start")));
 			}
 			if(audioDecoder==NULL && streamDecoder->audioDecoder)
@@ -1895,8 +1879,7 @@ void NetStream::execute()
 			if(!tickStarted && isReady() && frameRate && ((framesdecoded / frameRate) >= this->bufferTime))
 			{
 				tickStarted=true;
-				this->incRef();
-				getVm(getSystemState())->addEvent(_MR(this),
+				getVm(getSystemState())->addEvent(_IAMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
 				getSystemState()->addTick(1000/frameRate,this);
 				//Also ask for a render rate equal to the video one (capped at 24)
@@ -1906,8 +1889,7 @@ void NetStream::execute()
 			if (!bufferfull && frameRate && ((framesdecoded / frameRate) >= this->bufferTime))
 			{
 				bufferfull = true;
-				this->incRef();
-				getVm(getSystemState())->addEvent(_MR(this),
+				getVm(getSystemState())->addEvent(_IAMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
 			}
 			profile->accountTime(chronometer.checkpoint());
@@ -1944,10 +1926,8 @@ void NetStream::execute()
 		if(videoDecoder)
 			videoDecoder->waitFlushed();
 
-		this->incRef();
-		getVm(getSystemState())->addEvent(_MR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop")));
-		this->incRef();
-		getVm(getSystemState())->addEvent(_MR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush")));
+		getVm(getSystemState())->addEvent(_IAMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop")));
+		getVm(getSystemState())->addEvent(_IAMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush")));
 	}
 	//Before deleting stops ticking, removeJobs also spin waits for termination
 	getSystemState()->removeJob(this);
@@ -2430,8 +2410,7 @@ ASFUNCTIONBODY_ATOM(LocalConnection, _constructor)
 {
 	EventDispatcher::_constructor(sys,obj, NULL, 0);
 	LocalConnection* th=Class<LocalConnection>::cast(obj.getObject());
-	th->incRef();
-	th->client = _NR<LocalConnection>(th);
+	th->client = _IAMNR<LocalConnection>(th);
 	LOG(LOG_NOT_IMPLEMENTED,"LocalConnection is not implemented");
 	return asAtom::invalidAtom;
 }
@@ -2547,8 +2526,7 @@ ASFUNCTIONBODY(lightspark,registerClassAlias)
 {
 	assert_and_throw(argslen==2 && args[0]->getObjectType()==T_STRING && args[1]->getObjectType()==T_CLASS);
 	const tiny_string& arg0 = args[0]->toString();
-	args[1]->incRef();
-	_R<Class_base> c=_MR(static_cast<Class_base*>(args[1]));
+	_R<Class_base> c=_IAMR(static_cast<Class_base*>(args[1]));
 	getSys()->aliasMap.insert(make_pair(arg0, c));
 	return NULL;
 }

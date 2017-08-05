@@ -141,8 +141,7 @@ _NR<InteractiveObject> InputThread::getMouseTarget(uint32_t x, uint32_t y, Displ
 		_NR<DisplayObject> dispobj=m_sys->mainClip->getStage()->hitTest(NullRef,x,y, type);
 		if(!dispobj.isNull() && dispobj->is<InteractiveObject>())
 		{
-			dispobj->incRef();
-			selected=_MNR(dispobj->as<InteractiveObject>());
+			selected=_IAMNR(dispobj->as<InteractiveObject>());
 		}
 	}
 	catch(LightsparkException& e)

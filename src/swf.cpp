@@ -262,8 +262,7 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	loaderInfo->setBytesTotal(0);
 	mainClip=RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain);
 	stage=Class<Stage>::getInstanceS(this);
-	mainClip->incRef();
-	stage->_addChildAt(_MR(mainClip),0);
+	stage->_addChildAt(_IAMR(mainClip),0);
 	//Get starting time
 	startTime=compat_msectiming();
 	
@@ -1558,8 +1557,7 @@ void ParseThread::setRootMovie(RootMovieClip *root)
 {
 	SpinlockLocker l(objectSpinlock);
 	assert(root);
-	root->incRef();
-	parsedObject=_MNR(root);
+	parsedObject=_IAMNR(root);
 }
 
 RootMovieClip* ParseThread::getRootMovie() const
@@ -1626,8 +1624,7 @@ void RootMovieClip::commitFrame(bool another)
 		}
 		else
 		{
-			this->incRef();
-			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_MNR(this))));
+			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_AIMNR(this))));
 		}
 	}
 }
@@ -1676,8 +1673,7 @@ DictionaryTag* RootMovieClip::dictionaryLookup(int id)
 
 _NR<RootMovieClip> RootMovieClip::getRoot()
 {
-	this->incRef();
-	return _MR(this);
+	return _IAMR(this);
 }
 
 /*ASObject* RootMovieClip::getVariableByQName(const tiny_string& name, const tiny_string& ns, ASObject*& owner)
@@ -1810,11 +1806,9 @@ void SystemState::resizeCompleted()
 {
 	if(currentVm && scaleMode==NO_SCALE)
 	{
-		stage->incRef();
-		currentVm->addEvent(_MR(stage),_MR(Class<Event>::getInstanceS(this,"resize",false)));
+		currentVm->addEvent(_IAMR(stage),_MR(Class<Event>::getInstanceS(this,"resize",false)));
 		
-		stage->incRef();
-		currentVm->addEvent(_MR(stage),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
+		currentVm->addEvent(_IAMR(stage),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
 	}
 }
 

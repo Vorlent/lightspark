@@ -309,8 +309,7 @@ _R<ASObject> ASObject::toPrimitive(TP_HINT hint)
 
 	if(isPrimitive())
 	{
-		this->incRef();
-		return _MR(this);
+		return _IAMR(this);
 	}
 
 	/* for HINT_STRING evaluate first toString, then valueOf
@@ -2142,8 +2141,9 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 		c=asAtom::fromObject(closure);
 		if (args_refcounted)
 		{
-			ASATOM_INCREF(c);
-			ASATOM_DECREF(obj);
+			//this does nothing
+			//ASATOM_INCREF(c);
+			//ASATOM_DECREF(obj);
 		}
 	}
 	else

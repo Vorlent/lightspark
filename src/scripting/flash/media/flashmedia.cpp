@@ -217,10 +217,8 @@ ASFUNCTIONBODY(Video,attachNetStream)
 		throw RunTimeException("Type mismatch in Video::attachNetStream");
 
 	//Acquire the netStream
-	args[0]->incRef();
-
 	Mutex::Lock l(th->mutex);
-	th->netStream=_MR(Class<NetStream>::cast(args[0]));
+	th->netStream=_IAMR(Class<NetStream>::cast(args[0]));
 	return NULL;
 }
 ASFUNCTIONBODY(Video,clear)
@@ -303,8 +301,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		th->incRef();
-		getVm(th->getSystemState())->addEvent(_MR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 		return asAtom::invalidAtom;
 	}
 
@@ -326,8 +323,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	}
 	if(th->downloader->hasFailed())
 	{
-		th->incRef();
-		getVm(th->getSystemState())->addEvent(_MR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 	}
 	return asAtom::invalidAtom;
 }
@@ -367,12 +363,10 @@ void Sound::setBytesLoaded(uint32_t b)
 	if(b!=bytesLoaded)
 	{
 		bytesLoaded=b;
-		this->incRef();
-		getVm(getSystemState())->addEvent(_MR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
 		if(bytesLoaded==bytesTotal)
 		{
-			this->incRef();
-			getVm(getSystemState())->addEvent(_MR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
 		}
 	}
 }
@@ -656,10 +650,8 @@ ASFUNCTIONBODY(StageVideo,attachNetStream)
 		throw RunTimeException("Type mismatch in StageVideo::attachNetStream");
 
 	//Acquire the netStream
-	args[0]->incRef();
-
 	Mutex::Lock l(th->mutex);
-	th->netStream=_MR(Class<NetStream>::cast(args[0]));
+	th->netStream=_IAMR(Class<NetStream>::cast(args[0]));
 	return NULL;
 }
 

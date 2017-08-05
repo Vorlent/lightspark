@@ -190,13 +190,11 @@ ASFUNCTIONBODY(XMLList,_constructor)
 	}
 	else if(args[0]->is<XML>())
 	{
-		args[0]->incRef();
-		th->append(_MR(args[0]->as<XML>()));
+		th->append(_IAMR(args[0]->as<XML>()));
 	}
 	else if(args[0]->is<XMLList>())
 	{
-		args[0]->incRef();
-		th->append(_MR(args[0]->as<XMLList>()));
+		th->append(_IAMR(args[0]->as<XMLList>()));
 	}
 	else if(args[0]->is<ASString>() ||
 		args[0]->is<Number>() ||
@@ -945,8 +943,7 @@ void XMLList::appendSingleNode(ASObject *x)
 {
 	if (x->is<XML>())
 	{
-		x->incRef();
-		append(_MR(x->as<XML>()));
+		append(_IAMR(x->as<XML>()));
 	}
 	else if (x->is<XMLList>())
 	{
@@ -1063,8 +1060,7 @@ void XMLList::replace(unsigned int idx, ASObject *o, const XML::XMLVector &retno
 		}
 		else
 		{
-			o->incRef();
-			nodes[idx] = _MR(o->as<XML>());
+			nodes[idx] = _IAMR(o->as<XML>());
 		}
 	}
 	else
