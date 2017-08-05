@@ -2135,7 +2135,6 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
     //LOG(LOG_INFO, _("callFunction"));
 
     int refcount = -1024;
-    bool set = false;
 		
 	ASObject* closure = closure_this;
 	if ((obj.type == T_FUNCTION && obj.closure_this) || obj.is<XML>() || obj.is<XMLList>())
@@ -2148,14 +2147,16 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 		if (args_refcounted)
 		{
             refcount = c.getObject()->getRefCount();
-            set = true;
-
-            if(c.getObject()->getRefCount() > 1000) {
-               LOG(LOG_INFO, _("Callfunction increment"));
+            /*if(c.getObject() != obj.getObject()) {
+                LOG(LOG_INFO, _("c incref1: ") << c.getObject()->getRefCount());
+                LOG(LOG_INFO, _("obj decref2: ") << obj.getObject()->getRefCount());
             }
-
             ASATOM_INCREF(c);
-			ASATOM_DECREF(obj);
+            ASATOM_DECREF(obj);
+            if(c.getObject() != obj.getObject()) {
+                LOG(LOG_INFO, _("c incref1: ") << c.getObject()->getRefCount());
+                LOG(LOG_INFO, _("obj decref2: ") << obj.getObject()->getRefCount());
+            }*/
 		}
 	}
 	else
@@ -2164,30 +2165,16 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 	{
 		if (!args_refcounted)
 		{
+            //TODO do these get decremented?
 			for (uint32_t i = 0; i < num_args; i++)
 				ASATOM_INCREF(args[i]);
         }
+        //TODO do memory leaks happen in here?
         asAtom returnValue = objval->as<SyntheticFunction>()->call(c, args, num_args);
         if (args_refcounted)
         {
-            if(c.getObject()->getRefCount() > 1000) {
-               LOG(LOG_INFO, _("Callfunction decrement"));
-            }
-            ASATOM_DECREF(c);
-            ASATOM_DECREF(c);
-            if(set) {
-                LOG(LOG_INFO, _("Callfunction decrement: ") << refcount << "<" << c.getObject()->getRefCount());
-                //what is getObject()->getRefCount()?
-            }
-            /*while(refcount > 1000 && refcount < getObject()->getRefCount()) {
-                ASATOM_DECREF(c);
-            }*/
-            if(set && (refcount != c.getObject()->getRefCount()) && c.getObject()->getRefCount() > 1000) {
-                //while(refcount < c.getObject()->getRefCount()) {
-               //     ASATOM_DECREF(c);
-               // }
-                //LOG(LOG_INFO, _("RDecrement: ") << c.getObject()->getRefCount() << _(" Before: ") << refcount << _(" diff:") << (c.getObject()->getRefCount() - refcount));
-            }
+            //TODO DELETE THIS ASATOM_DECREF(c);
+            //TODO DELETE THIS ASATOM_DECREF(c);
         }
         return returnValue;
 	}
@@ -2198,10 +2185,7 @@ asAtom asAtom::callFunction(asAtom &obj, asAtom *args, uint32_t num_args, bool a
 	{
 		for (uint32_t i = 0; i < num_args; i++)
 			ASATOM_DECREF(args[i]);
-		ASATOM_DECREF(c);
-        if(c.getObject()->getRefCount() > 100) {
-            //LOG(LOG_INFO, _("Decrement: ") << c.getObject()->getRefCount());
-        }
+        //ASATOM_DECREF(c);
 	}
 	return ret;
 }

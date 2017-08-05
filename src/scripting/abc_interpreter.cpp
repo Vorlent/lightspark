@@ -1310,9 +1310,6 @@ void ABCVm::abc_getProperty(call_context* context,memorystream& code)
 			LOG(LOG_NOT_IMPLEMENTED,"getProperty: " << name->normalizedNameUnresolved(context->context->root->getSystemState()) << " not found on " << obj->toDebugString() << " "<<obj->getClassName());
 		prop = asAtom::undefinedAtom;
 	}
-    if(obj->getRefCount() > 1000) {
-        LOG(LOG_INFO, _("getProperty ") << *name << ' ' << obj->toDebugString() << ' '<<obj->isInitialized());
-    }
 	obj->decRef();
 	name->resetNameIfObject();
 
@@ -1779,9 +1776,6 @@ void ABCVm::abc_getlocal_0(call_context* context,memorystream& code)
 	//getlocal_0
 	int i=0;
 	LOG_CALL( _("getLocal ") << i << _(": ") << context->locals[i].toDebugString() );
-    if(context->locals[i].getObject() && context->locals[i].getObject()->getRefCount() > 1000) {
-        LOG(LOG_INFO, _("getLocal ") << i << _(": ") << context->locals[i].toDebugString() );
-    }
 	ASATOM_INCREF(context->locals[i]);
 	RUNTIME_STACK_PUSH(context,context->locals[i]);
 }

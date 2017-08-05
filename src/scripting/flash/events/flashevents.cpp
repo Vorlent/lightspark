@@ -582,6 +582,39 @@ void EventDispatcher::dumpHandlers()
 		LOG(LOG_INFO, it->first);
 }
 
+void EventDispatcher::incRef()
+{
+    if(ref_count > 1000) {
+       // LOG(LOG_INFO, _("EventDispatcher incref:") << ref_count);
+    }
+    if (!isConstant)
+        ++ref_count;
+}
+
+bool EventDispatcher::decRef()
+{
+    assert(ref_count>0);
+    if (!isConstant)
+    {
+        if (ref_count == 1)
+        {
+            if (destruct())
+            {
+                //Let's make refcount very invalid
+                ref_count=-1024;
+                delete this;
+            }
+            return true;
+        }
+        else
+            --ref_count;
+    }
+    if(ref_count > 1000) {
+        //LOG(LOG_INFO, _("EventDispatcher decref:") << ref_count);
+    }
+    return false;
+}
+
 ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());

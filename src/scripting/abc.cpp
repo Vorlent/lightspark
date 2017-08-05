@@ -1648,18 +1648,11 @@ call_context::~call_context()
 
 	for(uint32_t i=locals_size;--i;)
 	{
-        if(locals[i-1].getObject()) {
-            LOG(LOG_INFO, _("delete argument ") << (i-1) << _(" : ") << locals[i-1].toDebugString());
-        }
 		ASATOM_DECREF(locals[i-1]);
 	}
-    LOG(LOG_INFO, _("exitFunction"));
 	while (curr_scope_stack)
 	{
 		--curr_scope_stack;
-        if(scope_stack[curr_scope_stack].getObject() && scope_stack[curr_scope_stack].getObject()->getRefCount() > 1000) {
-            LOG(LOG_INFO, _("delete scope: ") << scope_stack[curr_scope_stack].toDebugString());
-        }
 		ASATOM_DECREF(scope_stack[curr_scope_stack]);
 	}
 }

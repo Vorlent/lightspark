@@ -360,6 +360,8 @@ private:
 protected:
 	virtual void eventListenerAdded(const tiny_string& eventName) {}
 public:
+    virtual void incRef();
+    virtual bool decRef();
 	EventDispatcher(Class_base* c);
 	void finalize();
 	static void sinit(Class_base*);

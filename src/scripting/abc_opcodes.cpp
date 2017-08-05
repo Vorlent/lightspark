@@ -324,7 +324,6 @@ void ABCVm::callProperty(call_context* th, int n, int m, method_info** called_mi
 		RUNTIME_STACK_POP(th,args[m-i-1]);
 
 	multiname* name=th->context->getMultiname(n,th);
-    LOG(LOG_INFO, (keepReturn ? "callProperty " : "callPropVoid") << *name << ' ' << m);
 	LOG_CALL( (keepReturn ? "callProperty " : "callPropVoid") << *name << ' ' << m);
 
 	RUNTIME_STACK_POP_CREATE(th,obj);
@@ -571,9 +570,6 @@ void ABCVm::pushScope(call_context* th)
 {
 	RUNTIME_STACK_POP_CREATE(th,t);
 	LOG_CALL( _("pushScope ") << t.toDebugString() );
-    if(t.getObject()->getRefCount() > 1000) {
-        LOG(LOG_INFO, _("pushScope ") << t.toDebugString() );
-    }
 	ASATOM_INCREF(t);
 	assert_and_throw(th->curr_scope_stack < th->max_scope_stack);
 	th->scope_stack[th->curr_scope_stack] = t;

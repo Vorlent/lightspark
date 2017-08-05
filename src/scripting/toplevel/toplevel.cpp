@@ -416,9 +416,6 @@ asAtom SyntheticFunction::call(asAtom& obj, asAtom *args, uint32_t numArgs)
 		LOG(LOG_ERROR,"obj invalid");
 	}
 	assert_and_throw(obj.type != T_INVALID);
-    if(obj.getObject()->getRefCount() > 1000) {
-       LOG(LOG_INFO, _("SyntheticFunction::call this"));
-    }
     ASATOM_INCREF(obj); //this is free'd in ~call_context
 	cc.locals[0]=obj;
     //cc.stack_index++;
