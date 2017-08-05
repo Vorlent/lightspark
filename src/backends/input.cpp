@@ -292,8 +292,7 @@ void InputThread::handleMouseLeave()
 		return;
 
 	_NR<Stage> stage = m_sys->mainClip->getStage();
-	stage->incRef();
-	m_sys->currentVm->addEvent(stage,
+	m_sys->currentVm->addEvent(_IAMR(stage.getPtr()),
 		_MR(Class<Event>::getInstanceS(m_sys,"mouseLeave")));
 }
 
@@ -503,9 +502,8 @@ void InputThread::sendKeyEvent(const SDL_KeyboardEvent *keyevent)
 	else
 		type = "keyUp";
 
-	target->incRef();
 	AS3KeyCode c = getAS3KeyCode(keyevent->keysym.sym);
-	m_sys->currentVm->addEvent(target,
+	m_sys->currentVm->addEvent(_IAMR(target.getPtr()),
 	    _MR(Class<KeyboardEvent>::getInstanceS(m_sys,type,c,c, (SDL_Keymod)keyevent->keysym.mod)));
 }
 

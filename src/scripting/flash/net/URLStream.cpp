@@ -52,8 +52,7 @@ void URLStreamThread::setBytesLoaded(uint32_t b)
 		if (cur > timestamp_last_progress+ 40*1000)
 		{
 			timestamp_last_progress = cur;
-			loader->incRef();
-			getVm(loader->getSystemState())->addEvent(loader,_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total)));
+			getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total)));
 		}
 	}
 }
@@ -73,11 +72,9 @@ void URLStreamThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 		streambuffer = cache->createReader();
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total)));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total)));
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
 		{
@@ -99,17 +96,14 @@ void URLStreamThread::execute()
 	// Don't send any events if the thread is aborting
 	if(success && !threadAborting)
 	{
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
 		//Send a complete event for this object
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 	}
 
 	{

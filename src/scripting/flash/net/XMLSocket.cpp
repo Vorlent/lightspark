@@ -380,13 +380,11 @@ void XMLSocketThread::execute()
 {
 	if (!sock.connect(hostname, port))
 	{
-		owner->incRef();
-		getVm(owner->getSystemState())->addEvent(owner, _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 		return;
 	}
 
-	owner->incRef();
-	getVm(owner->getSystemState())->addEvent(owner, _MR(Class<Event>::getInstanceS(owner->getSystemState(),"connect")));
+	getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"connect")));
 
 	struct timeval timeout;
 	int maxfd;
@@ -406,8 +404,7 @@ void XMLSocketThread::execute()
 		int status = select(maxfd+1, &readfds, NULL, NULL, &timeout);
 		if (status  < 0)
 		{
-			owner->incRef();
-			getVm(owner->getSystemState())->addEvent(owner, _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+			getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 			return;
 		}
 
@@ -418,8 +415,7 @@ void XMLSocketThread::execute()
 			ssize_t nbytes = read(signalListener, &cmd, 1);
 			if (nbytes < 0)
 			{
-				owner->incRef();
-				getVm(owner->getSystemState())->addEvent(owner, _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+				getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 				return;
 			}
 			else if (nbytes == 0)
@@ -450,21 +446,18 @@ void XMLSocketThread::readSocket(const SocketIO& sock)
 	{
 		buf[nbytes] = '\0';
 		tiny_string data(buf, true);
-		owner->incRef();
-		getVm(owner->getSystemState())->addEvent(owner, _MR(Class<DataEvent>::getInstanceS(owner->getSystemState(),data)));
+		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<DataEvent>::getInstanceS(owner->getSystemState(),data)));
 	}
 	else if (nbytes == 0)
 	{
 		// The server has closed the socket
-		owner->incRef();
-		getVm(owner->getSystemState())->addEvent(owner, _MR(Class<Event>::getInstanceS(owner->getSystemState(),"close")));
+		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"close")));
 		threadAborting = true;
 	}
 	else
 	{
 		// Error
-		owner->incRef();
-		getVm(owner->getSystemState())->addEvent(owner, _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 		threadAborting = true;
 	}
 }

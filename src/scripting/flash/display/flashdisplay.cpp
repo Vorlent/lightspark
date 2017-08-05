@@ -368,23 +368,19 @@ void LoaderThread::execute()
 		if(cache->hasFailed()) //Check to see if the download failed for some reason
 		{
 			LOG(LOG_ERROR, "Loader::execute(): Download of URL failed: " << url);
-			loaderInfo->incRef();
-			getVm(loader->getSystemState())->addEvent(loaderInfo,_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
-			loader->incRef();
-			getVm(loader->getSystemState())->addEvent(loader,_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 			delete sbuf;
 			// downloader will be deleted in jobFence
 			return;
 		}
-		loaderInfo->incRef();
-		getVm(loader->getSystemState())->addEvent(loaderInfo,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 	}
 	else if(source==BYTES)
 	{
 		assert_and_throw(bytes->bytes);
 
-		loaderInfo->incRef();
-		getVm(loader->getSystemState())->addEvent(loaderInfo,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 		loaderInfo->setBytesTotal(bytes->getLength());
 		loaderInfo->setBytesLoaded(bytes->getLength());
 
@@ -414,8 +410,7 @@ void LoaderThread::execute()
 		// The stream did not contain RootMovieClip or Bitmap
 		if(!threadAborting)
 		{
-			loaderInfo->incRef();
-			getVm(loader->getSystemState())->addEvent(loaderInfo,_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 		}
 		return;
 	}
@@ -619,8 +614,7 @@ void Loader::unload()
 	
 	if(loaded)
 	{
-		contentLoaderInfo->incRef();
-		getVm(getSystemState())->addEvent(contentLoaderInfo,_MR(Class<Event>::getInstanceS(getSystemState(),"unload")));
+		getVm(getSystemState())->addEvent(_IAMR(contentLoaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(getSystemState(),"unload")));
 		loaded=false;
 	}
 
@@ -748,8 +742,7 @@ ASFUNCTIONBODY_ATOM(Sprite,_startDrag)
 		offset += th->getXY();
 	}
 
-	th->incRef();
-	sys->getInputThread()->startDrag(_MR(th), bounds, offset);
+	sys->getInputThread()->startDrag(_IAMR(th), bounds, offset);
 	return asAtom::invalidAtom;
 }
 
@@ -1543,9 +1536,8 @@ void DisplayObjectContainer::deleteLegacyChildAt(uint32_t depth)
 //		setVariableByMultiname(objName,asAtom::nullAtom, ASObject::CONST_NOT_ALLOWED);
 //	}
 
-	obj->incRef();
 	//this also removes it from depthToLegacyChild
-	bool ret = _removeChild(_MR(obj));
+	bool ret = _removeChild(_IAMR(obj));
 	assert_and_throw(ret);
 }
 
@@ -1840,8 +1832,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,contains)
 
 	//Cast to object
 	DisplayObject* d=args[0].as<DisplayObject>();
-	d->incRef();
-	bool ret=th->_contains(_MR(d));
+	bool ret=th->_contains(_IAMR(d));
 	return asAtom(ret);
 }
 
@@ -1866,8 +1857,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 	th->_addChildAt(d,index);
 
 	//Notify the object
-	d->incRef();
-	getVm(sys)->addEvent(d,_MR(Class<Event>::getInstanceS(sys,"added")));
+	getVm(sys)->addEvent(_IAMR(d.getPtr()),_MR(Class<Event>::getInstanceS(sys,"added")));
 
 	//incRef again as the value is getting returned
 	d->incRef();
@@ -1907,8 +1897,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChild)
 	}
 	//Cast to object
 	DisplayObject* d=args[0].as<DisplayObject>();
-	d->incRef();
-	if(!th->_removeChild(_MR(d)))
+	if(!th->_removeChild(_IAMR(d)))
 		throw Class<ArgumentError>::getInstanceS(sys,"removeChild: child not in list", 2025);
 
 	//As we return the child we have to incRef it
@@ -1984,13 +1973,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 	for(;it != th->dynamicDisplayList.end(); ++it)
 		if(i++ == index)
 		{
-			child->incRef();
-			th->dynamicDisplayList.insert(it, child);
+			th->dynamicDisplayList.insert(it, _IAMR(child.getPtr()));
 			return asAtom::invalidAtom;
 		}
 
-	child->incRef();
-	th->dynamicDisplayList.push_back(child);
+	th->dynamicDisplayList.push_back(_IAMR(child.getPtr()));
 	return asAtom::invalidAtom;
 }
 
@@ -2300,8 +2287,7 @@ void Stage::eventListenerAdded(const tiny_string& eventName)
 	{
 		// StageVideoAvailabilityEvent is dispatched directly after an eventListener is added added
 		// see https://www.adobe.com/devnet/flashplayer/articles/stage_video.html 
-		this->incRef();
-		getVm(getSystemState())->addEvent(_MR(this),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState())));
+		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState())));
 	}
 }
 
@@ -2594,8 +2580,7 @@ Bitmap::Bitmap(Class_base* c, _NR<LoaderInfo> li, std::istream *s, FILE_TYPE typ
 	if(li)
 	{
 		loaderInfo = li;
-		this->incRef();
-		loaderInfo->setWaitedObject(_MR(this));
+		loaderInfo->setWaitedObject(_IAMR(this));
 	}
 
 	bitmapData = _MR(Class<BitmapData>::getInstanceS(c->getSystemState()));
@@ -2788,8 +2773,7 @@ _NR<DisplayObject> SimpleButton::hitTestImpl(_NR<DisplayObject> last, number_t x
 		{
 			number_t localX, localY;
 			hitTestState->getMatrix().getInverted().multiply2D(x,y,localX,localY);
-			this->incRef();
-			ret = hitTestState->hitTest(_MR(this), localX, localY, type);
+			ret = hitTestState->hitTest(_IAMR(this), localX, localY, type);
 		}
 	}
 	/* mouseDown events, for example, are never dispatched to the hitTestState,

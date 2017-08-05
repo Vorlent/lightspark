@@ -1351,8 +1351,7 @@ void ParseThread::parseSWF(UI8 ver)
 	if (loader && !loader->allowLoadingSWF())
 	{
 		_NR<LoaderInfo> li=loader->getContentLoaderInfo();
-		li->incRef();
-		getVm(loader->getSystemState())->addEvent(li,_MR(Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
+		getVm(loader->getSystemState())->addEvent(_IAMR(li.getPtr()),_MR(Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
 			"Cannot import a SWF file when LoaderContext.allowCodeImport is false."))); // 3226
 		return;
 	}
@@ -1624,7 +1623,7 @@ void RootMovieClip::commitFrame(bool another)
 		}
 		else
 		{
-			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_AIMNR(this))));
+			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_IAMNR(this))));
 		}
 	}
 }

@@ -352,8 +352,7 @@ void URLLoaderThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
@@ -399,17 +398,14 @@ void URLLoaderThread::execute()
 		//Send a complete event for this object
 		loader->setData(data);
 
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
 		//Send a complete event for this object
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		loader->incRef();
-		getVm(loader->getSystemState())->addEvent(loader,_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 	}
 
 	{
@@ -1456,8 +1452,7 @@ ASFUNCTIONBODY(NetStream,close)
 	if(!th->closed)
 	{
 		th->threadAbort();
-		th->incRef();
-		getVm(obj->getSystemState())->addEvent(_MR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop")));
+		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop")));
 	}
 	LOG(LOG_CALLS, _("NetStream::close called"));
 	return NULL;
