@@ -482,9 +482,7 @@ ASFUNCTIONBODY(Date,setFullYear)
 
 ASFUNCTIONBODY(Date,fullYearSetter)
 {
-	ASObject *o=Date::setFullYear(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setFullYear(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -504,9 +502,7 @@ ASFUNCTIONBODY(Date,setMonth)
 
 ASFUNCTIONBODY(Date,monthSetter)
 {
-	ASObject *o=Date::setMonth(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject>o=_MNR(Date::setMonth(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -524,9 +520,7 @@ ASFUNCTIONBODY(Date,setDate)
 
 ASFUNCTIONBODY(Date,dateSetter)
 {
-	ASObject *o=Date::setDate(obj, args, argslen);
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setDate(obj, args, argslen));
 	return NULL;
 }
 
@@ -547,9 +541,7 @@ ASFUNCTIONBODY(Date,setHours)
 
 ASFUNCTIONBODY(Date,hoursSetter)
 {
-	ASObject *o=Date::setHours(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setHours(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -569,9 +561,7 @@ ASFUNCTIONBODY(Date,setMinutes)
 
 ASFUNCTIONBODY(Date,minutesSetter)
 {
-	ASObject *o=Date::setMinutes(obj, args, argslen);
-	if(o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setMinutes(obj, args, argslen));
 	return NULL;
 }
 
@@ -591,9 +581,7 @@ ASFUNCTIONBODY(Date,setSeconds)
 
 ASFUNCTIONBODY(Date,secondsSetter)
 {
-	ASObject *o=Date::setSeconds(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setSeconds(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -611,9 +599,7 @@ ASFUNCTIONBODY(Date,setMilliseconds)
 
 ASFUNCTIONBODY(Date,millisecondsSetter)
 {
-	ASObject *o=Date::setMilliseconds(obj, args, argslen);
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setMilliseconds(obj, args, argslen));
 	return NULL;
 }
 
@@ -635,9 +621,7 @@ ASFUNCTIONBODY(Date,setUTCFullYear)
 
 ASFUNCTIONBODY(Date,UTCFullYearSetter)
 {
-	ASObject *o=Date::setUTCFullYear(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCFullYear(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -657,9 +641,7 @@ ASFUNCTIONBODY(Date,setUTCMonth)
 
 ASFUNCTIONBODY(Date,UTCMonthSetter)
 {
-	ASObject *o=Date::setUTCMonth(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCMonth(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -677,9 +659,7 @@ ASFUNCTIONBODY(Date,setUTCDate)
 
 ASFUNCTIONBODY(Date,UTCDateSetter)
 {
-	ASObject *o=Date::setUTCDate(obj, args, argslen);
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCDate(obj, args, argslen));
 	return NULL;
 }
 
@@ -700,9 +680,7 @@ ASFUNCTIONBODY(Date,setUTCHours)
 
 ASFUNCTIONBODY(Date,UTCHoursSetter)
 {
-	ASObject *o=Date::setUTCHours(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCHours(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -722,9 +700,7 @@ ASFUNCTIONBODY(Date,setUTCMinutes)
 
 ASFUNCTIONBODY(Date,UTCMinutesSetter)
 {
-	ASObject *o=Date::setUTCMinutes(obj, args, argslen==0?0:1);
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCMinutes(obj, args, argslen==0?0:1));
 	return NULL;
 }
 
@@ -744,9 +720,7 @@ ASFUNCTIONBODY(Date,setUTCSeconds)
 
 ASFUNCTIONBODY(Date,UTCSecondsSetter)
 {
-	ASObject *o=Date::setUTCSeconds(obj, args, min(argslen, (unsigned)1));
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCSeconds(obj, args, min(argslen, (unsigned)1)));
 	return NULL;
 }
 
@@ -764,9 +738,7 @@ ASFUNCTIONBODY(Date,setUTCMilliseconds)
 
 ASFUNCTIONBODY(Date,UTCMillisecondsSetter)
 {
-	ASObject *o=Date::setUTCMilliseconds(obj, args, argslen);
-	if(o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setUTCMilliseconds(obj, args, argslen));
 	return NULL;
 }
 
@@ -801,9 +773,7 @@ ASFUNCTIONBODY(Date,setTime)
 
 ASFUNCTIONBODY(Date,timeSetter)
 {
-	ASObject *o=Date::setTime(obj, args, argslen);
-	if (o)
-		o->decRef();
+	_NR<ASObject> o=_MNR(Date::setTime(obj, args, argslen));
 	return NULL;
 }
 

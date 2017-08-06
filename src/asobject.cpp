@@ -2537,7 +2537,9 @@ void asAtom::add(asAtom &v2, SystemState* sys)
 		}
 		else
 		{//If none of the above apply, convert both to primitives with no hint
+			LOG(LOG_INFO, _("before val1 ref: ") << val1->getRefCount());
 			_R<ASObject> val1p = val1->toPrimitive(NO_HINT);
+			LOG(LOG_INFO, _("after val1 ref: ") << val1->getRefCount());
 			_R<ASObject> val2p = val2->toPrimitive(NO_HINT);
 			if(val1p->is<ASString>() || val2p->is<ASString>())
 			{//If one is String, convert both to strings and concat

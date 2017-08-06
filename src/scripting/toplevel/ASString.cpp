@@ -202,16 +202,15 @@ ASFUNCTIONBODY_ATOM(ASString,match)
 	if(argslen == 0 || args[0].type==T_NULL || args[0].type==T_UNDEFINED)
 		return asAtom::nullAtom;
 	ASObject* ret=NULL;
-	RegExp* re;
+	_NR<RegExp> re;
 
 	if(args[0].is<RegExp>())
 	{
-		re = args[0].as<RegExp>();
-		re->incRef();
+		re = _IMNR(args[0].as<RegExp>());
 	}
 	else
 	{
-		re = Class<RegExp>::getInstanceS(sys,args[0].toString());
+		re = _MNR(Class<RegExp>::getInstanceS(sys,args[0].toString()));
 	}
 
 	if (re->global)
@@ -250,8 +249,6 @@ ASFUNCTIONBODY_ATOM(ASString,match)
 	{
 		ret = re->match(data);
 	}
-
-	re->decRef();
 
 	return asAtom::fromObject(ret);
 }

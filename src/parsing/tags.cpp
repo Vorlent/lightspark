@@ -1292,15 +1292,14 @@ void PlaceObject2Tag::execute(DisplayObjectContainer* parent) const
 		placedTag->loadedFrom->checkBinding(placedTag);
 
 		//We can create the object right away
-		ASObject *instance = placedTag->instance();
-		DisplayObject* toAdd=dynamic_cast<DisplayObject*>(instance);
+		_NR<ASObject> instance = _MNR(placedTag->instance());
+		DisplayObject* toAdd=dynamic_cast<DisplayObject*>(placedTag->instance());
 
 		if(!toAdd && instance)
 		{
 			//We ignore weird tags. I have seen ASFont
 			//(from a DefineFont) being added by PlaceObject2.
 			LOG(LOG_NOT_IMPLEMENTED, "Adding non-DisplayObject to display list");
-			instance->decRef();
 			return;
 		}
 
@@ -1737,15 +1736,15 @@ void StartSoundTag::execute(RootMovieClip* root) const
 
 void StartSoundTag::play(const DefineSoundTag *soundTag) const
 {
-	SoundChannel *schannel = Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
+	_NR<SoundChannel> schannel = _MNR(Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
 		soundTag->getSoundData(),
 		AudioFormat(soundTag->getAudioCodec(),
 			    soundTag->getSampleRate(),
-			    soundTag->getChannels()));
+				soundTag->getChannels())));
 
 	// SoundChannel thread keeps one reference, which will be
 	// removed thread is finished
-	schannel->decRef();
+	// schannel decRef();
 }
 
 ScriptLimitsTag::ScriptLimitsTag(RECORDHEADER h, std::istream& in):ControlTag(h)

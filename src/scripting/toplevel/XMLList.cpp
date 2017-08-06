@@ -690,9 +690,8 @@ asAtom XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 		//delegate to ASString
 		if(res.type == T_INVALID && nodes.size()==1 && nodes[0]->hasSimpleContent())
 		{
-			ASString *contentstr=abstract_s(getSystemState(),nodes[0]->toString_priv());
+			_NR<ASString> contentstr=_MNR(abstract_s(getSystemState(),nodes[0]->toString_priv()));
 			res=contentstr->getVariableByMultiname(name, opt);
-			contentstr->decRef();
 		}
 
 		return res;

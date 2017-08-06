@@ -36,9 +36,9 @@ protected:
 public:
 	virtual ~RefCountable() {}
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
 	int getRefCount() const { return ref_count; }
-#endif
+//#endif
 	inline bool isLastRef() const { return !isConstant && ref_count == 1; }
 	inline void setConstant()
 	{

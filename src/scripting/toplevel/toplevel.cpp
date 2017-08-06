@@ -467,7 +467,7 @@ asAtom SyntheticFunction::call(asAtom& obj, asAtom *args, uint32_t numArgs)
 
 	asAtom ret;
 	//obtain a local reference to this function, as it may delete itself
-	this->incRef();
+	_NR<SyntheticFunction> keep = _IMNR(this);
 
 	++cur_recursion; //increment current recursion depth
 #ifndef NDEBUG
@@ -552,8 +552,6 @@ asAtom SyntheticFunction::call(asAtom& obj, asAtom *args, uint32_t numArgs)
 	Log::calls_indent--;
 #endif
 	getVm(getSystemState())->currentCallContext = saved_cc;
-
-	this->decRef(); //free local ref
 
 	if(ret.type == T_INVALID)
 		ret=asAtom::undefinedAtom;

@@ -1769,16 +1769,14 @@ void ABCContext::runScriptInit(unsigned int i, asAtom &g)
 	hasRunScriptInit[i] = true;
 
 	method_info* m=get_method(scripts[i].init);
-	SyntheticFunction* entry=Class<IFunction>::getSyntheticFunction(this->root->getSystemState(),m);
+	_NR<SyntheticFunction> entry = _MNR(Class<IFunction>::getSyntheticFunction(this->root->getSystemState(),m));
 	
 	ASATOM_INCREF(g);
 	entry->addToScope(scope_entry(g,false));
 
-	asAtom ret=asAtom::fromObject(entry).callFunction(g,NULL,0,false);
+	asAtom ret=asAtom::fromObject(entry.getPtr()).callFunction(g,NULL,0,false);
 
 	ASATOM_DECREF(ret);
-
-	entry->decRef();
 	
 	LOG(LOG_CALLS, "Finished script init for script " << i );
 }

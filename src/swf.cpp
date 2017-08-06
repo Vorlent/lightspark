@@ -230,20 +230,21 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	builtinClasses = new Class_base*[asClassCount];
 	memset(builtinClasses,0,asClassCount*sizeof(Class_base*));
 
-	//Untangle the messy relationship between class objects and the Class class
-	Class_object* classObject = Class_object::getClass(this);
-	//Getting the Object class object will set the classdef to the Class_object
-	//like any other class. This happens inside Class_base constructor
-	_R<Class_base> asobjectClass = Class<ASObject>::getRef(this);
-	//The only bit remaining is setting the Object class as the super class for Class
-	classObject->setSuper(asobjectClass);
-	classObject->decRef();
-	objClassRef = asobjectClass.getPtr();
+	{
+		//Untangle the messy relationship between class objects and the Class class
+		_NR<Class_object> classObject = _MNR(Class_object::getClass(this));
+		//Getting the Object class object will set the classdef to the Class_object
+		//like any other class. This happens inside Class_base constructor
+		_R<Class_base> asobjectClass = Class<ASObject>::getRef(this);
+		//The only bit remaining is setting the Object class as the super class for Class
+		classObject->setSuper(asobjectClass);
+		objClassRef = asobjectClass.getPtr();
 
-	trueRef=_MR(Class<Boolean>::getInstanceS(this,true));
-	trueRef->setConstant();
-	falseRef=_MR(Class<Boolean>::getInstanceS(this,false));
-	falseRef->setConstant();
+		trueRef=_MR(Class<Boolean>::getInstanceS(this,true));
+		trueRef->setConstant();
+		falseRef=_MR(Class<Boolean>::getInstanceS(this,false));
+		falseRef->setConstant();
+	}
 
 	systemDomain = _MR(Class<ApplicationDomain>::getInstanceS(this));
 	_NR<ApplicationDomain> applicationDomain=_MR(Class<ApplicationDomain>::getInstanceS(this,systemDomain));
