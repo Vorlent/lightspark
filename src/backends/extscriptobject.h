@@ -193,12 +193,12 @@ class DLL_PUBLIC ExtASCallback : public ExtCallback
 {
 private:
 	bool funcWasCalled;
-	asAtom func;
+	asAtomR func;
 	_NR<ExternalCallEvent> funcEvent;
 	ASObject* result;
         ASObject** asArgs;
 public:
-	ExtASCallback(asAtom _func);
+	ExtASCallback(asAtomR _func);
 	~ExtASCallback();
 
 	// Don't forget to delete this copy after use

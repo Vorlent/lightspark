@@ -1125,7 +1125,7 @@ FunctionEvent::~FunctionEvent()
 	delete[] args;
 }
 
-ExternalCallEvent::ExternalCallEvent(asAtom _f, ASObject* const* _args,
+ExternalCallEvent::ExternalCallEvent(asAtomR _f, ASObject* const* _args,
 	uint32_t _numArgs, ASObject** _result, bool* _thrown, tiny_string* _exception):
 		WaitableEvent("ExternalCallEvent"),
 		f(_f),args(_args),result(_result),thrown(_thrown),exception(_exception),numArgs(_numArgs)

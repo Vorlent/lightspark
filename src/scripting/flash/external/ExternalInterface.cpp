@@ -82,7 +82,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,addCallback)
 		sys->extScriptObject->removeMethod(args[0].toString().raw_buf());
 	else
 	{
-		sys->extScriptObject->setMethod(args[0].toString().raw_buf(), new ExtASCallback(args[1]));
+		sys->extScriptObject->setMethod(args[0].toString().raw_buf(), new ExtASCallback(_AR(args[1])));
 	}
 	return asAtom::trueAtom;
 }

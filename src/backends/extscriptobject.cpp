@@ -343,13 +343,11 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 }
 
 /* -- ExtASCallback -- */
-ExtASCallback::ExtASCallback(asAtom _func):funcWasCalled(false), func(_func), result(NULL), asArgs(NULL)
+ExtASCallback::ExtASCallback(asAtomR _func):funcWasCalled(false), func(_func), result(NULL), asArgs(NULL)
 {
-	ASATOM_INCREF(func);
 }
 
 ExtASCallback::~ExtASCallback() {
-	ASATOM_DECREF(func);
 	if(asArgs)
 		delete[] asArgs;
 }
@@ -377,14 +375,13 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 
 	if(!synchronous)
 	{
-		ASATOM_INCREF(func);
-		funcEvent = _MR(new (func.getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
+		funcEvent = _MR(new (func->getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
 		// Add the callback function event to the top of the VM event queue
-		funcWasCalled=getVm(func.getObject()->getSystemState())->prependEvent(NullRef,funcEvent);
+		funcWasCalled=getVm(func->getObject()->getSystemState())->prependEvent(NullRef,funcEvent);
 		if(!funcWasCalled)
 			funcEvent = NullRef;
 		else
-			func.getObject()->getSystemState()->sendMainSignal();
+			func->getObject()->getSystemState()->sendMainSignal();
 	}
 	// The caller indicated the VM is currently suspended, so call synchronously.
 	else
@@ -402,7 +399,7 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 			}
 
 			/* TODO: shouldn't we pass some global object instead of Null? */
-			result = func.callFunction(asAtom::nullAtom, newArgs, argc,false).toObject(func.getObject()->getSystemState());
+			result = func->callFunction(asAtom::nullAtom, newArgs, argc,false).toObject(func->getObject()->getSystemState());
 		}
 		// Catch AS exceptions and pass them on
 		catch(ASObject* _exception)

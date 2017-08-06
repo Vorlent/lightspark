@@ -439,14 +439,14 @@ class ExternalCallEvent: public WaitableEvent
 {
 friend class ABCVm;
 private:
-	asAtom f;
+	asAtomR f;
 	ASObject* const* args;
 	ASObject** result;
 	bool* thrown;
 	tiny_string* exception;
 	unsigned int numArgs;
 public:
-	ExternalCallEvent(asAtom _f, ASObject* const* _args, uint32_t _numArgs,
+	ExternalCallEvent(asAtomR _f, ASObject* const* _args, uint32_t _numArgs,
 			  ASObject** _result, bool* _thrown, tiny_string* _exception);
 	~ExternalCallEvent();
 	static void sinit(Class_base*);

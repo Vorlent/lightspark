@@ -1377,7 +1377,7 @@ void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
 							newArgs[i] = asAtom::fromObject(ev->args[i]);
 						}
 					}
-					*(ev->result) = ev->f.callFunction(asAtom::nullAtom,newArgs,ev->numArgs,true).toObject(m_sys);
+					*(ev->result) = ev->f->callFunction(asAtom::nullAtom,newArgs,ev->numArgs,true).toObject(m_sys);
 				}
 				catch(ASObject* exception)
 				{

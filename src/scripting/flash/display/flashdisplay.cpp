@@ -1135,12 +1135,6 @@ MovieClip::MovieClip(Class_base* c, const FrameContainer& f, bool defineSpriteTa
 bool MovieClip::destruct()
 {
 	frames.clear();
-	auto it = frameScripts.begin();
-	while (it != frameScripts.end())
-	{
-		ASATOM_DECREF(it->second);
-		it++;
-	}
 	frameScripts.clear();
 	
 	fromDefineSpriteTag = false;
@@ -1231,7 +1225,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,addFrameScript)
 			return asAtom::invalidAtom;
 		}
 		ASATOM_INCREF(args[i+1]);
-		th->frameScripts[frame]=args[i+1];
+		th->frameScripts[frame]=_AR(args[i+1]);
 	}
 	return asAtom::invalidAtom;
 }
@@ -3140,7 +3134,7 @@ void MovieClip::initFrame()
 	//TODO: check order: child or parent first?
 	if(newFrame && frameScripts.count(state.FP))
 	{
-		asAtom v=frameScripts[state.FP].callFunction(asAtom::invalidAtom,NULL,0,false);
+		asAtom v=frameScripts[state.FP]->callFunction(asAtom::invalidAtom,NULL,0,false);
 		ASATOM_DECREF(v);
 	}
 

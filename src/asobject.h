@@ -905,7 +905,6 @@ public:
 };
 
 #define _AR asAtomR
-#define asAtomR asAtomR
 
 asAtomR _IMAR(asAtom a);
 asAtomR _MAR(asAtom a);
