@@ -469,8 +469,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			{
 				//pop
 				pop();
-				RUNTIME_STACK_POP_CREATE(context,o);
-				ASATOM_DECREF(o);
+				RUNTIME_STACK_POP_CREATE_REF(context,o);
 				break;
 			}
 			case 0x2a:
@@ -986,10 +985,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				RUNTIME_STACK_POP_CREATE(context,value);
 				multiname* name=context->context->getMultiname(t,context);
 				LOG_CALL("initProperty "<<*name);
-				RUNTIME_STACK_POP_CREATE(context,obj);
-				checkDeclaredTraits(obj.toObject(context->context->root->getSystemState()));
-				obj.toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
-				ASATOM_DECREF(obj);
+				RUNTIME_STACK_POP_CREATE_REF(context,obj);
+				checkDeclaredTraits(obj->toObject(context->context->root->getSystemState()));
+				obj->toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
 				name->resetNameIfObject();
 				break;
 			}

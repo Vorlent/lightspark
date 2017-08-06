@@ -267,9 +267,9 @@ public:
 	void replace(ASObject* obj);
 	std::string toDebugString();
 	inline void applyProxyProperty(SystemState *sys, multiname& name);
-	inline TRISTATE isLess(SystemState *sys, asAtom& v2);
-	inline bool isEqual(SystemState *sys, asAtom& v2);
-	inline bool isEqualStrict(SystemState *sys, asAtom& v2);
+	inline TRISTATE isLess(SystemState *sys, asAtom* v2);
+	inline bool isEqual(SystemState *sys, asAtom* v2);
+	inline bool isEqualStrict(SystemState *sys, asAtom* v2);
 	inline bool isConstructed() const;
 	inline bool isPrimitive() const;
 	inline bool isNumeric() const { return (type==T_NUMBER || type==T_INTEGER || type==T_UINTEGER); }
@@ -845,7 +845,6 @@ public:
 	CLASS_SUBTYPE getSubtype() const { return subtype;}
 };
 
-
 class AtomRef
 {
 private:
@@ -1204,24 +1203,24 @@ void asAtom::applyProxyProperty(SystemState* sys,multiname &name)
 			break;
 	}
 }
-TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
+TRISTATE asAtom::isLess(SystemState* sys,asAtom* v2)
 {
 	switch (type)
 	{
 		case T_INTEGER:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return (intval < v2.intval)?TTRUE:TFALSE;
+					return (intval < v2->intval)?TTRUE:TFALSE;
 				case T_UINTEGER:
-					return (intval < 0 || ((uint32_t)intval)  < v2.uintval)?TTRUE:TFALSE;
+					return (intval < 0 || ((uint32_t)intval)  < v2->uintval)?TTRUE:TFALSE;
 				case T_NUMBER:
-					if(std::isnan(v2.numberval))
+					if(std::isnan(v2->numberval))
 						return TUNDEFINED;
-					return (intval < v2.numberval)?TTRUE:TFALSE;
+					return (intval < v2->numberval)?TTRUE:TFALSE;
 				case T_BOOLEAN:
-					return (intval < v2.toInt())?TTRUE:TFALSE;
+					return (intval < v2->toInt())?TTRUE:TFALSE;
 				case T_UNDEFINED:
 					return TUNDEFINED;
 				case T_NULL:
@@ -1233,18 +1232,18 @@ TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
 		}
 		case T_UINTEGER:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return (v2.intval > 0 && (uintval < (uint32_t)v2.intval))?TTRUE:TFALSE;
+					return (v2->intval > 0 && (uintval < (uint32_t)v2->intval))?TTRUE:TFALSE;
 				case T_UINTEGER:
-					return (uintval < v2.uintval)?TTRUE:TFALSE;
+					return (uintval < v2->uintval)?TTRUE:TFALSE;
 				case T_NUMBER:
-					if(std::isnan(v2.numberval))
+					if(std::isnan(v2->numberval))
 						return TUNDEFINED;
-					return (uintval < v2.numberval)?TTRUE:TFALSE;
+					return (uintval < v2->numberval)?TTRUE:TFALSE;
 				case T_BOOLEAN:
-					return (uintval < v2.toUInt())?TTRUE:TFALSE;
+					return (uintval < v2->toUInt())?TTRUE:TFALSE;
 				case T_UNDEFINED:
 					return TUNDEFINED;
 				case T_NULL:
@@ -1258,18 +1257,18 @@ TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
 		{
 			if(std::isnan(numberval))
 				return TUNDEFINED;
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return (numberval  < v2.intval)?TTRUE:TFALSE;
+					return (numberval  < v2->intval)?TTRUE:TFALSE;
 				case T_UINTEGER:
-					return (numberval < v2.uintval)?TTRUE:TFALSE;
+					return (numberval < v2->uintval)?TTRUE:TFALSE;
 				case T_NUMBER:
-					if(std::isnan(v2.numberval))
+					if(std::isnan(v2->numberval))
 						return TUNDEFINED;
-					return (numberval < v2.numberval)?TTRUE:TFALSE;
+					return (numberval < v2->numberval)?TTRUE:TFALSE;
 				case T_BOOLEAN:
-					return (numberval < v2.toInt())?TTRUE:TFALSE;
+					return (numberval < v2->toInt())?TTRUE:TFALSE;
 				case T_UNDEFINED:
 					return TUNDEFINED;
 				case T_NULL:
@@ -1281,18 +1280,18 @@ TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
 		}
 		case T_BOOLEAN:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return (boolval < v2.intval)?TTRUE:TFALSE;
+					return (boolval < v2->intval)?TTRUE:TFALSE;
 				case T_UINTEGER:
-					return (boolval < v2.uintval)?TTRUE:TFALSE;
+					return (boolval < v2->uintval)?TTRUE:TFALSE;
 				case T_NUMBER:
-					if(std::isnan(v2.numberval))
+					if(std::isnan(v2->numberval))
 						return TUNDEFINED;
-					return (boolval < v2.numberval)?TTRUE:TFALSE;
+					return (boolval < v2->numberval)?TTRUE:TFALSE;
 				case T_BOOLEAN:
-					return (boolval < v2.boolval)?TTRUE:TFALSE;
+					return (boolval < v2->boolval)?TTRUE:TFALSE;
 				case T_UNDEFINED:
 					return TUNDEFINED;
 				case T_NULL:
@@ -1304,18 +1303,18 @@ TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
 		}
 		case T_NULL:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return (0 < v2.intval)?TTRUE:TFALSE;
+					return (0 < v2->intval)?TTRUE:TFALSE;
 				case T_UINTEGER:
-					return (0 < v2.uintval)?TTRUE:TFALSE;
+					return (0 < v2->uintval)?TTRUE:TFALSE;
 				case T_NUMBER:
-					if(std::isnan(v2.numberval))
+					if(std::isnan(v2->numberval))
 						return TUNDEFINED;
-					return (0 < v2.numberval)?TTRUE:TFALSE;
+					return (0 < v2->numberval)?TTRUE:TFALSE;
 				case T_BOOLEAN:
-					return (0 < v2.boolval)?TTRUE:TFALSE;
+					return (0 < v2->boolval)?TTRUE:TFALSE;
 				case T_UNDEFINED:
 					return TUNDEFINED;
 				case T_NULL:
@@ -1332,97 +1331,97 @@ TRISTATE asAtom::isLess(SystemState* sys,asAtom &v2)
 		default:
 			break;
 	}
-	return toObject(sys)->isLess(v2.toObject(sys));
+	return toObject(sys)->isLess(v2->toObject(sys));
 }
-bool asAtom::isEqual(SystemState *sys, asAtom &v2)
+bool asAtom::isEqual(SystemState *sys, asAtom* v2)
 {
 	switch (type)
 	{
 		case T_INTEGER:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return intval==v2.toInt();
+					return intval==v2->toInt();
 				case T_UINTEGER:
-					return intval >= 0 && intval==v2.toInt();
+					return intval >= 0 && intval==v2->toInt();
 				case T_NUMBER:
-					return intval==v2.toNumber();
+					return intval==v2->toNumber();
 				case T_BOOLEAN:
-					return intval==v2.toInt();
+					return intval==v2->toInt();
 				case T_STRING:
-					return intval==v2.toNumber();
+					return intval==v2->toNumber();
 				case T_NULL:
 				case T_UNDEFINED:
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 			break;
 		}
 		case T_UINTEGER:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
-					return v2.intval >= 0 && uintval==v2.toUInt();
+					return v2->intval >= 0 && uintval==v2->toUInt();
 				case T_UINTEGER:
 				case T_NUMBER:
 				case T_STRING:
 				case T_BOOLEAN:
-					return uintval==v2.toUInt();
+					return uintval==v2->toUInt();
 				case T_NULL:
 				case T_UNDEFINED:
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 			break;
 		}
 		case T_NUMBER:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_INTEGER:
 				case T_UINTEGER:
 				case T_BOOLEAN:
-					return toNumber()==v2.toNumber();
+					return toNumber()==v2->toNumber();
 				case T_NUMBER:
 				case T_STRING:
-					return toNumber()==v2.toNumber();
+					return toNumber()==v2->toNumber();
 				case T_NULL:
 				case T_UNDEFINED:
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 			break;
 		}
 		case T_BOOLEAN:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_BOOLEAN:
-					return boolval==v2.boolval;
+					return boolval==v2->boolval;
 				case T_STRING:
-					if ((!v2.objval && v2.stringID == UINT32_MAX) || (v2.objval && !v2.objval->isConstructed()))
+					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
 						return false;
-					return boolval==v2.toNumber();
+					return boolval==v2->toNumber();
 				case T_INTEGER:
 				case T_UINTEGER:
 				case T_NUMBER:
-					return boolval==v2.toNumber();
+					return boolval==v2->toNumber();
 				case T_NULL:
 				case T_UNDEFINED:
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 			break;
 		}
 		case T_NULL:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_NULL:
 				case T_UNDEFINED:
@@ -1433,21 +1432,21 @@ bool asAtom::isEqual(SystemState *sys, asAtom &v2)
 				case T_BOOLEAN:
 					return false;
 				case T_FUNCTION:
-					if (!v2.objval->isConstructed())
+					if (!v2->objval->isConstructed())
 						return true;
 					return false;
 				case T_STRING:
-					if ((!v2.objval && v2.stringID == UINT32_MAX) || (v2.objval && !v2.objval->isConstructed()))
+					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
 						return true;
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 			break;
 		}
 		case T_UNDEFINED:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_UNDEFINED:
 				case T_NULL:
@@ -1458,25 +1457,25 @@ bool asAtom::isEqual(SystemState *sys, asAtom &v2)
 				case T_BOOLEAN:
 					return false;
 				case T_FUNCTION:
-					if (!v2.objval->isConstructed())
+					if (!v2->objval->isConstructed())
 						return true;
 					return false;
 				case T_STRING:
-					if ((!v2.objval && v2.stringID == UINT32_MAX) || (v2.objval && !v2.objval->isConstructed()))
+					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
 						return true;
 					return false;
 				default:
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 			}
 		}
 		case T_FUNCTION:
 		{
-			switch (v2.type)
+			switch (v2->type)
 			{
 				case T_FUNCTION:
-					if (closure_this != NULL && v2.closure_this != NULL && closure_this != v2.closure_this)
+					if (closure_this != NULL && v2->closure_this != NULL && closure_this != v2->closure_this)
 						return false;
-					return v2.toObject(sys)->isEqual(this->toObject(sys));
+					return v2->toObject(sys)->isEqual(this->toObject(sys));
 				default:
 					return false;
 			}
@@ -1487,11 +1486,11 @@ bool asAtom::isEqual(SystemState *sys, asAtom &v2)
 		{
 			if (stringID != UINT32_MAX)
 			{
-				switch (v2.type)
+				switch (v2->type)
 				{
 					case T_STRING:
-						if (v2.stringID != UINT32_MAX)
-							return v2.stringID == stringID;
+						if (v2->stringID != UINT32_MAX)
+							return v2->stringID == stringID;
 						break;
 					default:
 						break;
@@ -1502,12 +1501,12 @@ bool asAtom::isEqual(SystemState *sys, asAtom &v2)
 		default:
 			break;
 	}
-	return toObject(sys)->isEqual(v2.toObject(sys));
+	return toObject(sys)->isEqual(v2->toObject(sys));
 }
 
-bool asAtom::isEqualStrict(SystemState *sys, asAtom &v2)
+bool asAtom::isEqualStrict(SystemState *sys, asAtom* v2)
 {
-	if(type!=v2.type)
+	if(type!=v2->type)
 	{
 		//Type conversions are ok only for numeric types
 		switch(type)
@@ -1517,13 +1516,13 @@ bool asAtom::isEqualStrict(SystemState *sys, asAtom &v2)
 			case T_UINTEGER:
 				break;
 			case T_NULL:
-				if (!v2.isConstructed() && v2.type!=T_CLASS)
+				if (!v2->isConstructed() && v2->type!=T_CLASS)
 					return true;
 				return false;
 			default:
 				return false;
 		}
-		switch(v2.type)
+		switch(v2->type)
 		{
 			case T_NUMBER:
 			case T_INTEGER:

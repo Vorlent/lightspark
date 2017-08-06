@@ -414,11 +414,9 @@ void ABCVm::abc_ifnlt(call_context* context,memorystream& code)
 {
 	//ifnlt
 	int32_t t = code.reads24();
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=!(v2.isLess(context->context->root->getSystemState(),v1) == TTRUE);
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=!(v2->isLess(context->context->root->getSystemState(),v1.getPtr()) == TTRUE);
 	LOG_CALL(_("ifNLT (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -436,11 +434,9 @@ void ABCVm::abc_ifnle(call_context* context,memorystream& code)
 {
 	//ifnle
 	int32_t t = code.reads24();
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=!(v1.isLess(context->context->root->getSystemState(),v2) == TFALSE);
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=!(v1->isLess(context->context->root->getSystemState(),v2.getPtr()) == TFALSE);
 	LOG_CALL(_("ifNLE (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -458,11 +454,9 @@ void ABCVm::abc_ifngt(call_context* context,memorystream& code)
 {
 	//ifngt
 	int32_t t = code.reads24();
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=!(v1.isLess(context->context->root->getSystemState(),v2) == TTRUE);
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=!(v1->isLess(context->context->root->getSystemState(),v2.getPtr()) == TTRUE);
 	LOG_CALL(_("ifNGT (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -480,11 +474,9 @@ void ABCVm::abc_ifnge(call_context* context,memorystream& code)
 {
 	//ifnge
 	int32_t t = code.reads24();
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=!(v2.isLess(context->context->root->getSystemState(),v1) == TFALSE);
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=!(v2->isLess(context->context->root->getSystemState(),v1.getPtr()) == TFALSE);
 	LOG_CALL(_("ifNGE (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -516,10 +508,9 @@ void ABCVm::abc_iftrue(call_context* context,memorystream& code)
 	//iftrue
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	bool cond=v1.Boolean_concrete();
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	bool cond=v1->Boolean_concrete();
 	LOG_CALL(_("ifTrue (") << ((cond)?_("taken)"):_("not taken)")));
-	ASATOM_DECREF(v1);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -536,10 +527,9 @@ void ABCVm::abc_iffalse(call_context* context,memorystream& code)
 	//iffalse
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	bool cond=!v1.Boolean_concrete();
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	bool cond=!v1->Boolean_concrete();
 	LOG_CALL(_("ifFalse (") << ((cond)?_("taken"):_("not taken")) << ')');
-	ASATOM_DECREF(v1);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -556,12 +546,10 @@ void ABCVm::abc_ifeq(call_context* context,memorystream& code)
 	//ifeq
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=(v1.isEqual(context->context->root->getSystemState(),v2));
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=(v1->isEqual(context->context->root->getSystemState(),v2.getPtr()));
 	LOG_CALL(_("ifEq (") << ((cond)?_("taken)"):_("not taken)")));
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -578,12 +566,10 @@ void ABCVm::abc_ifne(call_context* context,memorystream& code)
 	//ifne
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=!(v1.isEqual(context->context->root->getSystemState(),v2));
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=!(v1->isEqual(context->context->root->getSystemState(),v2.getPtr()));
 	LOG_CALL(_("ifNE (") << ((cond)?_("taken)"):_("not taken)")));
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -601,11 +587,9 @@ void ABCVm::abc_iflt(call_context* context,memorystream& code)
 	int32_t t = code.reads24();
 
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=v2.isLess(context->context->root->getSystemState(),v1) == TTRUE;
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=v2->isLess(context->context->root->getSystemState(),v1.getPtr()) == TTRUE;
 	LOG_CALL(_("ifLT (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -625,11 +609,9 @@ void ABCVm::abc_ifle(call_context* context,memorystream& code)
 	int32_t t = code.reads24();
 
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=v1.isLess(context->context->root->getSystemState(),v2) == TFALSE;
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=v1->isLess(context->context->root->getSystemState(),v2.getPtr()) == TFALSE;
 	LOG_CALL(_("ifLE (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -648,11 +630,9 @@ void ABCVm::abc_ifgt(call_context* context,memorystream& code)
 	//ifgt
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=v1.isLess(context->context->root->getSystemState(),v2) == TTRUE;
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=v1->isLess(context->context->root->getSystemState(),v2.getPtr()) == TTRUE;
 	LOG_CALL(_("ifGT (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -671,11 +651,9 @@ void ABCVm::abc_ifge(call_context* context,memorystream& code)
 	//ifge
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
-	bool cond=v2.isLess(context->context->root->getSystemState(),v1) == TFALSE;
-	ASATOM_DECREF(v2);
-	ASATOM_DECREF(v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
+	bool cond=v2->isLess(context->context->root->getSystemState(),v1.getPtr()) == TFALSE;
 	LOG_CALL(_("ifGE (") << ((cond)?_("taken)"):_("not taken)")));
 
 	if(cond)
@@ -694,13 +672,11 @@ void ABCVm::abc_ifstricteq(call_context* context,memorystream& code)
 	//ifstricteq
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 
-	bool cond=v1.isEqualStrict(context->context->root->getSystemState(),v2);
+	bool cond=v1->isEqualStrict(context->context->root->getSystemState(),v2.getPtr());
 	LOG_CALL(_("ifStrictEq ")<<cond);
-	ASATOM_DECREF(v1);
-	ASATOM_DECREF(v2);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -717,13 +693,11 @@ void ABCVm::abc_ifstrictne(call_context* context,memorystream& code)
 	//ifstrictne
 	int32_t t = code.reads24();
 
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 
-	bool cond=!v1.isEqualStrict(context->context->root->getSystemState(),v2);
+	bool cond=!v1->isEqualStrict(context->context->root->getSystemState(),v2.getPtr());
 	LOG_CALL(_("ifStrictNE ")<<cond <<" "<<v1.toDebugString()<<" "<<v2.toDebugString());
-	ASATOM_DECREF(v1);
-	ASATOM_DECREF(v2);
 	if(cond)
 	{
 		int here=code.tellg();
@@ -750,10 +724,9 @@ void ABCVm::abc_lookupswitch(call_context* context,memorystream& code)
 		LOG_CALL(_("Switch dest ") << i << ' ' << offsets[i]);
 	}
 
-	RUNTIME_STACK_POP_CREATE(context,index_obj);
-	assert_and_throw(index_obj.type==T_INTEGER);
-	unsigned int index=index_obj.toUInt();
-	ASATOM_DECREF(index_obj);
+	RUNTIME_STACK_POP_CREATE_REF(context,index_obj);
+	assert_and_throw(index_obj->type==T_INTEGER);
+	unsigned int index=index_obj->toUInt();
 
 	uint32_t dest=defaultdest;
 	if(index<=count)
@@ -776,15 +749,14 @@ void ABCVm::abc_popscope(call_context* context,memorystream& code)
 void ABCVm::abc_nextname(call_context* context,memorystream& code)
 {
 	//nextname
-	RUNTIME_STACK_POP_CREATE(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	LOG_CALL("nextName");
-	if(v1.type!=T_UINTEGER)
+	if(v1->type!=T_UINTEGER)
 		throw UnsupportedException("Type mismatch in nextName");
 
-	asAtom ret=pval->toObject(context->context->root->getSystemState())->nextName(v1.toUInt());
+	asAtom ret=pval->toObject(context->context->root->getSystemState())->nextName(v1->toUInt());
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v1);
 	ASATOM_INCREF(ret);
 	*pval = ret;
 }
@@ -796,7 +768,6 @@ void ABCVm::abc_hasnext(call_context* context,memorystream& code)
 	LOG_CALL("hasNext " << v1.toDebugString() << ' ' << pval->toDebugString());
 
 	uint32_t curIndex=pval->toUInt();
-
 	uint32_t newIndex=v1.toObject(context->context->root->getSystemState())->nextNameIndex(curIndex);
 	pval->setInt(newIndex);
 }
@@ -814,15 +785,14 @@ void ABCVm::abc_pushundefined(call_context* context,memorystream& code)
 void ABCVm::abc_nextvalue(call_context* context,memorystream& code)
 {
 	//nextvalue
-	RUNTIME_STACK_POP_CREATE(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	
-	if(v1.type!=T_UINTEGER)
+	if(v1->type!=T_UINTEGER)
 		throw UnsupportedException("Type mismatch in nextValue");
 
-	asAtom ret=pval->toObject(context->context->root->getSystemState())->nextValue(v1.toUInt());
+	asAtom ret=pval->toObject(context->context->root->getSystemState())->nextValue(v1->toUInt());
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v1);
 	ASATOM_INCREF(ret);
 	*pval=ret;
 }
@@ -865,8 +835,7 @@ void ABCVm::abc_pop(call_context* context,memorystream& code)
 {
 	//pop
 	pop();
-	RUNTIME_STACK_POP_CREATE(context,o);
-	ASATOM_DECREF(o);
+	RUNTIME_STACK_POP_CREATE_REF(context,o);
 }
 void ABCVm::abc_dup(call_context* context,memorystream& code)
 {
@@ -1324,10 +1293,9 @@ void ABCVm::abc_initproperty(call_context* context,memorystream& code)
 	RUNTIME_STACK_POP_CREATE(context,value);
 	multiname* name=context->context->getMultiname(t,context);
 	LOG_CALL("initProperty "<<*name);
-	RUNTIME_STACK_POP_CREATE(context,obj);
-	checkDeclaredTraits(obj.toObject(context->context->root->getSystemState()));
-	obj.toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
-	ASATOM_DECREF(obj);
+	RUNTIME_STACK_POP_CREATE_REF(context,obj);
+	checkDeclaredTraits(obj->toObject(context->context->root->getSystemState()));
+	obj->toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
 	name->resetNameIfObject();
 }
 void ABCVm::abc_deleteproperty(call_context* context,memorystream& code)
@@ -1617,75 +1585,69 @@ void ABCVm::abc_bitxor(call_context* context,memorystream& code)
 void ABCVm::abc_equals(call_context* context,memorystream& code)
 {
 	//equals
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 
-	bool ret=pval->isEqual(context->context->root->getSystemState(),v2);
+	bool ret=pval->isEqual(context->context->root->getSystemState(),v2.getPtr());
 	LOG_CALL( _("equals ") << ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 	pval->setBool(ret);
 }
 void ABCVm::abc_strictequals(call_context* context,memorystream& code)
 {
 	//strictequals
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
-	bool ret = pval->isEqualStrict(context->context->root->getSystemState(),v2);
+	bool ret = pval->isEqualStrict(context->context->root->getSystemState(),v2.getPtr());
 	LOG_CALL( _("strictequals ") << ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 	pval->setBool(ret);
 }
 void ABCVm::abc_lessthan(call_context* context,memorystream& code)
 {
 	//lessthan
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	//Real comparision demanded to object
-	bool ret=(pval->isLess(context->context->root->getSystemState(),v2)==TTRUE);
+	bool ret=(pval->isLess(context->context->root->getSystemState(),v2.getPtr())==TTRUE);
 	LOG_CALL(_("lessThan ")<<ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 
 	pval->setBool(ret);
 }
 void ABCVm::abc_lessequals(call_context* context,memorystream& code)
 {
 	//lessequals
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	//Real comparision demanded to object
-	bool ret=(v2.isLess(context->context->root->getSystemState(),*pval)==TFALSE);
+	bool ret=(v2->isLess(context->context->root->getSystemState(),pval)==TFALSE);
 	LOG_CALL(_("lessEquals ")<<ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 
 	pval->setBool(ret);
 }
 void ABCVm::abc_greaterthan(call_context* context,memorystream& code)
 {
 	//greaterthan
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	//Real comparision demanded to object
-	bool ret=(v2.isLess(context->context->root->getSystemState(),*pval)==TTRUE);
+	bool ret=(v2->isLess(context->context->root->getSystemState(),pval)==TTRUE);
 	LOG_CALL(_("greaterThan ")<<ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 
 	pval->setBool(ret);
 }
 void ABCVm::abc_greaterequals(call_context* context,memorystream& code)
 {
 	//greaterequals
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 	RUNTIME_STACK_POINTER_CREATE(context,pval);
 	//Real comparision demanded to object
-	bool ret=(pval->isLess(context->context->root->getSystemState(),v2)==TFALSE);
+	bool ret=(pval->isLess(context->context->root->getSystemState(),v2.getPtr())==TFALSE);
 	LOG_CALL(_("greaterEquals ")<<ret);
 	ASATOM_DECREF_POINTER(pval);
-	ASATOM_DECREF(v2);
 
 	pval->setBool(ret);
 }

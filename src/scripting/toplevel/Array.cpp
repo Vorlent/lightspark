@@ -493,7 +493,7 @@ ASFUNCTIONBODY_ATOM(Array,lastIndexOf)
 			if (a.type == T_INVALID)
 				continue;
 		}
-		if(a.isEqualStrict(th->getSystemState(),arg0))
+		if(a.isEqualStrict(th->getSystemState(),&arg0))
 		{
 			ret=i;
 			break;
@@ -715,7 +715,7 @@ ASFUNCTIONBODY_ATOM(Array,indexOf)
 	{
 		for (auto it=th->data_first.begin()+index ; it != th->data_first.end(); ++it )
 		{
-			if(it->isEqualStrict(sys,arg0))
+			if(it->isEqualStrict(sys,&arg0))
 			{
 				ret=it - th->data_first.begin();
 				break;
@@ -728,7 +728,7 @@ ASFUNCTIONBODY_ATOM(Array,indexOf)
 		{
 			if (it->first < (uint32_t)index)
 				continue;
-			if(it->second.isEqualStrict(sys,arg0))
+			if(it->second.isEqualStrict(sys,&arg0))
 			{
 				ret=it->first;
 				break;

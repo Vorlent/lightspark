@@ -539,7 +539,7 @@ ASFUNCTIONBODY_ATOM(Vector,lastIndexOf)
 	{
 		if (th->vec[i].type == T_INVALID)
 		    continue;
-		if (th->vec[i].isEqualStrict(th->getSystemState(),arg0))
+		if (th->vec[i].isEqualStrict(th->getSystemState(),&arg0))
 		{
 			ret=i;
 			break;
@@ -715,7 +715,7 @@ ASFUNCTIONBODY_ATOM(Vector,indexOf)
 	{
 		if (th->vec[i].type ==T_INVALID)
 			continue;
-		if(th->vec[i].isEqualStrict(th->getSystemState(),arg0))
+		if(th->vec[i].isEqualStrict(th->getSystemState(),&arg0))
 		{
 			ret=i;
 			break;

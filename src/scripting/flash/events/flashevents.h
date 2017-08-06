@@ -333,7 +333,7 @@ public:
 		/* One can register the same handle for the same event with
 		 * different values of use_capture
 		 */
-		return (use_capture == r.second) && f.isEqual(getSys(),r.first);
+		return (use_capture == r.second) && f.isEqual(getSys(),&r.first);
 	}
 	bool operator<(const listener& r) const
 	{
