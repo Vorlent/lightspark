@@ -907,6 +907,7 @@ public:
 #define _AR AtomRef
 
 AtomRef _IMAR(asAtom* a);
+AtomRef _MAR(asAtom* a);
 
 class ApplicationDomain;
 class Array;

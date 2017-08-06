@@ -2570,3 +2570,8 @@ AtomRef _IMAR(asAtom* a)
 	if (a->getObject()) a->getObject()->incRef();
 	return AtomRef(a);
 }
+
+AtomRef _MAR(asAtom* a)
+{
+	return AtomRef(a);
+}

@@ -910,8 +910,9 @@ void ABCVm::constructGenericType(call_context* th, int m)
 	RUNTIME_STACK_PUSH(th,asAtom::fromObject(o_class));
 }
 
-ASObject* ABCVm::typeOf(ASObject* obj)
+ASObject* ABCVm::typeOf(ASObject* objPtr)
 {
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL(_("typeOf"));
 	string ret;
 	switch(obj->getObjectType())
@@ -950,9 +951,7 @@ ASObject* ABCVm::typeOf(ASObject* obj)
 		default:
 			assert_and_throw(false);
 	}
-	ASObject* res = abstract_s(obj->getSystemState(),ret);
-	obj->decRef();
-	return res;
+	return abstract_s(obj->getSystemState(),ret);
 }
 
 void ABCVm::jump(int offset)
@@ -1159,17 +1158,17 @@ int32_t ABCVm::add_i(ASObject* val2Ptr, ASObject* val1Ptr)
 	return num1+num2;
 }
 
-ASObject* ABCVm::add_oi(ASObject* val2, int32_t val1)
+ASObject* ABCVm::add_oi(ASObject* val2Ptr, int32_t val1)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	ASObject* res =NULL;
 	//Implement ECMA add algorithm, for XML and default
 	if(val2->getObjectType()==T_INTEGER)
 	{
-		Integer* ip=static_cast<Integer*>(val2);
+		Integer* ip=static_cast<Integer*>(val2.getPtr());
 		int32_t num2=ip->val;
 		int32_t num1=val1;
 		res = abstract_i(val2->getSystemState(),num1+num2);
-		val2->decRef();
 		LOG_CALL(_("add ") << num1 << '+' << num2);
 		return res;
 	}
@@ -1178,7 +1177,6 @@ ASObject* ABCVm::add_oi(ASObject* val2, int32_t val1)
 		double num2=val2->toNumber();
 		double num1=val1;
 		res = abstract_d(val2->getSystemState(),num1+num2);
-		val2->decRef();
 		LOG_CALL(_("add ") << num1 << '+' << num2);
 		return res;
 	}
@@ -1188,19 +1186,21 @@ ASObject* ABCVm::add_oi(ASObject* val2, int32_t val1)
 		tiny_string a = Integer::toString(val1);
 		const tiny_string& b=val2->toString();
 		res = abstract_s(val2->getSystemState(), a+b);
-		val2->decRef();
 		LOG_CALL(_("add ") << a << '+' << b);
 		return res;
 	}
 	else
 	{
-		return add(val2,abstract_i(val2->getSystemState(),val1));
+		//TODO use MR in parameter signature
+		val2.getPtr()->incRef();
+		return add(val2.getPtr(),abstract_i(val2->getSystemState(),val1));
 	}
 
 }
 
-ASObject* ABCVm::add_od(ASObject* val2, number_t val1)
+ASObject* ABCVm::add_od(ASObject* val2Ptr, number_t val1)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	ASObject* res = NULL;
 	//Implement ECMA add algorithm, for XML and default
 	if(val2->getObjectType()==T_NUMBER)
@@ -1208,7 +1208,6 @@ ASObject* ABCVm::add_od(ASObject* val2, number_t val1)
 		double num2=val2->toNumber();
 		double num1=val1;
 		res = abstract_d(val2->getSystemState(),num1+num2);
-		val2->decRef();
 		LOG_CALL(_("add ") << num1 << '+' << num2);
 		return res;
 	}
@@ -1217,7 +1216,6 @@ ASObject* ABCVm::add_od(ASObject* val2, number_t val1)
 		double num2=val2->toNumber();
 		double num1=val1;
 		res = abstract_d(val2->getSystemState(),num1+num2);
-		val2->decRef();
 		LOG_CALL(_("add ") << num1 << '+' << num2);
 		return res;
 	}
@@ -1226,13 +1224,14 @@ ASObject* ABCVm::add_od(ASObject* val2, number_t val1)
 		tiny_string a = Number::toString(val1);
 		const tiny_string& b=val2->toString();
 		res = abstract_s(val2->getSystemState(),a+b);
-		val2->decRef();
 		LOG_CALL(_("add ") << a << '+' << b);
 		return res;
 	}
 	else
 	{
-		return add(val2,abstract_d(val2->getSystemState(),val1));
+		//TODO use MR in parameter signature
+		val2.getPtr()->incRef();
+		return add(val2.getPtr(),abstract_d(val2->getSystemState(),val1));
 	}
 
 }
@@ -2608,7 +2607,7 @@ void ABCVm::newClass(call_context* th, int n)
 	LOG_CALL(_("Calling Class init ") << ret);
 	//Class init functions are called with global as this
 	method_info* m=&th->context->methods[th->context->classes[n].cinit];
-	SyntheticFunction* cinit=Class<IFunction>::getSyntheticFunction(ret->getSystemState(),m);
+	_NR<SyntheticFunction> cinit= _MNR(Class<IFunction>::getSyntheticFunction(ret->getSystemState(),m));
 	//cinit must inherit the current scope
 	if (!th->parent_scope_stack.isNull())
 		cinit->acquireScope(th->parent_scope_stack->scope);
@@ -2622,14 +2621,13 @@ void ABCVm::newClass(call_context* th, int n)
 	try
 	{
 		asAtom v = asAtom::fromObject(ret);
-		ret2=asAtom::fromObject(cinit).callFunction(v,NULL,0,true);
+		ret2=asAtom::fromObject(cinit.getPtr()).callFunction(v,NULL,0,true);
 	}
 	catch(ASObject* exc)
 	{
 		LOG_CALL(_("Exception during class initialization. Returning Undefined"));
 		//Handle eventual exceptions from the constructor, to fix the stack
 		RUNTIME_STACK_PUSH(th,asAtom::fromObject(th->context->root->applicationDomain->getSystemState()->getUndefinedRef()));
-		cinit->decRef();
 
 		//Remove the class to the ones being currently defined in this context
 		th->context->root->applicationDomain->classesBeingDefined.erase(mname);
@@ -2639,7 +2637,6 @@ void ABCVm::newClass(call_context* th, int n)
 	ASATOM_DECREF(ret2);
 	LOG_CALL(_("End of Class init ") << *mname <<" " <<ret);
 	RUNTIME_STACK_PUSH(th,asAtom::fromObject(ret));
-	cinit->decRef();
 
 	auto j = th->context->root->applicationDomain->classesSuperNotFilled.cbegin();
 	while (j != th->context->root->applicationDomain->classesSuperNotFilled.cend())
