@@ -342,26 +342,12 @@ inline std::ostream& operator<<(std::ostream& s, const NullableRef<T>& r)
 template<class T>
 Ref<T> _IMR(T* a)
 {
-	if (a->getObject()) a->getObject()->incRef();
-	return Ref<T>(a);
-}
-
-template<class T>
-Ref<T> _IAMR(T* a)
-{
 	a->incRef();
 	return Ref<T>(a);
 }
 
 template<class T>
 NullableRef<T> _IMNR(T* a)
-{
-	if (a->getObject()) a->getObject()->incRef();
-	return NullableRef<T>(a);
-}
-
-template<class T>
-NullableRef<T> _IAMNR(T* a)
 {
 	a->incRef();
 	return NullableRef<T>(a);

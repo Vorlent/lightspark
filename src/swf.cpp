@@ -262,7 +262,7 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	loaderInfo->setBytesTotal(0);
 	mainClip=RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain);
 	stage=Class<Stage>::getInstanceS(this);
-	stage->_addChildAt(_IAMR(mainClip),0);
+	stage->_addChildAt(_IMR(mainClip),0);
 	//Get starting time
 	startTime=compat_msectiming();
 	
@@ -1351,7 +1351,7 @@ void ParseThread::parseSWF(UI8 ver)
 	if (loader && !loader->allowLoadingSWF())
 	{
 		_NR<LoaderInfo> li=loader->getContentLoaderInfo();
-		getVm(loader->getSystemState())->addEvent(_IAMR(li.getPtr()),_MR(Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
+		getVm(loader->getSystemState())->addEvent(_IMR(li.getPtr()),_MR(Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
 			"Cannot import a SWF file when LoaderContext.allowCodeImport is false."))); // 3226
 		return;
 	}
@@ -1556,7 +1556,7 @@ void ParseThread::setRootMovie(RootMovieClip *root)
 {
 	SpinlockLocker l(objectSpinlock);
 	assert(root);
-	parsedObject=_IAMNR(root);
+	parsedObject=_IMNR(root);
 }
 
 RootMovieClip* ParseThread::getRootMovie() const
@@ -1623,7 +1623,7 @@ void RootMovieClip::commitFrame(bool another)
 		}
 		else
 		{
-			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_IAMNR(this))));
+			sys->currentVm->addEvent(NullRef, _MR(new (sys->unaccountedMemory) InitFrameEvent(_IMNR(this))));
 		}
 	}
 }
@@ -1672,7 +1672,7 @@ DictionaryTag* RootMovieClip::dictionaryLookup(int id)
 
 _NR<RootMovieClip> RootMovieClip::getRoot()
 {
-	return _IAMR(this);
+	return _IMR(this);
 }
 
 /*ASObject* RootMovieClip::getVariableByQName(const tiny_string& name, const tiny_string& ns, ASObject*& owner)
@@ -1805,9 +1805,9 @@ void SystemState::resizeCompleted()
 {
 	if(currentVm && scaleMode==NO_SCALE)
 	{
-		currentVm->addEvent(_IAMR(stage),_MR(Class<Event>::getInstanceS(this,"resize",false)));
+		currentVm->addEvent(_IMR(stage),_MR(Class<Event>::getInstanceS(this,"resize",false)));
 		
-		currentVm->addEvent(_IAMR(stage),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
+		currentVm->addEvent(_IMR(stage),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
 	}
 }
 

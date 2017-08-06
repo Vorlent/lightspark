@@ -123,7 +123,7 @@ void TokenContainer::requestInvalidation(InvalidateQueue* q)
 {
 	if(tokens.empty())
 		return;
-	q->addToInvalidateQueue(_IAMR(owner));
+	q->addToInvalidateQueue(_IMR(owner));
 }
 
 IDrawable* TokenContainer::invalidate(DisplayObject* target, const MATRIX& initialMatrix)

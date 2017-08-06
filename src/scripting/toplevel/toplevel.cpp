@@ -373,7 +373,7 @@ asAtom SyntheticFunction::call(asAtom& obj, asAtom *args, uint32_t numArgs)
 			argumentsArray->set(j,args[j]);
 		}
 		//Add ourself as the callee property
-		incRef();
+		this->incRef();
 		argumentsArray->setVariableByQName("callee","",this,DECLARED_TRAIT);
 	}
 

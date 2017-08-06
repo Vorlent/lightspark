@@ -58,7 +58,7 @@ XML::XML(Class_base* c, const pugi::xml_node& _n, XML* parent, bool fromXMLList)
 {
 	if (parent)
 	{
-		parentNode = _IAMNR<XML>(parent);
+		parentNode = _IMNR<XML>(parent);
 	}
 	createTree(_n,fromXMLList);
 }
@@ -326,7 +326,7 @@ ASFUNCTIONBODY(XML,_appendChild)
 	_NR<XML> arg;
 	if(args[0]->getClass()==Class<XML>::getClass(obj->getSystemState()))
 	{
-		arg=_IAMR(Class<XML>::cast(args[0]));
+		arg=_IMR(Class<XML>::cast(args[0]));
 	}
 	else if(args[0]->getClass()==Class<XMLList>::getClass(obj->getSystemState()))
 	{
@@ -363,7 +363,7 @@ void XML::appendChild(_R<XML> newChild)
 				throwError<TypeError>(kXMLIllegalCyclicalLoop);
 			node = node->parentNode;
 		}
-		newChild->parentNode = _IAMNR<XML>(this);
+		newChild->parentNode = _IMNR<XML>(this);
 		childrenlist->append(newChild);
 	}
 	else
@@ -1117,7 +1117,7 @@ ASFUNCTIONBODY(XML,_setChildren)
 	if (newChildren->is<XML>())
 	{
 		XML *newChildrenXML=newChildren->as<XML>();
-		th->appendChild(_IAMR<XML>(newChildrenXML));
+		th->appendChild(_IMR<XML>(newChildrenXML));
 	}
 	else if (newChildren->is<XMLList>())
 	{
@@ -1564,7 +1564,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 		if (a.isNull() && !((*buf=='*')|| (*buf==0)))
 		{
 			_NR<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
-			tmp->parentNode = _IAMR<XML>(this);
+			tmp->parentNode = _IMR<XML>(this);
 			tmp->nodetype = pugi::node_null;
 			tmp->isAttribute = true;
 			tmp->nodename = buf;
@@ -1690,7 +1690,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 				tmpstr += normalizedName;
 				tmpstr +=">";
 				_NR<XML> tmp = _MR<XML>(createFromString(this->getSystemState(),tmpstr));
-				tmp->parentNode = _IAMR<XML>(this);
+				tmp->parentNode = _IMR<XML>(this);
 				tmpnodes.push_back(tmp);
 			}
 		}
@@ -2075,7 +2075,7 @@ XML *XML::createFromNode(const pugi::xml_node &_n, XML *parent, bool fromXMLList
 	XML* res = Class<XML>::getInstanceSNoArgs(parent ? parent->getSystemState() : getSys());
 	if (parent)
 	{
-		res->parentNode = _IAMNR<XML>(parent);
+		res->parentNode = _IMNR<XML>(parent);
 	}
 	res->createTree(_n,fromXMLList);
 	return res;
@@ -2108,15 +2108,15 @@ ASFUNCTIONBODY(XML,insertChildAfter)
 		th->incRef();
 		if (child2->is<XML>())
 		{
-			child2->as<XML>()->parentNode = _IAMNR<XML>(th);
-			th->childrenlist->nodes.insert(th->childrenlist->nodes.begin(),_IAMNR<XML>(child2->as<XML>()));
+			child2->as<XML>()->parentNode = _IMNR<XML>(th);
+			th->childrenlist->nodes.insert(th->childrenlist->nodes.begin(),_IMNR<XML>(child2->as<XML>()));
 		}
 		else if (child2->is<XMLList>())
 		{
 			for (auto it2 = child2->as<XMLList>()->nodes.begin(); it2 < child2->as<XMLList>()->nodes.end(); it2++)
 			{
 				(*it2)->incRef();
-				(*it2)->parentNode = _IAMNR<XML>(th);
+				(*it2)->parentNode = _IMNR<XML>(th);
 			}
 			th->childrenlist->nodes.insert(th->childrenlist->nodes.begin(),child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 		}
@@ -2136,15 +2136,15 @@ ASFUNCTIONBODY(XML,insertChildAfter)
 			th->incRef();
 			if (child2->is<XML>())
 			{
-				child2->as<XML>()->parentNode = _IAMNR<XML>(th);
-				th->childrenlist->nodes.insert(it+1,_IAMNR<XML>(child2->as<XML>()));
+				child2->as<XML>()->parentNode = _IMNR<XML>(th);
+				th->childrenlist->nodes.insert(it+1,_IMNR<XML>(child2->as<XML>()));
 			}
 			else if (child2->is<XMLList>())
 			{
 				for (auto it2 = child2->as<XMLList>()->nodes.begin(); it2 < child2->as<XMLList>()->nodes.end(); it2++)
 				{
 					(*it2)->incRef();
-					(*it2)->parentNode = _IAMNR<XML>(th);
+					(*it2)->parentNode = _IMNR<XML>(th);
 				}
 				th->childrenlist->nodes.insert(it+1,child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 			}
@@ -2187,7 +2187,7 @@ ASFUNCTIONBODY(XML,insertChildBefore)
 			for (auto it = child2->as<XMLList>()->nodes.begin(); it < child2->as<XMLList>()->nodes.end(); it++)
 			{
 				(*it)->incRef();
-				(*it)->parentNode = _IAMNR<XML>(th);
+				(*it)->parentNode = _IMNR<XML>(th);
 				th->childrenlist->nodes.push_back(_NR<XML>(*it));
 			}
 		}
@@ -2207,15 +2207,15 @@ ASFUNCTIONBODY(XML,insertChildBefore)
 			th->incRef();
 			if (child2->is<XML>())
 			{
-				child2->as<XML>()->parentNode = _IAMNR<XML>(th);
-				th->childrenlist->nodes.insert(it,_IAMNR<XML>(child2->as<XML>()));
+				child2->as<XML>()->parentNode = _IMNR<XML>(th);
+				th->childrenlist->nodes.insert(it,_IMNR<XML>(child2->as<XML>()));
 			}
 			else if (child2->is<XMLList>())
 			{
 				for (auto it2 = child2->as<XMLList>()->nodes.begin(); it2 < child2->as<XMLList>()->nodes.end(); it2++)
 				{
 					(*it2)->incRef();
-					(*it2)->parentNode = _IAMNR<XML>(th);
+					(*it2)->parentNode = _IMNR<XML>(th);
 				}
 				th->childrenlist->nodes.insert(it,child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 			}
@@ -2529,7 +2529,7 @@ asAtom XML::nextValue(uint32_t index)
 {
 	if(index<=1)
 	{
-		incRef();
+		this->incRef();
 		return asAtom::fromObject(this);
 	}
 	else
@@ -2740,7 +2740,7 @@ void XML::fillNode(XML* node, const pugi::xml_node &srcnode)
 		if(aname == "xmlns" || (aname.numBytes() >= 6 && aname.substr_bytes(0,6) == "xmlns:"))
 			continue;
 		_NR<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(node->getSystemState()));
-		tmp->parentNode = _IAMR<XML>(node);
+		tmp->parentNode = _IMR<XML>(node);
 		tmp->nodetype = pugi::node_null;
 		tmp->isAttribute = true;
 		tmp->nodename = aname;
@@ -2790,7 +2790,7 @@ ASFUNCTIONBODY(XML,_prependChild)
 	_NR<XML> arg;
 	if(args[0]->getClass()==Class<XML>::getClass(obj->getSystemState()))
 	{
-		arg=_IAMR(Class<XML>::cast(args[0]));
+		arg=_IMR(Class<XML>::cast(args[0]));
 	}
 	else if(args[0]->getClass()==Class<XMLList>::getClass(obj->getSystemState()))
 	{
@@ -2826,7 +2826,7 @@ void XML::prependChild(_R<XML> newChild)
 				throwError<TypeError>(kXMLIllegalCyclicalLoop);
 			node = node->parentNode;
 		}
-		newChild->parentNode = _IAMNR<XML>(this);
+		newChild->parentNode = _IMNR<XML>(this);
 		childrenlist->prepend(newChild);
 	}
 	else
@@ -2852,18 +2852,18 @@ ASFUNCTIONBODY(XML,_replace)
 		if (value->is<XMLList>())
 		{
 			th->childrenlist->decRef();
-			th->childrenlist = _IAMNR<XMLList>(value->as<XMLList>());
+			th->childrenlist = _IMNR<XMLList>(value->as<XMLList>());
 		}
 		else if (value->is<XML>())
 		{
 			th->childrenlist->clear();
-			th->childrenlist->append(_IAMR<XML>(value->as<XML>()));
+			th->childrenlist->append(_IMR<XML>(value->as<XML>()));
 		}
 		else
 		{
 			XML* x = createFromString(obj->getSystemState(),value->toString());
 			th->childrenlist->clear();
-			th->childrenlist->append(_IAMR<XML>(x));
+			th->childrenlist->append(_IMR<XML>(x));
 		}
 		th->incRef();
 		return th;

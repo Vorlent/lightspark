@@ -603,7 +603,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 				|| eventName=="exitFrame"
 				|| eventName=="frameConstructed") )
 	{
-		th->getSystemState()->registerFrameListener(_IAMR(th->as<DisplayObject>()));
+		th->getSystemState()->registerFrameListener(_IMR(th->as<DisplayObject>()));
 	}
 
 	{
@@ -669,7 +669,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 					&& !th->hasEventListener("exitFrame")
 					&& !th->hasEventListener("frameConstructed")) )
 	{
-		th->getSystemState()->unregisterFrameListener(_IAMR(th->as<DisplayObject>()));
+		th->getSystemState()->unregisterFrameListener(_IMR(th->as<DisplayObject>()));
 	}
 
 	return asAtom::invalidAtom;
@@ -700,7 +700,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 	}
 	if(th->forcedTarget.type != T_INVALID)
 		e->setTarget(th->forcedTarget);
-	ABCVm::publicHandleEvent(_IAMR(th), e);
+	ABCVm::publicHandleEvent(_IMR(th), e);
 	return asAtom::trueAtom;
 }
 

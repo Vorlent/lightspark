@@ -309,7 +309,7 @@ _R<ASObject> ASObject::toPrimitive(TP_HINT hint)
 
 	if(isPrimitive())
 	{
-		return _IAMR(this);
+		return _IMR(this);
 	}
 
 	/* for HINT_STRING evaluate first toString, then valueOf
@@ -2562,4 +2562,11 @@ void asAtom::add(asAtom &v2, SystemState* sys)
 			}
 		}
 	}
+}
+
+
+AtomRef _IMAR(asAtom* a)
+{
+	if (a->getObject()) a->getObject()->incRef();
+	return AtomRef(a);
 }

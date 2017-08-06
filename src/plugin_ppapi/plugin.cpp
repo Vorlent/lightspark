@@ -238,8 +238,7 @@ std::streambuf *ppFileStreamCache::createReader()
 		return NULL;
 	}
 
-	incRef();
-	ppFileStreamCache::ppFileStreamCacheReader *fbuf = new ppFileStreamCache::ppFileStreamCacheReader(_MR(this));
+	ppFileStreamCache::ppFileStreamCacheReader *fbuf = new ppFileStreamCache::ppFileStreamCacheReader(_IMR(this));
 	reader = fbuf;
 	return fbuf;
 }

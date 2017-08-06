@@ -209,7 +209,7 @@ public:
 	static _R<Class<T>> getRef(SystemState* sys)
 	{
 		Class<T>* ret = getClass(sys);
-		return _IAMR(ret);
+		return _IMR(ret);
 	}
 	static T* cast(ASObject* o)
 	{
@@ -313,7 +313,7 @@ public:
 	static _R<Class<ASObject>> getRef(SystemState* sys)
 	{
 		Class<ASObject>* ret = getClass(sys);
-		return _IAMR(ret);
+		return _IMR(ret);
 	}
 	static ASObject* cast(ASObject* o)
 	{
@@ -387,7 +387,7 @@ public:
 	static _R<InterfaceClass<T>> getRef(SystemState* sys)
 	{
 		InterfaceClass<T>* ret = getClass(sys);
-		return _IAMR(ret);
+		return _IMR(ret);
 	}
 	void linkInterface(Class_base* c) const
 	{

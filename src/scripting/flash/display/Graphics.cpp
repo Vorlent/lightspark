@@ -799,7 +799,7 @@ ASFUNCTIONBODY_ATOM(Graphics,beginGradientFill)
 	if (ratiosParam.isNull())
 		return asAtom::invalidAtom;
 
-	_NR<Array> ratios = _IAMNR(ratiosParam->as<Array>());
+	_NR<Array> ratios = _IMNR(ratiosParam->as<Array>());
 
 	FILLSTYLE style = createGradientFill(type, colors, alphas, ratios, matrix,
 					     spreadMethod, interpolationMethod,

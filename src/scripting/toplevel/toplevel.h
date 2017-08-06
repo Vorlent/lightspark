@@ -308,7 +308,7 @@ public:
 	static _R<Class_object> getRef(SystemState* sys)
 	{
 		Class_object* ret = getClass(sys);
-		return _IAMR(ret);
+		return _IMR(ret);
 	}
 	
 };
@@ -522,7 +522,7 @@ public:
 	static _R<Class<IFunction>> getRef(SystemState* sys)
 	{
 		Class<IFunction>* ret = getClass(sys);
-		return _IAMR(ret);
+		return _IMR(ret);
 	}
 	static Function* getFunction(SystemState* sys,Function::as_function v, int len = 0)
 	{

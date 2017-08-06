@@ -67,7 +67,7 @@ public:
                                                   obj->getClassName(),
                                                   Class<T>::getClass(obj->getSystemState())->getQualifiedClassName());
         T* o = obj->as<T>();
-		return _IAMR(o);
+		return _IMR(o);
 	}
 	static ASObject* toAbstract(SystemState* /*sys*/,const Ref<T>& val)
 	{
@@ -96,7 +96,7 @@ public:
                                                   obj->getClassName(),
                                                   Class<T>::getClass(obj->getSystemState())->getQualifiedClassName());
         T* o = obj->as<T>();
-		return _IAMNR(o);
+		return _IMNR(o);
 	}
 	static ASObject* toAbstract(SystemState* sys,const NullableRef<T>& val)
 	{
@@ -117,7 +117,7 @@ class ArgumentConversion<NullableRef<ASObject>>
 public:
 	static NullableRef<ASObject> toConcrete(ASObject* obj)
 	{
-		return _IAMNR(obj);
+		return _IMNR(obj);
 	}
 	static ASObject* toAbstract(SystemState* sys,const NullableRef<ASObject>& val)
 	{
@@ -309,7 +309,7 @@ public:
                                                   obj.toObject(getSys())->getClassName(),
                                                   Class<T>::getClass(getSys())->getQualifiedClassName());
         T* o = obj.as<T>();
-		return _IAMR(o);
+		return _IMR(o);
 	}
 	static ASObject* toAbstract(SystemState* /*sys*/,const Ref<T>& val)
 	{
@@ -353,7 +353,7 @@ public:
 	static NullableRef<ASObject> toConcrete(asAtom obj,const NullableRef<ASObject>& v)
 	{
 		ASObject* o = obj.toObject(getSys());
-		return _IAMNR(o);
+		return _IMNR(o);
 	}
 	static asAtom toAbstract(SystemState* sys,const NullableRef<ASObject>& val)
 	{

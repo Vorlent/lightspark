@@ -156,14 +156,14 @@ void LoaderInfo::setBytesLoaded(uint32_t b)
 		bytesLoaded=b;
 		if(getVm(getSystemState()))
 		{
-			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
+			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
 		}
 		if(loadStatus==INIT_SENT)
 		{
 			//The clip is also complete now
 			if(getVm(getSystemState()))
 			{
-				getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+				getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
 			}
 			loadStatus=COMPLETE;
 		}
@@ -172,13 +172,13 @@ void LoaderInfo::setBytesLoaded(uint32_t b)
 
 void LoaderInfo::sendInit()
 {
-	getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"init")));
+	getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"init")));
 	assert(loadStatus==STARTED);
 	loadStatus=INIT_SENT;
 	if(bytesTotal && bytesLoaded==bytesTotal)
 	{
 		//The clip is also complete now
-		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
 		loadStatus=COMPLETE;
 	}
 }
@@ -368,19 +368,19 @@ void LoaderThread::execute()
 		if(cache->hasFailed()) //Check to see if the download failed for some reason
 		{
 			LOG(LOG_ERROR, "Loader::execute(): Download of URL failed: " << url);
-			getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
-			getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 			delete sbuf;
 			// downloader will be deleted in jobFence
 			return;
 		}
-		getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 	}
 	else if(source==BYTES)
 	{
 		assert_and_throw(bytes->bytes);
 
-		getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 		loaderInfo->setBytesTotal(bytes->getLength());
 		loaderInfo->setBytesLoaded(bytes->getLength());
 
@@ -410,7 +410,7 @@ void LoaderThread::execute()
 		// The stream did not contain RootMovieClip or Bitmap
 		if(!threadAborting)
 		{
-			getVm(loader->getSystemState())->addEvent(_IAMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 		}
 		return;
 	}
@@ -511,7 +511,7 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		sys->currentVm->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(sys)));
+		sys->currentVm->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(sys)));
 		return asAtom::invalidAtom;
 	}
 
@@ -531,7 +531,7 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 		}
 	}
 
-	LoaderThread *thread=new LoaderThread(_IAMR(r.getPtr()), _IAMR(th));
+	LoaderThread *thread=new LoaderThread(_IMR(r.getPtr()), _IMR(th));
 
 	SpinlockLocker l(th->spinlock);
 	th->jobs.push_back(thread);
@@ -567,7 +567,7 @@ ASFUNCTIONBODY_ATOM(Loader,loadBytes)
 
 	if(bytes->getLength()!=0)
 	{
-		LoaderThread *thread=new LoaderThread(_MR(bytes), _IAMR(th));
+		LoaderThread *thread=new LoaderThread(_MR(bytes), _IMR(th));
 		SpinlockLocker l(th->spinlock);
 		th->jobs.push_back(thread);
 		sys->addJob(thread);
@@ -614,7 +614,7 @@ void Loader::unload()
 	
 	if(loaded)
 	{
-		getVm(getSystemState())->addEvent(_IAMR(contentLoaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(getSystemState(),"unload")));
+		getVm(getSystemState())->addEvent(_IMR(contentLoaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(getSystemState(),"unload")));
 		loaded=false;
 	}
 
@@ -635,8 +635,7 @@ void Loader::finalize()
 
 Loader::Loader(Class_base* c):DisplayObjectContainer(c),content(NullRef),contentLoaderInfo(NullRef),loaded(false), allowCodeImport(true),uncaughtErrorEvents(NullRef)
 {
-	incRef();
-	contentLoaderInfo=_MR(Class<LoaderInfo>::getInstanceS(c->getSystemState(),_MR(this)));
+	contentLoaderInfo=_MR(Class<LoaderInfo>::getInstanceS(c->getSystemState(),_IMR(this)));
 }
 
 Loader::~Loader()
@@ -742,7 +741,7 @@ ASFUNCTIONBODY_ATOM(Sprite,_startDrag)
 		offset += th->getXY();
 	}
 
-	sys->getInputThread()->startDrag(_IAMR(th), bounds, offset);
+	sys->getInputThread()->startDrag(_IMR(th), bounds, offset);
 	return asAtom::invalidAtom;
 }
 
@@ -767,7 +766,7 @@ ASFUNCTIONBODY_ATOM(Sprite,_setter_hitArea)
 	th->hitArea = value;
 	if (!th->hitArea.isNull())
 	{
-		th->hitArea->hitTarget = _IAMNR(th);
+		th->hitArea->hitTarget = _IMNR(th);
 	}
 
 	return asAtom::invalidAtom;
@@ -883,14 +882,14 @@ _NR<DisplayObject> DisplayObjectContainer::hitTestImpl(_NR<DisplayObject> last, 
 
 		number_t localX, localY;
 		(*j)->getMatrix().getInverted().multiply2D(x,y,localX,localY);
-		ret=(*j)->hitTest(_IAMR(this), localX,localY, type);
+		ret=(*j)->hitTest(_IMR(this), localX,localY, type);
 		if(!ret.isNull())
 			break;
 	}
 	/* When mouseChildren is false, we should get all events of our children */
 	if(ret && !mouseChildren)
 	{
-		ret = _IAMNR(this);
+		ret = _IMNR(this);
 	}
 	return ret;
 }
@@ -899,12 +898,12 @@ _NR<DisplayObject> Sprite::hitTestImpl(_NR<DisplayObject>, number_t x, number_t 
 {
 	//Did we hit a children?
 	_NR<DisplayObject> ret = NullRef;
-	ret = DisplayObjectContainer::hitTestImpl(_IAMR(this),x,y, type);
+	ret = DisplayObjectContainer::hitTestImpl(_IMR(this),x,y, type);
 
 	if (ret.isNull() && hitArea.isNull())
 	{
 		//The coordinates are locals
-		ret = TokenContainer::hitTestImpl(_IAMR(this),x,y, type);
+		ret = TokenContainer::hitTestImpl(_IMR(this),x,y, type);
 
 		if (!ret.isNull())  //Did we hit the sprite?
 		{
@@ -1537,7 +1536,7 @@ void DisplayObjectContainer::deleteLegacyChildAt(uint32_t depth)
 //	}
 
 	//this also removes it from depthToLegacyChild
-	bool ret = _removeChild(_IAMR(obj));
+	bool ret = _removeChild(_IMR(obj));
 	assert_and_throw(ret);
 }
 
@@ -1770,7 +1769,7 @@ void DisplayObjectContainer::_addChildAt(_R<DisplayObject> child, unsigned int i
 			child->getParent()->_removeChild(child);
 	}
 	child->incRef();
-	child->setParent(_IAMR(this));
+	child->setParent(_IMR(this));
 	{
 		Locker l(mutexDisplayList);
 		//We insert the object in the back of the list
@@ -1832,7 +1831,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,contains)
 
 	//Cast to object
 	DisplayObject* d=args[0].as<DisplayObject>();
-	bool ret=th->_contains(_IAMR(d));
+	bool ret=th->_contains(_IMR(d));
 	return asAtom(ret);
 }
 
@@ -1857,7 +1856,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 	th->_addChildAt(d,index);
 
 	//Notify the object
-	getVm(sys)->addEvent(_IAMR(d.getPtr()),_MR(Class<Event>::getInstanceS(sys,"added")));
+	getVm(sys)->addEvent(_IMR(d.getPtr()),_MR(Class<Event>::getInstanceS(sys,"added")));
 
 	//incRef again as the value is getting returned
 	d->incRef();
@@ -1876,11 +1875,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChild)
 	assert_and_throw(args[0].is<DisplayObject>());
 
 	//Cast to object
-	_R<DisplayObject> d=_IAMR(args[0].as<DisplayObject>());
+	_R<DisplayObject> d=_IMR(args[0].as<DisplayObject>());
 	th->_addChildAt(d,numeric_limits<unsigned int>::max());
 
 	//Notify the object
-	getVm(sys)->addEvent(d,_IAMR(Class<Event>::getInstanceS(sys,"added")));
+	getVm(sys)->addEvent(d,_IMR(Class<Event>::getInstanceS(sys,"added")));
 
 	d->incRef();
 	return asAtom::fromObject(d.getPtr());
@@ -1897,7 +1896,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChild)
 	}
 	//Cast to object
 	DisplayObject* d=args[0].as<DisplayObject>();
-	if(!th->_removeChild(_IAMR(d)))
+	if(!th->_removeChild(_IMR(d)))
 		throw Class<ArgumentError>::getInstanceS(sys,"removeChild: child not in list", 2025);
 
 	//As we return the child we have to incRef it
@@ -1973,11 +1972,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 	for(;it != th->dynamicDisplayList.end(); ++it)
 		if(i++ == index)
 		{
-			th->dynamicDisplayList.insert(it, _IAMR(child.getPtr()));
+			th->dynamicDisplayList.insert(it, _IMR(child.getPtr()));
 			return asAtom::invalidAtom;
 		}
 
-	th->dynamicDisplayList.push_back(_IAMR(child.getPtr()));
+	th->dynamicDisplayList.push_back(_IMR(child.getPtr()));
 	return asAtom::invalidAtom;
 }
 
@@ -2287,7 +2286,7 @@ void Stage::eventListenerAdded(const tiny_string& eventName)
 	{
 		// StageVideoAvailabilityEvent is dispatched directly after an eventListener is added added
 		// see https://www.adobe.com/devnet/flashplayer/articles/stage_video.html 
-		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState())));
+		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState())));
 	}
 }
 
@@ -2305,7 +2304,7 @@ Stage::Stage(Class_base* c):
 
 _NR<Stage> Stage::getStage()
 {
-	return _IAMR(this);
+	return _IMR(this);
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_constructor)
@@ -2320,7 +2319,7 @@ _NR<DisplayObject> Stage::hitTestImpl(_NR<DisplayObject> last, number_t x, numbe
 	if(!ret)
 	{
 		/* If nothing else is hit, we hit the stage */
-		ret = _IAMNR(this);
+		ret = _IMNR(this);
 	}
 	return ret;
 }
@@ -2415,8 +2414,7 @@ _NR<InteractiveObject> Stage::getFocusTarget()
 	SpinlockLocker l(focusSpinlock);
 	if (focus.isNull())
 	{
-		incRef();
-		return _MNR(this);
+		return _IMNR(this);
 	}
 	else
 	{
@@ -2580,7 +2578,7 @@ Bitmap::Bitmap(Class_base* c, _NR<LoaderInfo> li, std::istream *s, FILE_TYPE typ
 	if(li)
 	{
 		loaderInfo = li;
-		loaderInfo->setWaitedObject(_IAMR(this));
+		loaderInfo->setWaitedObject(_IMR(this));
 	}
 
 	bitmapData = _MR(Class<BitmapData>::getInstanceS(c->getSystemState()));
@@ -2773,7 +2771,7 @@ _NR<DisplayObject> SimpleButton::hitTestImpl(_NR<DisplayObject> last, number_t x
 		{
 			number_t localX, localY;
 			hitTestState->getMatrix().getInverted().multiply2D(x,y,localX,localY);
-			ret = hitTestState->hitTest(_IAMR(this), localX, localY, type);
+			ret = hitTestState->hitTest(_IMR(this), localX, localY, type);
 		}
 	}
 	/* mouseDown events, for example, are never dispatched to the hitTestState,
@@ -2786,7 +2784,7 @@ _NR<DisplayObject> SimpleButton::hitTestImpl(_NR<DisplayObject> last, number_t x
 		if(!isHittable(type))
 			return NullRef;
 			
-		ret = _IAMR(this);
+		ret = _IMR(this);
 	}
 	return ret;
 }
@@ -3116,7 +3114,7 @@ void MovieClip::initFrame()
 			if((int)state.FP < state.last_FP || (int)i > state.last_FP)
 			{
 				//this->incRef(); //TODO kill ref from execute's declaration
-				iter->execute(_IAMR(this));
+				iter->execute(_IMR(this));
 			}
 			++iter;
 		}

@@ -245,7 +245,7 @@ ASFUNCTIONBODY(XMLNode,appendChild)
 		c->root->decRef();
 	if (th->is<XMLDocument>())
 	{
-		c->root = _IAMR(th->as<XMLDocument>());
+		c->root = _IMR(th->as<XMLDocument>());
 	}
 	else
 	{
@@ -357,7 +357,7 @@ ASFUNCTIONBODY(XMLDocument,firstChild)
 	assert_and_throw(argslen==0);
 	assert(th->node==NULL);
 	pugi::xml_node newNode=th->rootNode;
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IAMR(th),newNode);
+	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IMR(th),newNode);
 }
 ASFUNCTIONBODY(XMLDocument,createElement)
 {
@@ -367,5 +367,5 @@ ASFUNCTIONBODY(XMLDocument,createElement)
 	ARG_UNPACK(name);
 	pugi::xml_node newNode;
 	newNode.set_name(name.raw_buf());
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IAMR(th),newNode);
+	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IMR(th),newNode);
 }

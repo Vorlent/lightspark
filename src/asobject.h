@@ -323,6 +323,8 @@ public:
 #define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRef()
 #define ASATOM_DECREF(a) do { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
 #define ASATOM_DECREF_POINTER(a) { ASObject* b = a->getObject(); if (b) b->decRef(); } while (0)
+
+
 struct variable
 {
 	asAtom var;
@@ -842,6 +844,69 @@ public:
 	}
 	CLASS_SUBTYPE getSubtype() const { return subtype;}
 };
+
+
+class AtomRef
+{
+private:
+	asAtom* m;
+public:
+	explicit AtomRef(asAtom* o):m(o)
+	{
+		assert(m);
+	}
+	AtomRef(const AtomRef& r):m(r.m)
+	{
+		if (m->getObject()) m->getObject()->incRef();
+	}
+	AtomRef& operator=(const AtomRef& r)
+	{
+		//incRef before decRef to make sure this works even if the pointer is the same
+		if (r.m->getObject()) r.m->getObject()->incRef();
+
+		asAtom* old=m;
+		m=r.m;
+
+		//decRef as the very last function call, because it
+		//may cause this Ref to be deleted (if old owns this Ref)
+		if (old->getObject()) old->getObject()->incRef();
+
+		return *this;
+	}
+	inline bool operator==(const AtomRef& r) const
+	{
+		return m==r.getPtr();
+	}
+	inline bool operator!=(const AtomRef& r) const
+	{
+		return m!=r.getPtr();
+	}
+	inline bool operator==(AtomRef* r) const
+	{
+		return m==r->m;
+	}
+	//Order operator for Dictionary map
+	inline bool operator<(const AtomRef& r) const
+	{
+		return m<r.m;
+	}
+	~AtomRef()
+	{
+		if (m->getObject()) m->getObject()->incRef();
+	}
+	inline asAtom* operator->() const
+	{
+		return m;
+	}
+	inline asAtom* getPtr() const
+	{
+		return m;
+	}
+};
+
+#define _AR AtomRef
+
+AtomRef _IMAR(asAtom* a);
 
 class ApplicationDomain;
 class Array;

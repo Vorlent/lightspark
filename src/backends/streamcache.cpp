@@ -183,8 +183,7 @@ void MemoryStreamCache::reserve(size_t expectedLength)
 
 std::streambuf *MemoryStreamCache::createReader()
 {
-	incRef();
-	return new MemoryStreamCache::Reader(_MR(this));
+	return new MemoryStreamCache::Reader(_IMR(this));
 }
 
 void MemoryStreamCache::openForWriting()
@@ -482,8 +481,7 @@ std::streambuf *FileStreamCache::createReader()
 		return NULL;
 	}
 
-	incRef();
-	FileStreamCache::Reader *fbuf = new FileStreamCache::Reader(_MR(this));
+	FileStreamCache::Reader *fbuf = new FileStreamCache::Reader(_IMR(this));
 	fbuf->open(cacheFilename.raw_buf(), std::fstream::binary | std::fstream::in);
 	if (!fbuf->is_open())
 	{

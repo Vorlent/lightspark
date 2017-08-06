@@ -218,7 +218,7 @@ ASFUNCTIONBODY(Video,attachNetStream)
 
 	//Acquire the netStream
 	Mutex::Lock l(th->mutex);
-	th->netStream=_IAMR(Class<NetStream>::cast(args[0]));
+	th->netStream=_IMR(Class<NetStream>::cast(args[0]));
 	return NULL;
 }
 ASFUNCTIONBODY(Video,clear)
@@ -301,7 +301,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		getVm(th->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 		return asAtom::invalidAtom;
 	}
 
@@ -323,7 +323,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	}
 	if(th->downloader->hasFailed())
 	{
-		getVm(th->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 	}
 	return asAtom::invalidAtom;
 }
@@ -363,10 +363,10 @@ void Sound::setBytesLoaded(uint32_t b)
 	if(b!=bytesLoaded)
 	{
 		bytesLoaded=b;
-		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
 		if(bytesLoaded==bytesTotal)
 		{
-			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
 		}
 	}
 }
@@ -438,7 +438,7 @@ SoundChannel::SoundChannel(Class_base* c, _NR<StreamCache> _stream, AudioFormat 
 	if (!stream.isNull())
 	{
 		// Start playback
-		incRef();
+		this->incRef();
 		getSys()->addJob(this);
 	}
 }
@@ -585,8 +585,7 @@ void SoundChannel::playStream()
 
 	if (!ACQUIRE_READ(stopped))
 	{
-		incRef();
-		getVm(getSystemState())->addEvent(_MR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"soundComplete")));
+		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"soundComplete")));
 	}
 }
 
@@ -651,7 +650,7 @@ ASFUNCTIONBODY(StageVideo,attachNetStream)
 
 	//Acquire the netStream
 	Mutex::Lock l(th->mutex);
-	th->netStream=_IAMR(Class<NetStream>::cast(args[0]));
+	th->netStream=_IMR(Class<NetStream>::cast(args[0]));
 	return NULL;
 }
 

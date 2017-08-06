@@ -234,8 +234,7 @@ _NR<DisplayObject> TextField::hitTestImpl(_NR<DisplayObject> last, number_t x, n
 	boundsRect(xmin,xmax,ymin,ymax);
 	if( xmin <= x && x <= xmax && ymin <= y && y <= ymax && isHittable(type))
 	{
-		incRef();
-		return _MNR(this);
+		return _IMNR(this);
 	}
 	else
 		return NullRef;
@@ -984,9 +983,8 @@ void TextField::requestInvalidation(InvalidateQueue* q)
 		TokenContainer::requestInvalidation(q);
 	else
 	{
-		incRef();
 		updateSizes();
-		q->addToInvalidateQueue(_MR(this));
+		q->addToInvalidateQueue(_IMR(this));
 	}
 }
 

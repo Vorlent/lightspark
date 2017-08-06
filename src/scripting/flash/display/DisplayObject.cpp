@@ -196,7 +196,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getTransform)
 {
 	DisplayObject* th=obj.as<DisplayObject>();
 	
-	return asAtom::fromObject(Class<Transform>::getInstanceS(sys,_IAMR(th)));
+	return asAtom::fromObject(Class<Transform>::getInstanceS(sys,_IMR(th)));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setTransform)
@@ -286,7 +286,7 @@ void DisplayObject::setMask(_NR<DisplayObject> m)
 	if(!mask.isNull())
 	{
 		//Use new mask
-		mask->becomeMaskOf(_IAMR(this));
+		mask->becomeMaskOf(_IMR(this));
 	}
 
 	if(mustInvalidate && onStage)
@@ -462,17 +462,17 @@ void DisplayObject::setOnStage(bool staged)
 		{
 			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"addedToStage"));
 			if(isVmThread())
-				ABCVm::publicHandleEvent(_IAMR(this),e);
+				ABCVm::publicHandleEvent(_IMR(this),e);
 			else
-				getVm(getSystemState())->addEvent(_IAMR(this),e);
+				getVm(getSystemState())->addEvent(_IMR(this),e);
 		}
 		else if(onStage==false)
 		{
 			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"removedFromStage"));
 			if(isVmThread())
-				ABCVm::publicHandleEvent(_IAMR(this),e);
+				ABCVm::publicHandleEvent(_IMR(this),e);
 			else
-				getVm(getSystemState())->addEvent(_IAMR(this),e);
+				getVm(getSystemState())->addEvent(_IMR(this),e);
 		}
 	}
 }
@@ -519,7 +519,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setMask)
 	{
 		//We received a valid mask object
 		DisplayObject* newMask=args[0].as<DisplayObject>();
-		th->setMask(_IAMR(newMask));
+		th->setMask(_IMR(newMask));
 	}
 	else
 		th->setMask(NullRef);
@@ -1108,12 +1108,12 @@ void DisplayObject::initFrame()
 		if(!parent.isNull())
 		{
 			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"added"));
-			ABCVm::publicHandleEvent(_IAMR(this),e);
+			ABCVm::publicHandleEvent(_IMR(this),e);
 		}
 		if(onStage)
 		{
 			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"addedToStage"));
-			ABCVm::publicHandleEvent(_IAMR(this),e);
+			ABCVm::publicHandleEvent(_IMR(this),e);
 		}
 	}
 }
@@ -1123,7 +1123,7 @@ void DisplayObject::constructionComplete()
 	RELEASE_WRITE(constructed,true);
 	if(!loaderInfo.isNull())
 	{
-		loaderInfo->objectHasLoaded(_IAMR(this));
+		loaderInfo->objectHasLoaded(_IMR(this));
 	}
 	hasChanged=true;
 	if(onStage)
@@ -1287,7 +1287,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,hitTestPoint)
 
 		// Hmm, hitTest will also check the mask, is this the
 		// right thing to do?
-		_NR<DisplayObject> hit = th->hitTest(_IAMR(th), localX, localY,
+		_NR<DisplayObject> hit = th->hitTest(_IMR(th), localX, localY,
 						     HIT_TYPE::GENERIC_HIT_INVISIBLE);
 
 		return asAtom(hit.getPtr() == th);

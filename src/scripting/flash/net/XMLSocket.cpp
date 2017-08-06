@@ -267,13 +267,11 @@ void XMLSocket::connect(tiny_string host, int port)
 	evaluationResult = getSys()->securityManager->evaluateSocketConnection(url, true);
 	if(evaluationResult != SecurityManager::ALLOWED)
 	{
-		incRef();
-		getVm(getSystemState())->addEvent(_MR(this), _MR(Class<SecurityErrorEvent>::getInstanceS(getSystemState(),"No policy file allows socket connection")));
+		getVm(getSystemState())->addEvent(_IMR(this), _MR(Class<SecurityErrorEvent>::getInstanceS(getSystemState(),"No policy file allows socket connection")));
 		return;
 	}
 
-	incRef();
-	XMLSocketThread *thread = new XMLSocketThread(_MR(this), host, port, timeout);
+	XMLSocketThread *thread = new XMLSocketThread(_IMR(this), host, port, timeout);
 	getSys()->addJob(thread);
 	job = thread;
 }
@@ -380,11 +378,11 @@ void XMLSocketThread::execute()
 {
 	if (!sock.connect(hostname, port))
 	{
-		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 		return;
 	}
 
-	getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"connect")));
+	getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"connect")));
 
 	struct timeval timeout;
 	int maxfd;
@@ -404,7 +402,7 @@ void XMLSocketThread::execute()
 		int status = select(maxfd+1, &readfds, NULL, NULL, &timeout);
 		if (status  < 0)
 		{
-			getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+			getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 			return;
 		}
 
@@ -415,7 +413,7 @@ void XMLSocketThread::execute()
 			ssize_t nbytes = read(signalListener, &cmd, 1);
 			if (nbytes < 0)
 			{
-				getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+				getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 				return;
 			}
 			else if (nbytes == 0)
@@ -446,18 +444,18 @@ void XMLSocketThread::readSocket(const SocketIO& sock)
 	{
 		buf[nbytes] = '\0';
 		tiny_string data(buf, true);
-		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<DataEvent>::getInstanceS(owner->getSystemState(),data)));
+		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<DataEvent>::getInstanceS(owner->getSystemState(),data)));
 	}
 	else if (nbytes == 0)
 	{
 		// The server has closed the socket
-		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"close")));
+		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<Event>::getInstanceS(owner->getSystemState(),"close")));
 		threadAborting = true;
 	}
 	else
 	{
 		// Error
-		getVm(owner->getSystemState())->addEvent(_IAMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
+		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), _MR(Class<IOErrorEvent>::getInstanceS(owner->getSystemState())));
 		threadAborting = true;
 	}
 }

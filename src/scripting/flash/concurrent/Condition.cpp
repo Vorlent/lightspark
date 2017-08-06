@@ -49,7 +49,7 @@ ASFUNCTIONBODY(ASCondition,_constructor)
 	
 	if (!arg->is<ASMutex>())
 		throwError<ArgumentError>(kInvalidArgumentError) ;
-	th->mutex = _IAMNR<ASMutex>(arg->as<ASMutex>());
+	th->mutex = _IMNR<ASMutex>(arg->as<ASMutex>());
 
 	return NULL;
 }

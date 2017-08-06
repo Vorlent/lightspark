@@ -279,7 +279,7 @@ ASFUNCTIONBODY(URLRequest,_setData)
 	URLRequest* th=static_cast<URLRequest*>(obj);
 	assert_and_throw(argslen==1);
 
-	th->data=_IAMR(args[0]);
+	th->data=_IMR(args[0]);
 
 	return NULL;
 }
@@ -352,7 +352,7 @@ void URLLoaderThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
@@ -398,14 +398,14 @@ void URLLoaderThread::execute()
 		//Send a complete event for this object
 		loader->setData(data);
 
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
 		//Send a complete event for this object
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 	}
 
 	{
@@ -477,7 +477,7 @@ void URLLoader::setBytesLoaded(uint32_t b)
 	if (cur > timestamp_last_progress+ 40*1000)
 	{
 		timestamp_last_progress = cur;
-		getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal)));
 	}
 }
 
@@ -509,7 +509,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	if(!url.isValid())
 	{
 		//Notify an error during loading
-		th->getSystemState()->currentVm->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		th->getSystemState()->currentVm->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 		return asAtom::invalidAtom;
 	}
 
@@ -521,7 +521,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	//TODO: should we disallow accessing local files in a directory above 
 	//the current one like we do with NetStream.play?
 
-	URLLoaderThread *job=new URLLoaderThread(_IAMR(urlRequest), _IAMR(th));
+	URLLoaderThread *job=new URLLoaderThread(_IMR(urlRequest), _IMR(th));
 	getSys()->addJob(job);
 	th->job=job;
 	return asAtom::invalidAtom;
@@ -573,7 +573,7 @@ ASFUNCTIONBODY(URLLoader,_setData)
 	URLLoader* th = obj->as<URLLoader>();
 	if(argslen != 1)
 		throw Class<ArgumentError>::getInstanceS(obj->getSystemState(),"Wrong number of arguments in setter");
-	th->setData(_IAMR(args[0]));
+	th->setData(_IMR(args[0]));
 	return NULL;
 }
 
@@ -676,7 +676,7 @@ ASFUNCTIONBODY(SharedObject,getLocal)
 		sharedobjectmap.insert(make_pair(fullname,Class<ASObject>::getInstanceS(obj->getSystemState())));
 		it = sharedobjectmap.find(fullname);
 	}
-	res->data = _IAMNR<ASObject>(it->second);
+	res->data = _IMNR<ASObject>(it->second);
 	res->incRef();
 	return res;
 }
@@ -969,7 +969,7 @@ ASFUNCTIONBODY(NetConnection,connect)
 	//When the URI is undefined the connect is successful (tested on Adobe player)
 	if(isNull || isRTMP)
 	{
-		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success")));
 	}
 	return NULL;
 }
@@ -1263,7 +1263,7 @@ ASFUNCTIONBODY(NetStream,_setClient)
 
 	NetStream* th=Class<NetStream>::cast(obj);
 
-	th->client = _IAMR(args[0]);
+	th->client = _IMR(args[0]);
 	return NULL;
 }
 
@@ -1302,7 +1302,7 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 
 	netConnection->incRef();
 	th->connection=netConnection;
-	th->client = _IAMNR<ASObject>(th);
+	th->client = _IMNR<ASObject>(th);
 
 	return asAtom::invalidAtom;
 }
@@ -1382,7 +1382,7 @@ ASFUNCTIONBODY(NetStream,play)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		getVm(obj->getSystemState())->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
+		getVm(obj->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
 	}
 	else //The URL is valid so we can start the download and add ourself as a job
 	{
@@ -1412,7 +1412,7 @@ ASFUNCTIONBODY(NetStream,resume)
 			if(th->audioStream)
 				th->audioStream->resume();
 		}
-		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify")));
 	}
 	return NULL;
 }
@@ -1428,7 +1428,7 @@ ASFUNCTIONBODY(NetStream,pause)
 			if(th->audioStream)
 				th->audioStream->pause();
 		}
-		getVm(obj->getSystemState())->addEvent(_IAMR(th),_MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th),_MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify")));
 	}
 	return NULL;
 }
@@ -1452,7 +1452,7 @@ ASFUNCTIONBODY(NetStream,close)
 	if(!th->closed)
 	{
 		th->threadAbort();
-		getVm(obj->getSystemState())->addEvent(_IAMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop")));
 	}
 	LOG(LOG_CALLS, _("NetStream::close called"));
 	return NULL;
@@ -1763,7 +1763,7 @@ void NetStream::execute()
 			return;
 		if(downloader->hasFailed())
 		{
-			getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<IOErrorEvent>::getInstanceS(getSystemState())));
+			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<IOErrorEvent>::getInstanceS(getSystemState())));
 			getSystemState()->downloadManager->destroy(downloader);
 			downloader = NULL;
 			return;
@@ -1854,7 +1854,7 @@ void NetStream::execute()
 						{
 							bufferfull = false;
 							this->bufferLength=0;
-							getVm(getSystemState())->addEvent(_IAMR(this),_MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty")));
+							getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty")));
 						}
 					}
 				}
@@ -1863,7 +1863,7 @@ void NetStream::execute()
 			if(videoDecoder==NULL && streamDecoder->videoDecoder)
 			{
 				videoDecoder=streamDecoder->videoDecoder;
-				getVm(getSystemState())->addEvent(_IAMR(this),
+				getVm(getSystemState())->addEvent(_IMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Start")));
 			}
 			if(audioDecoder==NULL && streamDecoder->audioDecoder)
@@ -1874,7 +1874,7 @@ void NetStream::execute()
 			if(!tickStarted && isReady() && frameRate && ((framesdecoded / frameRate) >= this->bufferTime))
 			{
 				tickStarted=true;
-				getVm(getSystemState())->addEvent(_IAMR(this),
+				getVm(getSystemState())->addEvent(_IMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
 				getSystemState()->addTick(1000/frameRate,this);
 				//Also ask for a render rate equal to the video one (capped at 24)
@@ -1884,7 +1884,7 @@ void NetStream::execute()
 			if (!bufferfull && frameRate && ((framesdecoded / frameRate) >= this->bufferTime))
 			{
 				bufferfull = true;
-				getVm(getSystemState())->addEvent(_IAMR(this),
+				getVm(getSystemState())->addEvent(_IMR(this),
 								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
 			}
 			profile->accountTime(chronometer.checkpoint());
@@ -1921,8 +1921,8 @@ void NetStream::execute()
 		if(videoDecoder)
 			videoDecoder->waitFlushed();
 
-		getVm(getSystemState())->addEvent(_IAMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop")));
-		getVm(getSystemState())->addEvent(_IAMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush")));
+		getVm(getSystemState())->addEvent(_IMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop")));
+		getVm(getSystemState())->addEvent(_IMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush")));
 	}
 	//Before deleting stops ticking, removeJobs also spin waits for termination
 	getSystemState()->removeJob(this);
@@ -2405,7 +2405,7 @@ ASFUNCTIONBODY_ATOM(LocalConnection, _constructor)
 {
 	EventDispatcher::_constructor(sys,obj, NULL, 0);
 	LocalConnection* th=Class<LocalConnection>::cast(obj.getObject());
-	th->client = _IAMNR<LocalConnection>(th);
+	th->client = _IMNR<LocalConnection>(th);
 	LOG(LOG_NOT_IMPLEMENTED,"LocalConnection is not implemented");
 	return asAtom::invalidAtom;
 }
@@ -2521,7 +2521,7 @@ ASFUNCTIONBODY(lightspark,registerClassAlias)
 {
 	assert_and_throw(argslen==2 && args[0]->getObjectType()==T_STRING && args[1]->getObjectType()==T_CLASS);
 	const tiny_string& arg0 = args[0]->toString();
-	_R<Class_base> c=_IAMR(static_cast<Class_base*>(args[1]));
+	_R<Class_base> c=_IMR(static_cast<Class_base*>(args[1]));
 	getSys()->aliasMap.insert(make_pair(arg0, c));
 	return NULL;
 }

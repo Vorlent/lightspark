@@ -52,7 +52,7 @@ void URLStreamThread::setBytesLoaded(uint32_t b)
 		if (cur > timestamp_last_progress+ 40*1000)
 		{
 			timestamp_last_progress = cur;
-			getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total)));
+			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total)));
 		}
 	}
 }
@@ -72,9 +72,9 @@ void URLStreamThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
 		streambuffer = cache->createReader();
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total)));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total)));
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
 		{
@@ -96,14 +96,14 @@ void URLStreamThread::execute()
 	// Don't send any events if the thread is aborting
 	if(success && !threadAborting)
 	{
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
 		//Send a complete event for this object
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		getVm(loader->getSystemState())->addEvent(_IAMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
 	}
 
 	{
@@ -184,7 +184,7 @@ ASFUNCTIONBODY(URLStream,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		getSys()->currentVm->addEvent(_IAMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
+		getSys()->currentVm->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
 		return NULL;
 	}
 
@@ -193,7 +193,7 @@ ASFUNCTIONBODY(URLStream,load)
 	SecurityManager::checkURLStaticAndThrow(th->url, ~(SecurityManager::LOCAL_WITH_FILE),
 		SecurityManager::LOCAL_WITH_FILE | SecurityManager::LOCAL_TRUSTED, true);
 
-	URLStreamThread *job=new URLStreamThread(urlRequest, _IAMR(th), th->data);
+	URLStreamThread *job=new URLStreamThread(urlRequest, _IMR(th), th->data);
 	getSys()->addJob(job);
 	th->job=job;
 	th->connected = true;

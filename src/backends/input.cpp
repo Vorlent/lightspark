@@ -141,7 +141,7 @@ _NR<InteractiveObject> InputThread::getMouseTarget(uint32_t x, uint32_t y, Displ
 		_NR<DisplayObject> dispobj=m_sys->mainClip->getStage()->hitTest(NullRef,x,y, type);
 		if(!dispobj.isNull() && dispobj->is<InteractiveObject>())
 		{
-			selected=_IAMNR(dispobj->as<InteractiveObject>());
+			selected=_IMNR(dispobj->as<InteractiveObject>());
 		}
 	}
 	catch(LightsparkException& e)
@@ -292,7 +292,7 @@ void InputThread::handleMouseLeave()
 		return;
 
 	_NR<Stage> stage = m_sys->mainClip->getStage();
-	m_sys->currentVm->addEvent(_IAMR(stage.getPtr()),
+	m_sys->currentVm->addEvent(_IMR(stage.getPtr()),
 		_MR(Class<Event>::getInstanceS(m_sys,"mouseLeave")));
 }
 
@@ -503,7 +503,7 @@ void InputThread::sendKeyEvent(const SDL_KeyboardEvent *keyevent)
 		type = "keyUp";
 
 	AS3KeyCode c = getAS3KeyCode(keyevent->keysym.sym);
-	m_sys->currentVm->addEvent(_IAMR(target.getPtr()),
+	m_sys->currentVm->addEvent(_IMR(target.getPtr()),
 	    _MR(Class<KeyboardEvent>::getInstanceS(m_sys,type,c,c, (SDL_Keymod)keyevent->keysym.mod)));
 }
 

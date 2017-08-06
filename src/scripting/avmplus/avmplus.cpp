@@ -261,7 +261,7 @@ ASFUNCTIONBODY(avmplusDomain,loadBytes)
 	RootMovieClip* root=getVm(getSys())->currentCallContext->context->root.getPtr();
 	_NR<ApplicationDomain> origdomain = root->applicationDomain;
 	root->applicationDomain = th->appdomain;
-	ABCContext context(_IAMR(root), s, getVm(root->getSystemState()));
+	ABCContext context(_IMR(root), s, getVm(root->getSystemState()));
 	context.exec(false);
 	root->applicationDomain = origdomain;
 	delete sbuf;

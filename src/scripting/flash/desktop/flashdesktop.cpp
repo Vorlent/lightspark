@@ -54,7 +54,7 @@ ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
 	EventDispatcher::addEventListener(sys,obj, args, argslen);
 	if (args[0].toString() == "invoke")
 	{
-		getVm(th->getSystemState())->addEvent(_IAMR(th), _MR(Class<InvokeEvent>::getInstanceS(sys)));
+		getVm(th->getSystemState())->addEvent(_IMR(th), _MR(Class<InvokeEvent>::getInstanceS(sys)));
 	}
 
 	return asAtom::invalidAtom;

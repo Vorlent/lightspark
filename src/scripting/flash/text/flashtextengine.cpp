@@ -346,7 +346,7 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 		
 	LOG(LOG_NOT_IMPLEMENTED,"splitting textblock in multiple lines not implemented");
 	th->content->as<TextElement>()->text = "";
-	_NR<TextLine> textLine = _NR<TextLine>(Class<TextLine>::getInstanceS(sys,linetext, _IAMNR(th)));
+	_NR<TextLine> textLine = _NR<TextLine>(Class<TextLine>::getInstanceS(sys,linetext, _IMNR(th)));
 	textLine->width = (uint32_t)width;
 	textLine->previousLine = previousLine;
 	textLine->updateSizes();
@@ -618,8 +618,7 @@ bool TextLine::boundsRect(number_t& xmin, number_t& xmax, number_t& ymin, number
 void TextLine::requestInvalidation(InvalidateQueue* q)
 {
 	DisplayObjectContainer::requestInvalidation(q);
-	incRef();
-	q->addToInvalidateQueue(_MR(this));
+	q->addToInvalidateQueue(_IMR(this));
 }
 
 IDrawable* TextLine::invalidate(DisplayObject* target, const MATRIX& initialMatrix)
@@ -660,8 +659,7 @@ _NR<DisplayObject> TextLine::hitTestImpl(_NR<DisplayObject> last, number_t x, nu
 		return last;
 	else
 	{
-		incRef();
-		return DisplayObjectContainer::hitTestImpl(_MR(this), x, y, type);
+		return DisplayObjectContainer::hitTestImpl(_IMR(this), x, y, type);
 	}
 }
 

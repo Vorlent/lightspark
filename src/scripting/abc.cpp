@@ -153,7 +153,7 @@ DoABCTag::DoABCTag(RECORDHEADER h, std::istream& in):ControlTag(h)
 	LOG(LOG_CALLS,_("DoABCTag"));
 
 	RootMovieClip* root=getParseThread()->getRootMovie();
-	context=new ABCContext(_IAMR(root), in, getVm(root->getSystemState()));
+	context=new ABCContext(_IMR(root), in, getVm(root->getSystemState()));
 
 	int pos=in.tellg();
 	if(dest!=pos)
@@ -178,7 +178,7 @@ DoABCDefineTag::DoABCDefineTag(RECORDHEADER h, std::istream& in):ControlTag(h)
 	LOG(LOG_CALLS,_("DoABCDefineTag Name: ") << Name);
 
 	RootMovieClip* root=getParseThread()->getRootMovie();
-	context=new ABCContext(_IAMR(root), in, getVm(root->getSystemState()));
+	context=new ABCContext(_IMR(root), in, getVm(root->getSystemState()));
 
 	int pos=in.tellg();
 	if(dest!=pos)
@@ -217,7 +217,7 @@ void SymbolClassTag::execute(RootMovieClip* root) const
 		tiny_string className((const char*)Names[i],true);
 		if(Tags[i]==0)
 		{
-			getVm(root->getSystemState())->addEvent(NullRef, _MR(new (root->getSystemState()->unaccountedMemory) BindClassEvent(_IAMR(root),className)));
+			getVm(root->getSystemState())->addEvent(NullRef, _MR(new (root->getSystemState()->unaccountedMemory) BindClassEvent(_IMR(root),className)));
 
 		}
 		else
@@ -1222,7 +1222,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 		_NR<DisplayObject> rcur;
 		if(event->type == "rollOver" || event->type == "rollOut")
 		{
-			_R<MouseEvent> mevent = _IAMR(event->as<MouseEvent>());
+			_R<MouseEvent> mevent = _IMR(event->as<MouseEvent>());
 			if(mevent->relatedObject)
 			{  
 				mevent->relatedObject->incRef();
@@ -2320,7 +2320,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 					ASObject* superclass=root->applicationDomain->getVariableByMultinameOpportunistic(mnsuper);
 					if(superclass && superclass->is<Class_base>() && !superclass->is<Class_inherit>())
 					{
-						c->setSuper(_IAMR(superclass->as<Class_base>()));
+						c->setSuper(_IMR(superclass->as<Class_base>()));
 					}
 				}
 				root->applicationDomain->classesBeingDefined.insert(make_pair(mname, c));
