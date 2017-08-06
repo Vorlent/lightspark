@@ -396,7 +396,7 @@ private:
 	static number_t multiply(ASObject*,ASObject*);
 	static int32_t multiply_i(ASObject*,ASObject*);
 	static number_t multiply_oi(ASObject*, int32_t);
-	static number_t divide(ASObject*,ASObject*);
+	static number_t divide(ASObject*val2Ptr, ASObject*val1Ptr);
 	static number_t modulo(ASObject*,ASObject*);
 	static number_t subtract(ASObject*,ASObject*);
 	static int32_t subtract_i(ASObject*,ASObject*);

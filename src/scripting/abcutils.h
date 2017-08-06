@@ -108,6 +108,15 @@ else context->handleError(kStackOverflowError)
 	ASObject* ret = NULL; \
 	RUNTIME_STACK_POP_ASOBJECT(context,ret, sys)
 
+#define RUNTIME_STACK_POP_ASOBJECT_REF(context,ret, sys) \
+	if(context->stack_index) ret=_MNR(context->stack[--context->stack_index].toObject(sys)); \
+	else context->handleError(kStackUnderflowError);
+
+
+#define RUNTIME_STACK_POP_CREATE_ASOBJECT_REF(context,ret, sys) \
+	_NR<ASObject> ret = NullRef; \
+	RUNTIME_STACK_POP_ASOBJECT_REF(context,ret, sys)
+
 #define RUNTIME_STACK_PEEK(context,ret) \
 	ret= context->stack_index ? context->stack[context->stack_index-1] : asAtom::invalidAtom; 
 

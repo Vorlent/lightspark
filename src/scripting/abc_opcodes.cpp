@@ -45,88 +45,83 @@ int32_t ABCVm::bitAnd(ASObject* val2, ASObject* val1)
 
 int32_t ABCVm::bitAnd_oi(ASObject* val1, int32_t val2)
 {
-	int32_t i1=val1->toInt();
+	_NR<ASObject> val1Ref = _MNR(val1);
+	int32_t i1=val1Ref->toInt();
 	int32_t i2=val2;
-	val1->decRef();
 	LOG_CALL(_("bitAnd_oi ") << hex << i1 << '&' << i2 << dec);
 	return i1&i2;
 }
 
 void ABCVm::setProperty(ASObject* value,ASObject* obj,multiname* name)
 {
-	LOG_CALL(_("setProperty ") << *name << ' ' << obj<<" "<<obj->toDebugString()<<" " <<value);
+	_NR<ASObject> objRef = _MNR(obj);
+	LOG_CALL(_("setProperty ") << *name << ' ' << objRef<<" "<<objRef->toDebugString()<<" " <<value);
 
-	if(obj->is<Null>())
+	if(objRef->is<Null>())
 	{
-		LOG(LOG_ERROR,"calling setProperty on null:" << *name << ' ' << obj->toDebugString()<<" " << value->toDebugString());
+		LOG(LOG_ERROR,"calling setProperty on null:" << *name << ' ' << objRef->toDebugString()<<" " << value->toDebugString());
 		throwError<TypeError>(kConvertNullToObjectError);
 	}
-	if (obj->is<Undefined>())
+	if (objRef->is<Undefined>())
 	{
-		LOG(LOG_ERROR,"calling setProperty on undefined:" << *name << ' ' << obj->toDebugString()<<" " << value->toDebugString());
+		LOG(LOG_ERROR,"calling setProperty on undefined:" << *name << ' ' << objRef->toDebugString()<<" " << value->toDebugString());
 		throwError<TypeError>(kConvertUndefinedToObjectError);
 	}
 	//Do not allow to set contant traits
 	asAtom v = asAtom::fromObject(value);
-	obj->setVariableByMultiname(*name,v,ASObject::CONST_NOT_ALLOWED);
-	obj->decRef();
+	objRef->setVariableByMultiname(*name,v,ASObject::CONST_NOT_ALLOWED);
 }
 
 void ABCVm::setProperty_i(int32_t value,ASObject* obj,multiname* name)
 {
-	LOG_CALL(_("setProperty_i ") << *name << ' ' <<obj);
-	if(obj->is<Null>())
+	_NR<ASObject> objRef = _MNR(obj);
+	LOG_CALL(_("setProperty_i ") << *name << ' ' <<objRef);
+	if(objRef->is<Null>())
 	{
-		LOG(LOG_ERROR,"calling setProperty_i on null:" << *name << ' ' << obj->toDebugString()<<" " << value);
+		LOG(LOG_ERROR,"calling setProperty_i on null:" << *name << ' ' << objRef->toDebugString()<<" " << value);
 		throwError<TypeError>(kConvertNullToObjectError);
 	}
-	if (obj->is<Undefined>())
+	if (objRef->is<Undefined>())
 	{
-		LOG(LOG_ERROR,"calling setProperty_i on undefined:" << *name << ' ' << obj->toDebugString()<<" " << value);
+		LOG(LOG_ERROR,"calling setProperty_i on undefined:" << *name << ' ' << objRef->toDebugString()<<" " << value);
 		throwError<TypeError>(kConvertUndefinedToObjectError);
 	}
-	obj->setVariableByMultiname_i(*name,value);
-	obj->decRef();
+	objRef->setVariableByMultiname_i(*name,value);
 }
 
 number_t ABCVm::convert_d(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL( _("convert_d") );
-	number_t ret=o->toNumber();
-	o->decRef();
-	return ret;
+	return oRef->toNumber();
 }
 
 bool ABCVm::convert_b(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL( _("convert_b") );
-	bool ret=Boolean_concrete(o);
-	o->decRef();
-	return ret;
+	return Boolean_concrete(oRef.getPtr());
 }
 
 uint32_t ABCVm::convert_u(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL( _("convert_u") );
-	uint32_t ret=o->toUInt();
-	o->decRef();
-	return ret;
+	return oRef->toUInt();
 }
 
 int32_t ABCVm::convert_i(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL( _("convert_i") );
-	int32_t ret=o->toInt();
-	o->decRef();
-	return ret;
+	return oRef->toInt();
 }
 
 int64_t ABCVm::convert_di(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL( _("convert_di") );
-	int64_t ret=o->toInt64();
-	o->decRef();
-	return ret;
+	return oRef->toInt64();
 }
 
 ASObject* ABCVm::convert_s(ASObject* o)
@@ -247,72 +242,70 @@ int32_t ABCVm::pushShort(intptr_t n)
 
 void ABCVm::setSlot(ASObject* value, ASObject* obj, int n)
 {
-	LOG_CALL("setSlot " << n << " "<< obj<<" " <<obj->toDebugString() << " "<< value->toDebugString()<<" "<<value);
-	obj->setSlot(n,asAtom::fromObject(value));
-	obj->decRef();
+	_NR<ASObject> objRef = _MNR(obj);
+	LOG_CALL("setSlot " << n << " "<< objRef<<" " <<objRef->toDebugString() << " "<< value->toDebugString()<<" "<<value);
+	objRef->setSlot(n,asAtom::fromObject(value));
 }
 
 ASObject* ABCVm::getSlot(ASObject* obj, int n)
 {
-	asAtom ret=obj->getSlot(n);
+	_NR<ASObject> objRef = _MNR(obj);
+	asAtom ret=objRef->getSlot(n);
 	LOG_CALL("getSlot " << n << " " << ret.toDebugString());
 	//getSlot can only access properties defined in the current
 	//script, so they should already be defind by this script
 	ASATOM_INCREF(ret);
-	obj->decRef();
-	return ret.toObject(obj->getSystemState());
+	return ret.toObject(objRef->getSystemState());
 }
 
 number_t ABCVm::negate(ASObject* v)
 {
+	_NR<ASObject> vRef = _MNR(v);
 	LOG_CALL( _("negate") );
-	number_t ret=-(v->toNumber());
-	v->decRef();
-	return ret;
+	return -(vRef->toNumber());
 }
 
 int32_t ABCVm::negate_i(ASObject* o)
 {
+	_NR<ASObject> oRef = _MNR(o);
 	LOG_CALL(_("negate_i"));
 
-	int n=o->toInt();
-	o->decRef();
-	return -n;
+	return -oRef->toInt();
 }
 
 int32_t ABCVm::bitNot(ASObject* val)
 {
-	int32_t i1=val->toInt();
-	val->decRef();
+	_NR<ASObject> valRef = _MNR(val);
+	int32_t i1=valRef->toInt();
 	LOG_CALL(_("bitNot ") << hex << i1 << dec);
 	return ~i1;
 }
 
 int32_t ABCVm::bitXor(ASObject* val2, ASObject* val1)
 {
-	int32_t i1=val1->toInt();
-	int32_t i2=val2->toInt();
-	val1->decRef();
-	val2->decRef();
+	_NR<ASObject> val1Ref = _MNR(val1);
+	_NR<ASObject> val2Ref = _MNR(val2);
+	int32_t i1=val1Ref->toInt();
+	int32_t i2=val2Ref->toInt();
 	LOG_CALL(_("bitXor ") << hex << i1 << '^' << i2 << dec);
 	return i1^i2;
 }
 
 int32_t ABCVm::bitOr_oi(ASObject* val2, int32_t val1)
 {
+	_NR<ASObject> val2Ref = _MNR(val2);
 	int32_t i1=val1;
-	int32_t i2=val2->toInt();
-	val2->decRef();
+	int32_t i2=val2Ref->toInt();
 	LOG_CALL(_("bitOr ") << hex << i1 << '|' << i2 << dec);
 	return i1|i2;
 }
 
 int32_t ABCVm::bitOr(ASObject* val2, ASObject* val1)
 {
-	int32_t i1=val1->toInt();
-	int32_t i2=val2->toInt();
-	val1->decRef();
-	val2->decRef();
+	_NR<ASObject> val1Ref = _MNR(val1);
+	_NR<ASObject> val2Ref = _MNR(val2);
+	int32_t i1=val1Ref->toInt();
+	int32_t i2=val2Ref->toInt();
 	LOG_CALL(_("bitOr ") << hex << i1 << '|' << i2 << dec);
 	return i1|i2;
 }
@@ -504,20 +497,19 @@ void ABCVm::checkDeclaredTraits(ASObject* obj)
 
 int32_t ABCVm::getProperty_i(ASObject* obj, multiname* name)
 {
+	_NR<ASObject> objRef = _MNR(obj);
 	LOG_CALL( _("getProperty_i ") << *name );
-	checkDeclaredTraits(obj);
+	checkDeclaredTraits(objRef.getPtr());
 
 	//TODO: implement exception handling to find out if no integer can be returned
-	int32_t ret=obj->getVariableByMultiname_i(*name);
-
-	obj->decRef();
-	return ret;
+	return obj->getVariableByMultiname_i(*name);
 }
 
-ASObject* ABCVm::getProperty(ASObject* obj, multiname* name)
+ASObject* ABCVm::getProperty(ASObject* objPtr, multiname* name)
 {
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL( _("getProperty ") << *name << ' ' << obj->toDebugString() << ' '<<obj->isInitialized());
-	checkDeclaredTraits(obj);
+	checkDeclaredTraits(obj.getPtr());
 
 		
 	asAtom prop=obj->getVariableByMultiname(*name);
@@ -540,17 +532,16 @@ ASObject* ABCVm::getProperty(ASObject* obj, multiname* name)
 		ret=prop.toObject(obj->getSystemState());
 		ret->incRef();
 	}
-	obj->decRef();
 	return ret;
 }
 
-number_t ABCVm::divide(ASObject* val2, ASObject* val1)
+number_t ABCVm::divide(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
+	_NR<ASObject> val1 = _MNR(val1Ptr);
 	double num1=val1->toNumber();
 	double num2=val2->toNumber();
 
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("divide ")  << num1 << '/' << num2);
 	return num1/num2;
 }
@@ -593,57 +584,50 @@ Global* ABCVm::getGlobalScope(call_context* th)
 	return ret->as<Global>();
 }
 
-number_t ABCVm::decrement(ASObject* o)
+number_t ABCVm::decrement(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("decrement"));
-
-	number_t n=o->toNumber();
-	o->decRef();
-	return n-1;
+	return o->toNumber() - 1;
 }
 
-uint32_t ABCVm::decrement_i(ASObject* o)
+uint32_t ABCVm::decrement_i(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("decrement_i"));
-
-	int32_t n=o->toInt();
-	o->decRef();
-	return n-1;
+	return o->toInt() - 1;
 }
 
-uint64_t ABCVm::decrement_di(ASObject* o)
+uint64_t ABCVm::decrement_di(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("decrement_di"));
-
-	int64_t n=o->toInt64();
-	o->decRef();
-	return n-1;
+	return o->toInt64()-1;
 }
 
-bool ABCVm::ifNLT(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifNLT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=!(obj1->isLess(obj2)==TTRUE);
+	bool ret=!(obj1->isLess(obj2.getPtr())==TTRUE);
 	LOG_CALL(_("ifNLT (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj2->decRef();
-	obj1->decRef();
 	return ret;
 }
 
-bool ABCVm::ifLT(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifLT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=(obj1->isLess(obj2)==TTRUE);
+	bool ret=(obj1->isLess(obj2.getPtr())==TTRUE);
 	LOG_CALL(_("ifLT (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj2->decRef();
-	obj1->decRef();
 	return ret;
 }
 
-bool ABCVm::ifLT_oi(ASObject* obj2, int32_t val1)
+bool ABCVm::ifLT_oi(ASObject* obj2Ptr, int32_t val1)
 {
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL(_("ifLT_oi"));
 
 	//As ECMA said, on NaN return undefined... and undefined means not jump
@@ -652,41 +636,35 @@ bool ABCVm::ifLT_oi(ASObject* obj2, int32_t val1)
 		ret=false;
 	else
 		ret=val1<obj2->toInt();
-
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifLT_io(int32_t val2, ASObject* obj1)
+bool ABCVm::ifLT_io(int32_t val2, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
 	LOG_CALL(_("ifLT_io "));
-
-	bool ret=obj1->toInt()<val2;
-
-	obj1->decRef();
-	return ret;
+	return obj1->toInt()<val2;
 }
 
-bool ABCVm::ifNE(ASObject* obj1, ASObject* obj2)
+bool ABCVm::ifNE(ASObject* obj1Ptr, ASObject* obj2Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=!(obj1->isEqual(obj2));
+	bool ret=!(obj1->isEqual(obj2.getPtr()));
 	LOG_CALL(_("ifNE (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj2->decRef();
-	obj1->decRef();
 	return ret;
 }
 
-bool ABCVm::ifNE_oi(ASObject* obj1, int32_t val2)
+bool ABCVm::ifNE_oi(ASObject* obj1Ptr, int32_t val2)
 {
 	//HACK
-	if(obj1->getObjectType()==T_UNDEFINED)
+	if(obj1Ptr->getObjectType()==T_UNDEFINED)
 		return false;
+
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
 	bool ret=obj1->toInt()!=val2;
 	LOG_CALL(_("ifNE (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj1->decRef();
 	return ret;
 }
 
@@ -696,31 +674,31 @@ int32_t ABCVm::pushByte(intptr_t n)
 	return n;
 }
 
-number_t ABCVm::multiply_oi(ASObject* val2, int32_t val1)
+number_t ABCVm::multiply_oi(ASObject* val2Ptr, int32_t val1)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	double num1=val1;
 	double num2=val2->toNumber();
-	val2->decRef();
 	LOG_CALL(_("multiply_oi ")  << num1 << '*' << num2);
 	return num1*num2;
 }
 
-number_t ABCVm::multiply(ASObject* val2, ASObject* val1)
+number_t ABCVm::multiply(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	double num1=val1->toNumber();
 	double num2=val2->toNumber();
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("multiply ")  << num1 << '*' << num2);
 	return num1*num2;
 }
 
-int32_t ABCVm::multiply_i(ASObject* val2, ASObject* val1)
+int32_t ABCVm::multiply_i(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	int num1=val1->toInt();
 	int num2=val2->toInt();
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("multiply ")  << num1 << '*' << num2);
 	return num1*num2;
 }
@@ -982,49 +960,47 @@ void ABCVm::jump(int offset)
 	LOG_CALL(_("jump ") << offset);
 }
 
-bool ABCVm::ifTrue(ASObject* obj1)
+bool ABCVm::ifTrue(ASObject* obj1Ptr)
 {
-	bool ret=Boolean_concrete(obj1);
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	bool ret=Boolean_concrete(obj1.getPtr());
 	LOG_CALL(_("ifTrue (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj1->decRef();
 	return ret;
 }
 
-number_t ABCVm::modulo(ASObject* val1, ASObject* val2)
+number_t ABCVm::modulo(ASObject* val1Ptr, ASObject* val2Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	number_t num1=val1->toNumber();
 	number_t num2=val2->toNumber();
-
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("modulo ")  << num1 << '%' << num2);
 	/* fmod returns NaN if num2 == 0 as the spec mandates */
 	return ::fmod(num1,num2);
 }
 
-number_t ABCVm::subtract_oi(ASObject* val2, int32_t val1)
+number_t ABCVm::subtract_oi(ASObject* val2Ptr, int32_t val1)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	int num2=val2->toInt();
 	int num1=val1;
-
-	val2->decRef();
 	LOG_CALL(_("subtract_oi ") << num1 << '-' << num2);
 	return num1-num2;
 }
 
-number_t ABCVm::subtract_do(number_t val2, ASObject* val1)
+number_t ABCVm::subtract_do(number_t val2, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
 	number_t num2=val2;
 	number_t num1=val1->toNumber();
 
-	val1->decRef();
 	LOG_CALL(_("subtract_do ") << num1 << '-' << num2);
 	return num1-num2;
 }
 
-number_t ABCVm::subtract_io(int32_t val2, ASObject* val1)
+number_t ABCVm::subtract_io(int32_t val2, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
 	if(val1->getObjectType()==T_UNDEFINED)
 	{
 		//HACK
@@ -1034,13 +1010,14 @@ number_t ABCVm::subtract_io(int32_t val2, ASObject* val1)
 	int num2=val2;
 	int num1=val1->toInt();
 
-	val1->decRef();
 	LOG_CALL(_("subtract_io ") << dec << num1 << '-' << num2);
 	return num1-num2;
 }
 
-int32_t ABCVm::subtract_i(ASObject* val2, ASObject* val1)
+int32_t ABCVm::subtract_i(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	if(val1->getObjectType()==T_UNDEFINED ||
 		val2->getObjectType()==T_UNDEFINED)
 	{
@@ -1051,19 +1028,17 @@ int32_t ABCVm::subtract_i(ASObject* val2, ASObject* val1)
 	int num2=val2->toInt();
 	int num1=val1->toInt();
 
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("subtract_i ") << num1 << '-' << num2);
 	return num1-num2;
 }
 
-number_t ABCVm::subtract(ASObject* val2, ASObject* val1)
+number_t ABCVm::subtract(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	number_t num2=val2->toNumber();
 	number_t num1=val1->toNumber();
 
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("subtract ") << num1 << '-' << num2);
 	return num1-num2;
 }
@@ -1088,8 +1063,10 @@ void ABCVm::kill(int n)
 	LOG_CALL( _("kill ") << n );
 }
 
-ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
+ASObject* ABCVm::add(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	//Implement ECMA add algorithm, for XML and default (see avm2overview)
 	
 	ASObject* res = NULL;
@@ -1101,8 +1078,6 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 		int64_t num2=val2->toInt64();
 		LOG_CALL("addI " << num1 << '+' << num2);
 		res = abstract_di(val1->getSystemState(), num1+num2);
-		val1->decRef();
-		val2->decRef();
 		return res;
 	}
 	else if(val1->is<Number>() && val2->is<Number>())
@@ -1111,8 +1086,6 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 		double num2=val2->as<Number>()->toNumber();
 		LOG_CALL("addN " << num1 << '+' << num2);
 		res = abstract_d(val1->getSystemState(), num1+num2);
-		val1->decRef();
-		val2->decRef();
 		return res;
 	}
 	else if(val1->is<ASString>() || val2->is<ASString>())
@@ -1121,8 +1094,6 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 		tiny_string b = val2->toString();
 		LOG_CALL("add " << a << '+' << b);
 		res = abstract_s(val1->getSystemState(),a + b);
-		val1->decRef();
-		val2->decRef();
 		return res;
 	}
 	else if( (val1->is<XML>() || val1->is<XMLList>()) && (val2->is<XML>() || val2->is<XMLList>()) )
@@ -1132,14 +1103,14 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 
 		XMLList* newList=Class<XMLList>::getInstanceS(val1->getSystemState(),true);
 		if(val1->getClass()==xmlClass)
-			newList->append(_MR(static_cast<XML*>(val1)));
+			newList->append(_IMR(static_cast<XML*>(val1.getPtr())));
 		else //if(val1->getClass()==xmlListClass)
-			newList->append(_MR(static_cast<XMLList*>(val1)));
+			newList->append(_IMR(static_cast<XMLList*>(val1.getPtr())));
 
 		if(val2->getClass()==xmlClass)
-			newList->append(_MR(static_cast<XML*>(val2)));
+			newList->append(_IMR(static_cast<XML*>(val2.getPtr())));
 		else //if(val2->getClass()==xmlListClass)
-			newList->append(_MR(static_cast<XMLList*>(val2)));
+			newList->append(_IMR(static_cast<XMLList*>(val2.getPtr())));
 
 		//The references of val1 and val2 have been passed to the smart references
 		//no decRef is needed
@@ -1155,8 +1126,6 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 			string b(val2p->toString().raw_buf());
 			LOG_CALL("add " << a << '+' << b);
 			res = abstract_s(val1->getSystemState(),a+b);
-			val1->decRef();
-			val2->decRef();
 			return res;
 		}
 		else
@@ -1166,16 +1135,16 @@ ASObject* ABCVm::add(ASObject* val2, ASObject* val1)
 			LOG_CALL("addN " << num1 << '+' << num2);
 			number_t result = num1 + num2;
 			res = abstract_d(val1->getSystemState(),result);
-			val1->decRef();
-			val2->decRef();
 			return res;
 		}
 	}
 
 }
 
-int32_t ABCVm::add_i(ASObject* val2, ASObject* val1)
+int32_t ABCVm::add_i(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	if(val1->getObjectType()==T_UNDEFINED ||
 		val2->getObjectType()==T_UNDEFINED)
 	{
@@ -1186,8 +1155,6 @@ int32_t ABCVm::add_i(ASObject* val2, ASObject* val1)
 	int32_t num2=val2->toInt();
 	int32_t num1=val1->toInt();
 
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("add_i ") << num1 << '+' << num2);
 	return num1+num2;
 }
@@ -1270,72 +1237,71 @@ ASObject* ABCVm::add_od(ASObject* val2, number_t val1)
 
 }
 
-int32_t ABCVm::lShift(ASObject* val1, ASObject* val2)
+int32_t ABCVm::lShift(ASObject* val1Ptr, ASObject* val2Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	int32_t i2=val2->toInt();
 	uint32_t i1=val1->toUInt()&0x1f;
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("lShift ")<<hex<<i2<<_("<<")<<i1<<dec);
 	//Left shift are supposed to always work in 32bit
 	int32_t ret=i2<<i1;
 	return ret;
 }
 
-int32_t ABCVm::lShift_io(uint32_t val1, ASObject* val2)
+int32_t ABCVm::lShift_io(uint32_t val1, ASObject* val2Ptr)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	int32_t i2=val2->toInt();
 	uint32_t i1=val1&0x1f;
-	val2->decRef();
 	LOG_CALL(_("lShift ")<<hex<<i2<<_("<<")<<i1<<dec);
 	//Left shift are supposed to always work in 32bit
 	int32_t ret=i2<<i1;
 	return ret;
 }
 
-int32_t ABCVm::rShift(ASObject* val1, ASObject* val2)
+int32_t ABCVm::rShift(ASObject* val1Ptr, ASObject* val2Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	int32_t i2=val2->toInt();
 	uint32_t i1=val1->toUInt()&0x1f;
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("rShift ")<<hex<<i2<<_(">>")<<i1<<dec);
 	return i2>>i1;
 }
 
-uint32_t ABCVm::urShift(ASObject* val1, ASObject* val2)
+uint32_t ABCVm::urShift(ASObject* val1Ptr, ASObject* val2Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	uint32_t i2=val2->toUInt();
 	uint32_t i1=val1->toUInt()&0x1f;
-	val1->decRef();
-	val2->decRef();
 	LOG_CALL(_("urShift ")<<hex<<i2<<_(">>")<<i1<<dec);
 	return i2>>i1;
 }
 
-uint32_t ABCVm::urShift_io(uint32_t val1, ASObject* val2)
+uint32_t ABCVm::urShift_io(uint32_t val1, ASObject* val2Ptr)
 {
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	uint32_t i2=val2->toUInt();
 	uint32_t i1=val1&0x1f;
-	val2->decRef();
 	LOG_CALL(_("urShift ")<<hex<<i2<<_(">>")<<i1<<dec);
 	return i2>>i1;
 }
 
-bool ABCVm::_not(ASObject* v)
+bool ABCVm::_not(ASObject* vPtr)
 {
+	_NR<ASObject> v = _MNR(vPtr);
 	LOG_CALL( _("not") );
-	bool ret=!Boolean_concrete(v);
-	v->decRef();
-	return ret;
+	return !Boolean_concrete(v.getPtr());
 }
 
-bool ABCVm::equals(ASObject* val2, ASObject* val1)
+bool ABCVm::equals(ASObject* val2Ptr, ASObject* val1Ptr)
 {
-	bool ret=val1->isEqual(val2);
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
+	bool ret=val1->isEqual(val2.getPtr());
 	LOG_CALL( _("equals ") << ret);
-	val1->decRef();
-	val2->decRef();
 	return ret;
 }
 
@@ -1376,13 +1342,12 @@ bool ABCVm::strictEqualImpl(ASObject* obj1, ASObject* obj2)
 	return obj1->isEqual(obj2);
 }
 
-bool ABCVm::strictEquals(ASObject* obj2, ASObject* obj1)
+bool ABCVm::strictEquals(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL( _("strictEquals") );
-	bool ret=strictEqualImpl(obj1, obj2);
-	obj1->decRef();
-	obj2->decRef();
-	return ret;
+	return strictEqualImpl(obj1.getPtr(), obj2.getPtr());
 }
 
 void ABCVm::dup()
@@ -1408,66 +1373,63 @@ ASObject* ABCVm::pushNaN()
 	return abstract_d(getSys(),Number::NaN);
 }
 
-bool ABCVm::ifGT(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifGT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=(obj2->isLess(obj1)==TTRUE);
+	bool ret=(obj2->isLess(obj1.getPtr())==TTRUE);
 	LOG_CALL(_("ifGT (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj2->decRef();
-	obj1->decRef();
 	return ret;
 }
 
-bool ABCVm::ifNGT(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifNGT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
-
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=!(obj2->isLess(obj1)==TTRUE);
+	bool ret=!(obj2->isLess(obj1.getPtr())==TTRUE);
 	LOG_CALL(_("ifNGT (") << ((ret)?_("taken)"):_("not taken)")));
-
-	obj2->decRef();
-	obj1->decRef();
 	return ret;
 }
 
-bool ABCVm::ifLE(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifLE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=(obj2->isLess(obj1)==TFALSE);
+	bool ret=(obj2->isLess(obj1.getPtr())==TFALSE);
 	LOG_CALL(_("ifLE (") << ((ret)?_("taken)"):_("not taken)")));
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifNLE(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifNLE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=!(obj2->isLess(obj1)==TFALSE);
+	bool ret=!(obj2->isLess(obj1.getPtr())==TFALSE);
 	LOG_CALL(_("ifNLE (") << ((ret)?_("taken)"):_("not taken)")));
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifGE(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifGE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=(obj1->isLess(obj2)==TFALSE);
+	bool ret=(obj1->isLess(obj2.getPtr())==TFALSE);
 	LOG_CALL(_("ifGE (") << ((ret)?_("taken)"):_("not taken)")));
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifNGE(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifNGE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	//Real comparision demanded to object
-	bool ret=!(obj1->isLess(obj2)==TFALSE);
+	bool ret=!(obj1->isLess(obj2.getPtr())==TFALSE);
 	LOG_CALL(_("ifNGE (") << ((ret)?_("taken)"):_("not taken)")));
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
@@ -1851,37 +1813,33 @@ asAtom ABCVm::findPropStrictCache(call_context* th, memorystream& code)
 	return ret;
 }
 
-bool ABCVm::greaterThan(ASObject* obj1, ASObject* obj2)
-{
+bool ABCVm::greaterThan(ASObject* obj1Ptr, ASObject* obj2Ptr)
+{	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL(_("greaterThan"));
 
 	//Real comparision demanded to object
-	bool ret=(obj2->isLess(obj1)==TTRUE);
-	obj1->decRef();
-	obj2->decRef();
-	return ret;
+	return (obj2->isLess(obj1.getPtr())==TTRUE);
 }
 
-bool ABCVm::greaterEquals(ASObject* obj1, ASObject* obj2)
+bool ABCVm::greaterEquals(ASObject* obj1Ptr, ASObject* obj2Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL(_("greaterEquals"));
 
 	//Real comparision demanded to object
-	bool ret=(obj1->isLess(obj2)==TFALSE);
-	obj1->decRef();
-	obj2->decRef();
-	return ret;
+	return (obj1->isLess(obj2.getPtr())==TFALSE);
 }
 
-bool ABCVm::lessEquals(ASObject* obj1, ASObject* obj2)
+bool ABCVm::lessEquals(ASObject* obj1Ptr, ASObject* obj2Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL(_("lessEquals"));
 
 	//Real comparision demanded to object
-	bool ret=(obj2->isLess(obj1)==TFALSE);
-	obj1->decRef();
-	obj2->decRef();
-	return ret;
+	return (obj2->isLess(obj1.getPtr())==TFALSE);
 }
 
 void ABCVm::initProperty(ASObject* obj, ASObject* value, multiname* name)
@@ -1980,15 +1938,16 @@ void ABCVm::callSuper(call_context* th, int n, int m, method_info** called_mi, b
 	LOG_CALL(_("End of callSuper ") << *name);
 }
 
-bool ABCVm::isType(ABCContext* context, ASObject* obj, multiname* name)
+bool ABCVm::isType(ABCContext* context, ASObject* objPtr, multiname* name)
 {
-	bool ret = context->isinstance(obj, name);
-	obj->decRef();
-	return ret;
+	_NR<ASObject> obj = _MNR(objPtr);
+	return context->isinstance(obj.getPtr(), name);
 }
 
-bool ABCVm::isTypelate(ASObject* type, ASObject* obj)
+bool ABCVm::isTypelate(ASObject* typePtr, ASObject* objPtr)
 {
+	_NR<ASObject> type = _MNR(typePtr);
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL(_("isTypelate"));
 	bool real_ret=false;
 
@@ -2018,7 +1977,7 @@ bool ABCVm::isTypelate(ASObject* type, ASObject* obj)
 			throwError<TypeError>(kIsTypeMustBeClassError);
 	}
 
-	c=static_cast<Class_base*>(type);
+	c=static_cast<Class_base*>(type.getPtr());
 	//Special case numeric types
 	if(obj->getObjectType()==T_INTEGER || obj->getObjectType()==T_UINTEGER || obj->getObjectType()==T_NUMBER)
 	{
@@ -2031,8 +1990,6 @@ bool ABCVm::isTypelate(ASObject* type, ASObject* obj)
 		else
 			real_ret=false;
 		LOG_CALL(_("Numeric type is ") << ((real_ret)?"":_("not ")) << _("subclass of ") << c->class_name);
-		obj->decRef();
-		type->decRef();
 		return real_ret;
 	}
 
@@ -2044,16 +2001,12 @@ bool ABCVm::isTypelate(ASObject* type, ASObject* obj)
 	{
 		real_ret=obj->getObjectType()==type->getObjectType();
 		LOG_CALL(_("isTypelate on non classed object ") << real_ret);
-		obj->decRef();
-		type->decRef();
 		return real_ret;
 	}
 
 	real_ret=objc->isSubClass(c);
 	LOG_CALL(_("Type ") << objc->class_name << _(" is ") << ((real_ret)?"":_("not ")) 
 			<< "subclass of " << c->class_name);
-	obj->decRef();
-	type->decRef();
 	return real_ret;
 }
 
@@ -2131,37 +2084,39 @@ ASObject* ABCVm::asTypelate(ASObject* type, ASObject* obj)
 	}
 }
 
-bool ABCVm::ifEq(ASObject* obj1, ASObject* obj2)
+bool ABCVm::ifEq(ASObject* obj1Ptr, ASObject* obj2Ptr)
 {
-	bool ret=obj1->isEqual(obj2);
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
+	bool ret=obj1->isEqual(obj2.getPtr());
 	LOG_CALL(_("ifEq (") << ((ret)?_("taken)"):_("not taken)")));
 
 	//Real comparision demanded to object
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifStrictEq(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifStrictEq(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
-	bool ret=strictEqualImpl(obj1,obj2);
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
+	bool ret=strictEqualImpl(obj1.getPtr(),obj2.getPtr());
 	LOG_CALL(_("ifStrictEq ")<<ret);
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifStrictNE(ASObject* obj2, ASObject* obj1)
+bool ABCVm::ifStrictNE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
-	bool ret=!strictEqualImpl(obj1,obj2);
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
+	bool ret=!strictEqualImpl(obj1.getPtr(),obj2.getPtr());
 	LOG_CALL(_("ifStrictNE ")<<ret);
-	obj1->decRef();
-	obj2->decRef();
 	return ret;
 }
 
-bool ABCVm::in(ASObject* val2, ASObject* val1)
+bool ABCVm::in(ASObject* val2Ptr, ASObject* val1Ptr)
 {
+	_NR<ASObject> val1 = _MNR(val1Ptr);
+	_NR<ASObject> val2 = _MNR(val2Ptr);
 	LOG_CALL( _("in") );
 	if(val2->is<Null>())
 		throwError<TypeError>(kConvertNullToObjectError);
@@ -2169,21 +2124,18 @@ bool ABCVm::in(ASObject* val2, ASObject* val1)
 	multiname name(NULL);
 	name.name_type=multiname::NAME_OBJECT;
 	//Acquire the reference
-	name.name_o=val1;
+	name.name_o=val1.getPtr();
 	name.ns.emplace_back(val2->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 	bool ret=val2->hasPropertyByMultiname(name, true, true);
 	name.name_o=NULL;
-	val1->decRef();
-	val2->decRef();
 	return ret;
 }
 
-bool ABCVm::ifFalse(ASObject* obj1)
+bool ABCVm::ifFalse(ASObject* obj1Ptr)
 {
-	bool ret=!Boolean_concrete(obj1);
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	bool ret=!Boolean_concrete(obj1.getPtr());
 	LOG_CALL(_("ifFalse (") << ((ret)?_("taken"):_("not taken")) << ')');
-
-	obj1->decRef();
 	return ret;
 }
 
@@ -2376,55 +2328,52 @@ void ABCVm::getDescendants(call_context* th, int n)
 	obj->decRef();
 }
 
-number_t ABCVm::increment(ASObject* o)
+number_t ABCVm::increment(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL("increment");
 
-	number_t n=o->toNumber();
-	o->decRef();
-	return n+1;
+	return o->toNumber() + 1;
 }
 
-uint32_t ABCVm::increment_i(ASObject* o)
+uint32_t ABCVm::increment_i(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("increment_i"));
 
-	int n=o->toInt();
-	o->decRef();
-	return n+1;
+	return o->toInt() + 1;
 }
 
-uint64_t ABCVm::increment_di(ASObject* o)
+uint64_t ABCVm::increment_di(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("increment_di"));
 
-	int64_t n=o->toInt64();
-	o->decRef();
-	return n+1;
+	return o->toInt64() + 1;
 }
 
-ASObject* ABCVm::nextValue(ASObject* index, ASObject* obj)
+ASObject* ABCVm::nextValue(ASObject* indexPtr, ASObject* objPtr)
 {
+	_NR<ASObject> index = _MNR(indexPtr);
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL("nextValue");
 	if(index->getObjectType()!=T_UINTEGER)
 		throw UnsupportedException("Type mismatch in nextValue");
 
 	asAtom ret=obj->nextValue(index->toUInt());
-	obj->decRef();
-	index->decRef();
 	ASATOM_INCREF(ret);
 	return ret.toObject(obj->getSystemState());
 }
 
-ASObject* ABCVm::nextName(ASObject* index, ASObject* obj)
+ASObject* ABCVm::nextName(ASObject* indexPtr, ASObject* objPtr)
 {
+	_NR<ASObject> index = _MNR(indexPtr);
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL("nextName");
 	if(index->getObjectType()!=T_UINTEGER)
 		throw UnsupportedException("Type mismatch in nextName");
 
 	asAtom ret=obj->nextName(index->toUInt());
-	obj->decRef();
-	index->decRef();
 	ASATOM_INCREF(ret);
 	return ret.toObject(obj->getSystemState());
 }
@@ -2746,15 +2695,14 @@ void ABCVm::popScope(call_context* th)
 	th->curr_scope_stack--;
 }
 
-bool ABCVm::lessThan(ASObject* obj1, ASObject* obj2)
+bool ABCVm::lessThan(ASObject* obj1Ptr, ASObject* obj2Ptr)
 {
+	_NR<ASObject> obj1 = _MNR(obj1Ptr);
+	_NR<ASObject> obj2 = _MNR(obj2Ptr);
 	LOG_CALL(_("lessThan"));
 
 	//Real comparision demanded to object
-	bool ret=(obj1->isLess(obj2)==TTRUE);
-	obj1->decRef();
-	obj2->decRef();
-	return ret;
+	return (obj1->isLess(obj2.getPtr())==TTRUE);
 }
 
 void ABCVm::call(call_context* th, int m, method_info** called_mi)
@@ -2812,18 +2760,16 @@ void ABCVm::callImpl(call_context* th, asAtom& f, asAtom& obj, asAtom* args, int
 	LOG_CALL(_("End of call ") << m << ' ' << f.type);
 }
 
-bool ABCVm::deleteProperty(ASObject* obj, multiname* name)
+bool ABCVm::deleteProperty(ASObject* objPtr, multiname* name)
 {
+	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL(_("deleteProperty ") << *name<<" "<<obj->toDebugString());
 	if (name->name_type == multiname::NAME_OBJECT && name->name_o)
 	{
 		if (name->name_o->is<XMLList>())
 			throwError<TypeError>(kDeleteTypeError,name->name_o->getClassName());
 	}
-	bool ret = obj->deleteVariableByMultiname(*name);
-
-	obj->decRef();
-	return ret;
+	return obj->deleteVariableByMultiname(*name);
 }
 
 ASObject* ABCVm::newFunction(call_context* th, int n)
@@ -2887,8 +2833,9 @@ void ABCVm::newArray(call_context* th, int n)
 	RUNTIME_STACK_PUSH(th,asAtom::fromObject(ret));
 }
 
-ASObject* ABCVm::esc_xattr(ASObject* o)
+ASObject* ABCVm::esc_xattr(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	tiny_string t;
 	if (o->is<XML>())
 		t = o->as<XML>()->toXMLString_internal();
@@ -2896,13 +2843,12 @@ ASObject* ABCVm::esc_xattr(ASObject* o)
 		t = o->as<XMLList>()->toXMLString_internal();
 	else
 		t = XML::encodeToXML(o->toString(),true);
-	ASObject* res = abstract_s(o->getSystemState(),t);
-	o->decRef();
-	return res;
+	return abstract_s(o->getSystemState(),t);
 }
 
-ASObject* ABCVm::esc_xelem(ASObject* o)
+ASObject* ABCVm::esc_xelem(ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	tiny_string t;
 	if (o->is<XML>())
 		t = o->as<XML>()->toXMLString_internal();
@@ -2910,9 +2856,7 @@ ASObject* ABCVm::esc_xelem(ASObject* o)
 		t = o->as<XMLList>()->toXMLString_internal();
 	else
 		t = XML::encodeToXML(o->toString(),false);
-	ASObject* res = abstract_s(o->getSystemState(),t);
-	o->decRef();
-	return res;
+	return abstract_s(o->getSystemState(),t);
 }
 
 /* This should walk prototype chain of value, trying to find type. See ECMA.
@@ -2968,11 +2912,11 @@ void ABCVm::dxns(call_context* th, int n)
 }
 
 /* @spec-checked avm2overview */
-void ABCVm::dxnslate(call_context* th, ASObject* o)
+void ABCVm::dxnslate(call_context* th, ASObject* oPtr)
 {
+	_NR<ASObject> o = _MNR(oPtr);
 	if(!th->mi->hasDXNS())
 		throw Class<VerifyError>::getInstanceS(th->context->root->getSystemState(),"dxnslate without SET_DXNS");
 
 	th->defaultNamespaceUri = o->toStringId();
-	o->decRef();
 }
