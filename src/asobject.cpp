@@ -2565,13 +2565,13 @@ void asAtom::add(asAtom &v2, SystemState* sys)
 }
 
 
-AtomRef lightspark::_IMAR(asAtom* a)
+asAtomR lightspark::_IMAR(asAtom a)
 {
-	if (a->getObject()) a->getObject()->incRef();
-	return AtomRef(a);
+	if (a.getObject()) a.getObject()->incRef();
+	return asAtomR(a);
 }
 
-AtomRef lightspark::_MAR(asAtom* a)
+asAtomR lightspark::_MAR(asAtom a)
 {
-	return AtomRef(a);
+	return asAtomR(a);
 }

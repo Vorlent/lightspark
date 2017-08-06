@@ -845,68 +845,70 @@ public:
 	CLASS_SUBTYPE getSubtype() const { return subtype;}
 };
 
-class AtomRef
+class asAtomR
 {
 private:
-	asAtom* m;
+	asAtom m;
 public:
-	explicit AtomRef(asAtom* o):m(o)
+	asAtomR():m() {}
+	explicit asAtomR(asAtom o):m(o)
 	{
 		assert(m);
 	}
-	AtomRef(const AtomRef& r):m(r.m)
+	asAtomR(const asAtomR& r):m(r.m)
 	{
-		if (m->getObject()) m->getObject()->incRef();
+		if (m.getObject()) m.getObject()->incRef();
 	}
-	AtomRef& operator=(const AtomRef& r)
+	asAtomR operator=(asAtomR r)
 	{
 		//incRef before decRef to make sure this works even if the pointer is the same
-		if (r.m->getObject()) r.m->getObject()->incRef();
+		if (r.m.getObject()) r.m.getObject()->incRef();
 
-		asAtom* old=m;
+		asAtom old=m;
 		m=r.m;
 
 		//decRef as the very last function call, because it
 		//may cause this Ref to be deleted (if old owns this Ref)
-		if (old->getObject()) old->getObject()->incRef();
+		if (old.getObject()) old.getObject()->incRef();
 
 		return *this;
 	}
-	inline bool operator==(const AtomRef& r) const
+	inline bool operator==(asAtomR& r)
 	{
-		return m==r.getPtr();
+		return &m==r.getPtr();
 	}
-	inline bool operator!=(const AtomRef& r) const
+	inline bool operator!=(asAtomR& r)
 	{
-		return m!=r.getPtr();
+		return &m!=r.getPtr();
 	}
-	inline bool operator==(AtomRef* r) const
+	inline bool operator==(asAtomR* r)
 	{
-		return m==r->m;
+		return &m==&(r->m);
 	}
 	//Order operator for Dictionary map
-	inline bool operator<(const AtomRef& r) const
+	inline bool operator<(asAtomR& r)
 	{
-		return m<r.m;
+		return &m<&r.m;
 	}
-	~AtomRef()
+	~asAtomR()
 	{
-		if (m->getObject()) m->getObject()->incRef();
+		if (m.getObject()) m.getObject()->incRef();
 	}
-	inline asAtom* operator->() const
+	inline asAtom* operator->()
 	{
-		return m;
+		return &m;
 	}
-	inline asAtom* getPtr() const
+	inline asAtom* getPtr()
 	{
-		return m;
+		return &m;
 	}
 };
 
-#define _AR AtomRef
+#define _AR asAtomR
+#define asAtomR asAtomR
 
-AtomRef _IMAR(asAtom* a);
-AtomRef _MAR(asAtom* a);
+asAtomR _IMAR(asAtom a);
+asAtomR _MAR(asAtom a);
 
 class ApplicationDomain;
 class Array;

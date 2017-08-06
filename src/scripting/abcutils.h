@@ -101,13 +101,12 @@ else context->handleError(kStackOverflowError)
 	RUNTIME_STACK_POP(context,ret)
 
 #define RUNTIME_STACK_POP_REF(context,ret) \
-	asAtom ret ## Atom; \
-	if(context->stack_index) ret ## Atom=context->stack[--context->stack_index]; \
+	if(context->stack_index) ret=_MAR(context->stack[--context->stack_index]); \
 	else context->handleError(kStackUnderflowError);
 
 #define RUNTIME_STACK_POP_CREATE_REF(context,ret) \
+	_AR ret; \
 	RUNTIME_STACK_POP_REF(context,ret) \
-	_AR ret = _MAR(&ret ## Atom);
 
 #define RUNTIME_STACK_POP_ASOBJECT(context,ret, sys) \
 	if(context->stack_index) ret=context->stack[--context->stack_index].toObject(sys); \
