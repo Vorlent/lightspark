@@ -343,7 +343,7 @@ public:
 		return objClassRef;
 	}
 
-	RootMovieClip* mainClip;
+	_NR<RootMovieClip> mainClip;
 	Stage* stage;
 	ABCVm* currentVm;
 

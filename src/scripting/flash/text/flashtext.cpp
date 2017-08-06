@@ -999,8 +999,7 @@ IDrawable* TextField::invalidate(DisplayObject* target, const MATRIX& initialMat
 		return NULL;
 	}
 
-	RootMovieClip* currentRoot=getSys()->mainClip;
-	DefineFont3Tag* embeddedfont = currentRoot->getEmbeddedFont(font);
+	DefineFont3Tag* embeddedfont = getSys()->mainClip->getEmbeddedFont(font);
 	tokens.clear();
 	if (embeddedfont)
 	{

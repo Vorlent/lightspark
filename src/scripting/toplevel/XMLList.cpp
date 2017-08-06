@@ -1232,9 +1232,7 @@ void XMLList::appendNodesTo(XML *dest) const
 	for (it=nodes.begin(); it!=nodes.end(); ++it)
 	{
 		ASObject *arg0=it->getPtr();
-		ASObject *ret=XML::_appendChild(dest, &arg0, 1);
-		if(ret)
-			ret->decRef();
+		_NR<ASObject> ret=_MNR(XML::_appendChild(dest, &arg0, 1));
 	}
 }
 
@@ -1244,8 +1242,6 @@ void XMLList::prependNodesTo(XML *dest) const
 	for (it=nodes.rbegin(); it!=nodes.rend(); ++it)
 	{
 		ASObject *arg0=it->getPtr();
-		ASObject *ret=XML::_prependChild(dest, &arg0, 1);
-		if(ret)
-			ret->decRef();
+		_NR<ASObject> ret=_MNR(XML::_prependChild(dest, &arg0, 1));
 	}
 }

@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
 	}
 	//NOTE: see SystemState declaration
 	SystemState* sys = new SystemState(fileSize, flashMode);
-	ParseThread* pt = new ParseThread(f, sys->mainClip);
+	ParseThread* pt = new ParseThread(f, sys->mainClip.getPtr());
 	setTLSSys(sys);
 	sys->setDownloadedPath(fileName);
 

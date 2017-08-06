@@ -742,7 +742,7 @@ NPError nsPluginInstance::NewStream(NPMIMEType type, NPStream* stream, NPBool se
 		// loader is notified through parsethread
 		mainDownloader->getCache()->setNotifyLoader(false);
 		mainDownloaderStream.rdbuf(mainDownloaderStreambuf);
-		m_pt=new lightspark::ParseThread(mainDownloaderStream,m_sys->mainClip);
+		m_pt=new lightspark::ParseThread(mainDownloaderStream,m_sys->mainClip.getPtr());
 		m_sys->addJob(m_pt);
 	}
 	//The downloader is set as the private data for this stream

@@ -2364,7 +2364,7 @@ ASFUNCTIONBODY_ATOM(Stage,_getStageHeight)
 
 ASFUNCTIONBODY_ATOM(Stage,_getLoaderInfo)
 {
-	asAtom a = asAtom::fromObject(sys->mainClip);
+	asAtom a = asAtom::fromObject(sys->mainClip.getPtr());
 	return RootMovieClip::_getLoaderInfo(sys,a,NULL,0);
 }
 

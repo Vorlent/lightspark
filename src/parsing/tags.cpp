@@ -1737,15 +1737,14 @@ void StartSoundTag::execute(RootMovieClip* root) const
 
 void StartSoundTag::play(const DefineSoundTag *soundTag) const
 {
-	SoundChannel *schannel = Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
+	_NR<SoundChannel> schannel = _MNR(Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
 		soundTag->getSoundData(),
 		AudioFormat(soundTag->getAudioCodec(),
 			    soundTag->getSampleRate(),
-			    soundTag->getChannels()));
+				soundTag->getChannels())));
 
 	// SoundChannel thread keeps one reference, which will be
 	// removed thread is finished
-	schannel->decRef();
 }
 
 ScriptLimitsTag::ScriptLimitsTag(RECORDHEADER h, std::istream& in):ControlTag(h)

@@ -871,7 +871,7 @@ void ppPluginInstance::startMainParser()
 {
 	mainDownloaderStreambuf = mainDownloader->getCache()->createReader();
 	mainDownloaderStream.rdbuf(mainDownloaderStreambuf);
-	m_pt=new lightspark::ParseThread(mainDownloaderStream,m_sys->mainClip);
+	m_pt=new lightspark::ParseThread(mainDownloaderStream,m_sys->mainClip.getPtr());
 	m_sys->addJob(m_pt);
 	
 }

@@ -2546,8 +2546,6 @@ void asAtom::add(asAtom &v2, SystemState* sys)
 				string a(val1p->toString().raw_buf());
 				string b(val2p->toString().raw_buf());
 				LOG_CALL("add " << a << '+' << b);
-				val1->decRef();
-				val2->decRef();
 				type = T_STRING;
 				stringID = UINT32_MAX;
 				objval = abstract_s(sys,a+b);
@@ -2558,10 +2556,10 @@ void asAtom::add(asAtom &v2, SystemState* sys)
 				number_t num2=val2p->toNumber();
 				LOG_CALL("addN " << num1 << '+' << num2);
 				number_t result = num1 + num2;
-				val1->decRef();
-				val2->decRef();
 				setNumber(result);
 			}
+			val1->decRef();
+			val2->decRef();
 		}
 	}
 }

@@ -35,10 +35,10 @@ using namespace lightspark;
 
 int32_t ABCVm::bitAnd(ASObject* val2, ASObject* val1)
 {
-	int32_t i1=val1->toInt();
-	int32_t i2=val2->toInt();
-	val1->decRef();
-	val2->decRef();
+	_NR<ASObject> val2Ref = _MNR(val2);
+	_NR<ASObject> val1Ref = _MNR(val1);
+	int32_t i1=val1Ref->toInt();
+	int32_t i2=val2Ref->toInt();
 	LOG_CALL(_("bitAnd_oo ") << hex << i1 << '&' << i2 << dec);
 	return i1&i2;
 }

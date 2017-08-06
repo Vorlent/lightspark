@@ -552,18 +552,16 @@ public:
 	static Ref<Class_base> getTemplateInstance(SystemState* sys,const Type* type,_NR<ApplicationDomain> appdomain)
 	{
 		std::vector<const Type*> t(1,type);
-		Template<T>* templ=getTemplate(sys);
+		_NR<Template<T>> templ=_MNR(getTemplate(sys));
 		Ref<Class_base> ret=_MR(templ->applyType(t, appdomain));
-		templ->decRef();
 		return ret;
 	}
 
 	static Ref<Class_base> getTemplateInstance(SystemState* sys,const QName& qname, ABCContext* context,_NR<ApplicationDomain> appdomain)
 	{
-		Template<T>* templ=getTemplate(sys);
+		_NR<Template<T>> templ=_MNR(getTemplate(sys));
 		Ref<Class_base> ret=_MR(templ->applyTypeByQName(qname,appdomain));
 		ret->context = context;
-		templ->decRef();
 		return ret;
 	}
 	static asAtom getInstanceS(SystemState* sys,const Type* type,_NR<ApplicationDomain> appdomain)

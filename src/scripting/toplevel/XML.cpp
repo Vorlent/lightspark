@@ -1435,9 +1435,8 @@ asAtom XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION op
 		//object is a leaf node, delegate to ASString
 		if(res.type == T_INVALID && hasSimpleContent())
 		{
-			ASString *contentstr=abstract_s(getSystemState(),toString_priv());
+			_NR<ASString> contentstr=_MR(abstract_s(getSystemState(),toString_priv()));
 			res=contentstr->getVariableByMultiname(name, opt);
-			contentstr->decRef();
 		}
 
 		return res;
@@ -2851,7 +2850,7 @@ ASFUNCTIONBODY(XML,_replace)
 	{
 		if (value->is<XMLList>())
 		{
-			th->childrenlist->decRef();
+			//TODO: remove? th->childrenlist->decRef();
 			th->childrenlist = _IMNR<XMLList>(value->as<XMLList>());
 		}
 		else if (value->is<XML>())

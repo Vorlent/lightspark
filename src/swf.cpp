@@ -261,9 +261,9 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	loaderInfo->applicationDomain = applicationDomain;
 	loaderInfo->setBytesLoaded(0);
 	loaderInfo->setBytesTotal(0);
-	mainClip=RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain);
+	mainClip=_MNR(RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain));
 	stage=Class<Stage>::getInstanceS(this);
-	stage->_addChildAt(_IMR(mainClip),0);
+	stage->_addChildAt(_IMR(mainClip.getPtr()),0);
 	//Get starting time
 	startTime=compat_msectiming();
 	
@@ -522,7 +522,7 @@ void SystemState::systemFinalize()
 	frameListeners.clear();
 	systemDomain.reset();
 
-	mainClip->decRef();
+	mainClip = NullRef;
 	//Free the stage. This should free all objects on the displaylist
 	stage->decRef();
 }
@@ -1402,7 +1402,7 @@ void ParseThread::parseSWF(UI8 ver)
 			return;
 		}
 		//Check if this clip is the main clip then honour its FileAttributesTag
-		if(root == root->getSystemState()->mainClip)
+		if(root == root->getSystemState()->mainClip.getPtr())
 		{
 			root->getSystemState()->needsAVM2(fat->ActionScript3);
 			if(!fat->ActionScript3)
@@ -1617,7 +1617,7 @@ void RootMovieClip::commitFrame(bool another)
 	if(getFramesLoaded()==1 && frameRate!=0)
 	{
 		SystemState* sys = getSys();
-		if(this==sys->mainClip)
+		if(this==sys->mainClip.getPtr())
 		{
 			/* now the frameRate is available and all SymbolClass tags have created their classes */
 			sys->addTick(1000/frameRate,sys);
