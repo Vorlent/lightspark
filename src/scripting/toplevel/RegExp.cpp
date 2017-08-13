@@ -201,10 +201,13 @@ ASObject *RegExp::match(const tiny_string& str)
 	//Push the whole result and the captured strings
 	for(int i=0;i<capturingGroups+1;i++)
 	{
-		if(ovector[i*2] >= 0)
-			a->push(asAtom::fromObject(abstract_s(getSystemState(), str.substr_bytes(ovector[i*2],ovector[i*2+1]-ovector[i*2]) )));
-		else
-			a->push(asAtom::fromObject(getSystemState()->getUndefinedRef()));
+		if(ovector[i*2] >= 0) {
+			asAtomR element = asAtom::fromObject(abstract_s(getSystemState(), str.substr_bytes(ovector[i*2],ovector[i*2+1]-ovector[i*2]) ));
+			a->push(element);
+		} else {
+			asAtomR element = asAtom::fromObject(getSystemState()->getUndefinedRef());
+			a->push(element);
+		}
 	}
 	a->setVariableByQName("input","",abstract_s(getSystemState(),str),DYNAMIC_TRAIT);
 

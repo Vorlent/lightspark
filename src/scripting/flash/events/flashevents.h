@@ -48,7 +48,7 @@ public:
 	void finalize();
 	static void sinit(Class_base*);
 	static void buildTraits(ASObject* o);
-	virtual void setTarget(asAtomR t) {target = t; }
+	virtual void setTarget(asAtomR& t) {target = t; }
 	ASFUNCTION(_constructor);
 	ASFUNCTION(_preventDefault);
 	ASFUNCTION(_isDefaultPrevented);
@@ -280,7 +280,7 @@ public:
 		   _NR<InteractiveObject> relObj = NullRef, int32_t delta=1);
 	static void sinit(Class_base*);
 	static void buildTraits(ASObject* o);
-	void setTarget(asAtomR t);
+	void setTarget(asAtomR& t);
 	EVENT_TYPE getEventType() const { return MOUSE_EVENT;}
 	ASFUNCTION(_constructor);
 	ASPROPERTY_GETTER_SETTER(bool,buttonDown);
@@ -326,7 +326,7 @@ private:
 	 */
 	bool use_capture;
 public:
-	explicit listener(asAtomR _f, int32_t _p, bool _c)
+	explicit listener(asAtomR& _f, int32_t _p, bool _c)
 		:f(_f),priority(_p),use_capture(_c){}
 	bool operator==(std::pair<asAtomR,bool> r)
 	{
@@ -429,7 +429,7 @@ private:
 	std::vector<asAtomR> args;
 	unsigned int numArgs;
 public:
-	FunctionEvent(asAtomR _f, asAtomR _obj=_MAR(asAtom::invalidAtom), std::vector<asAtomR> _args = std::vector<asAtomR>(), uint32_t _numArgs=0);
+	FunctionEvent(asAtomR& _f, asAtomR& _obj=asAtomR::invalidAtomR, std::vector<asAtomR> _args = std::vector<asAtomR>(), uint32_t _numArgs=0);
 	~FunctionEvent();
 	static void sinit(Class_base*);
 	EVENT_TYPE getEventType() const { return FUNCTION; }
@@ -446,7 +446,7 @@ private:
 	tiny_string* exception;
 	unsigned int numArgs;
 public:
-	ExternalCallEvent(asAtomR _f, ASObject* const* _args, uint32_t _numArgs,
+	ExternalCallEvent(asAtomR& _f, ASObject* const* _args, uint32_t _numArgs,
 			  asAtomR* _result, bool* _thrown, tiny_string* _exception);
 	~ExternalCallEvent();
 	static void sinit(Class_base*);

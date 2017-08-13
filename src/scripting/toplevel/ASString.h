@@ -121,7 +121,7 @@ public:
 };
 
 template<>
-inline asAtomR Class<ASString>::coerce(SystemState* sys,asAtomR o) const
+inline asAtomR Class<ASString>::coerce(SystemState* sys, asAtomR& o) const
 {
 	if (o->type == T_STRING)
 		return o;

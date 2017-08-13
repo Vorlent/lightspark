@@ -230,8 +230,8 @@ asAtomR Amf3Deserializer::parseVector(uint8_t marker, std::vector<tiny_string>& 
 				uint32_t value = 0;
 				if (!input->readUnsignedInt(value))
 					throw ParseException("Not enough data to parse AMF3 vector");
-				asAtom v((int32_t)value);
-				ret->append(_MAR(v));
+				asAtomR v = _MAR(asAtom((int32_t)value));
+				ret->append(v);
 				break;
 			}
 			case vector_uint_marker:
@@ -239,8 +239,8 @@ asAtomR Amf3Deserializer::parseVector(uint8_t marker, std::vector<tiny_string>& 
 				uint32_t value = 0;
 				if (!input->readUnsignedInt(value))
 					throw ParseException("Not enough data to parse AMF3 vector");
-				asAtom v(value);
-				ret->append(_MAR(v));
+				asAtomR v = _MAR(asAtom(value));
+				ret->append(v);
 				break;
 			}
 			case vector_double_marker:

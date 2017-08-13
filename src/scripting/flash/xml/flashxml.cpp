@@ -110,7 +110,8 @@ ASFUNCTIONBODY(XMLNode,childNodes)
 	for(;it!=th->node.end();++it)
 	{
 		if(it->type()!=pugi::node_pcdata) {
-			ret->push(asAtom::fromObject(Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, *it)));
+			asAtomR element = asAtom::fromObject(Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, *it));
+			ret->push(element);
 		}
 	}
 	return ret;

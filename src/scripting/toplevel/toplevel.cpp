@@ -127,7 +127,7 @@ void Undefined::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& strin
 		out->writeByte(undefined_marker);
 }
 
-void Undefined::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
+void Undefined::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
 {
 	LOG(LOG_ERROR,"trying to set variable on undefined:"<<name <<" "<<o->toDebugString());
 	throwError<TypeError>(kConvertUndefinedToObjectError);
@@ -282,7 +282,7 @@ SyntheticFunction::SyntheticFunction(Class_base* c,method_info* m):IFunction(c,S
  * by ABCVm::executeFunction() or through JIT.
  * It consumes one reference of obj and one of each arg
  */
-asAtomR SyntheticFunction::call(asAtomR obj, std::vector<asAtomR>& args, uint32_t numArgs)
+asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32_t numArgs)
 {
 	const uint32_t opt_hit_threshold=1;
 	const uint32_t jit_hit_threshold=20;
@@ -553,7 +553,7 @@ asAtomR SyntheticFunction::call(asAtomR obj, std::vector<asAtomR>& args, uint32_
  * This executes a C++ function.
  * It consumes _no_ references of obj and args
  */
-asAtomR Function::call(asAtomR obj, std::vector<asAtomR>& args, uint32_t num_args)
+asAtomR Function::call(asAtomR& obj, std::vector<asAtomR>& args, uint32_t num_args)
 {
 	/*
 	 * We do not enforce ABCVm::limits.max_recursion here.
@@ -701,13 +701,13 @@ void Null::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 		out->writeByte(null_marker);
 }
 
-void Null::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
+void Null::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
 {
 	LOG(LOG_ERROR,"trying to set variable on null:"<<name<<" value:"<<o->toDebugString());
 	throwError<TypeError>(kConvertNullToObjectError);
 }
 
-asAtomR Void::coerce(SystemState* sys, asAtomR o) const
+asAtomR Void::coerce(SystemState* sys, asAtomR& o) const
 {
 	if(o->type != T_UNDEFINED)
 		throw Class<TypeError>::getInstanceS(sys,"Trying to coerce o!=undefined to void");
@@ -843,7 +843,7 @@ void Class_base::initStandardProps()
 }
 
 
-asAtomR Class_base::coerce(SystemState* sys, asAtomR o) const
+asAtomR Class_base::coerce(SystemState* sys, asAtomR& o) const
 {
 	switch (o->type)
 	{
@@ -917,7 +917,7 @@ Class_base::~Class_base()
 {
 }
 
-asAtomR Class_base::_getter_constructorprop(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen)
+asAtomR Class_base::_getter_constructorprop(SystemState* sys, asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen)
 {
 	Class_base* th = NULL;
 	if(obj->is<Class_base>())
@@ -929,7 +929,7 @@ asAtomR Class_base::_getter_constructorprop(SystemState* sys, asAtomR obj, std::
 	return th->constructorprop;
 }
 
-asAtomR Class_base::_getter_prototype(SystemState* sys,asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen)
+asAtomR Class_base::_getter_prototype(SystemState* sys,asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen)
 {
 	if(!obj->is<Class_base>())
 		throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object");
@@ -942,7 +942,7 @@ ASFUNCTIONBODY_GETTER(Class_base, length);
 
 asAtomR Class_base::generator(std::vector<asAtomR>& args, const unsigned int argslen)
 {
-	asAtomR ret=ASObject::generator(getSystemState(),_MAR(asAtom::invalidAtom), args, argslen);
+	asAtomR ret=ASObject::generator(getSystemState(),asAtomR::invalidAtomR, args, argslen);
 	return ret;
 }
 
@@ -970,7 +970,7 @@ void Class_base::setConstructor(IFunction* c)
 	constructor=c;
 }
 
-void Class_base::handleConstruction(asAtomR target, std::vector<asAtomR>& args, unsigned int argslen, bool buildAndLink)
+void Class_base::handleConstruction(asAtomR& target, std::vector<asAtomR>& args, unsigned int argslen, bool buildAndLink)
 {
 	if(buildAndLink)
 	{
@@ -2598,7 +2598,7 @@ asAtomR ObjectPrototype::getVariableByMultiname(const multiname& name, GET_VARIA
 	return prevPrototype->getObj()->getVariableByMultiname(name, opt);
 }
 
-void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtomR o, ASObject::CONST_ALLOWED_FLAG allowConst)
+void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtomR& o, ASObject::CONST_ALLOWED_FLAG allowConst)
 {
 	if (this->isSealed && this->hasPropertyByMultiname(name,false,true))
 		throwError<ReferenceError>(kCannotAssignToMethodError, name.normalizedNameUnresolved(getSystemState()), "");

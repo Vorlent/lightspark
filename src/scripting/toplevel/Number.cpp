@@ -287,11 +287,16 @@ void Number::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	c->setVariableAtomByQName("NEGATIVE_INFINITY",nsNameAndKind(),_MAR(asAtom(-numeric_limits<double>::infinity())),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("POSITIVE_INFINITY",nsNameAndKind(),_MAR(asAtom(numeric_limits<double>::infinity())),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),_MAR(asAtom(numeric_limits<double>::max())),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),_MAR(asAtom(numeric_limits<double>::min())),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NaN",nsNameAndKind(),_MAR(asAtom(numeric_limits<double>::quiet_NaN())),CONSTANT_TRAIT);
+	asAtomR negative_infinity = _MAR(asAtom(-numeric_limits<double>::infinity()));
+	asAtomR positive_infinity = _MAR(asAtom(numeric_limits<double>::infinity()));
+	asAtomR max = _MAR(asAtom(numeric_limits<double>::max()));
+	asAtomR min = _MAR(asAtom(numeric_limits<double>::min()));
+	asAtomR nan = _MAR(asAtom(numeric_limits<double>::quiet_NaN()));
+	c->setVariableAtomByQName("NEGATIVE_INFINITY",nsNameAndKind(),negative_infinity,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("POSITIVE_INFINITY",nsNameAndKind(),positive_infinity,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),max,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),max,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NaN",nsNameAndKind(),nan,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("toFixed",AS3,Class<IFunction>::getFunction(c->getSystemState(),toFixed,1),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("toExponential",AS3,Class<IFunction>::getFunction(c->getSystemState(),toExponential,1),NORMAL_METHOD,true);
@@ -307,14 +312,23 @@ void Number::sinit(Class_base* c)
 	// if needed add AVMPLUS definitions
 	if(c->getSystemState()->flashMode==SystemState::AVMPLUS)
 	{
-		c->setVariableAtomByQName("E",nsNameAndKind(),_MAR(asAtom(2.71828182845905)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("LN10",nsNameAndKind(),_MAR(asAtom(2.302585092994046)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("LN2",nsNameAndKind(),_MAR(asAtom(0.6931471805599453)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("LOG10E",nsNameAndKind(),_MAR(asAtom(0.4342944819032518)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("LOG2E",nsNameAndKind(),_MAR(asAtom(1.442695040888963387)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("PI",nsNameAndKind(),_MAR(asAtom(3.141592653589793)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("SQRT1_2",nsNameAndKind(),_MAR(asAtom(0.7071067811865476)),CONSTANT_TRAIT,false);
-		c->setVariableAtomByQName("SQRT2",nsNameAndKind(),_MAR(asAtom(1.4142135623730951)),CONSTANT_TRAIT,false);
+		asAtomR e = _MAR(asAtom(2.71828182845905));
+		asAtomR ln10 = _MAR(asAtom(2.302585092994046));
+		asAtomR ln2 = _MAR(asAtom(0.6931471805599453));
+		asAtomR log10e = _MAR(asAtom(0.4342944819032518));
+		asAtomR log2e = _MAR(asAtom(1.442695040888963387));
+		asAtomR pi = _MAR(asAtom(3.141592653589793));
+		asAtomR sqrt12 = _MAR(asAtom(0.7071067811865476));
+		asAtomR sqrt2 = _MAR(asAtom(1.4142135623730951));
+
+		c->setVariableAtomByQName("E",nsNameAndKind(),e,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("LN10",nsNameAndKind(),ln10,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("LN2",nsNameAndKind(), ln2,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("LOG10E",nsNameAndKind(), log10e,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("LOG2E",nsNameAndKind(), log2e,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("PI",nsNameAndKind(), pi,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("SQRT1_2",nsNameAndKind(), sqrt12,CONSTANT_TRAIT,false);
+		c->setVariableAtomByQName("SQRT2",nsNameAndKind(), sqrt2,CONSTANT_TRAIT,false);
 		
 		c->setDeclaredMethodByQName("abs","",Class<IFunction>::getFunction(c->getSystemState(),Math::abs,1),NORMAL_METHOD,false,false);
 		c->setDeclaredMethodByQName("acos","",Class<IFunction>::getFunction(c->getSystemState(),Math::acos,1),NORMAL_METHOD,false,false);

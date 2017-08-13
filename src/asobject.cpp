@@ -406,7 +406,7 @@ _R<ASObject> ASObject::call_toString()
 	return _IMR(ret->toObject(getSystemState()));
 }
 
-tiny_string ASObject::call_toJSON(bool& ok,std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces,const tiny_string& filter)
+tiny_string ASObject::call_toJSON(bool& ok,std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string &spaces,const tiny_string& filter)
 {
 	tiny_string res;
 	ok = false;
@@ -509,7 +509,7 @@ bool ASObject::hasPropertyByMultiname(const multiname& name, bool considerDynami
 
 void ASObject::setDeclaredMethodByQName(const tiny_string& name, const tiny_string& ns, IFunction* o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
 {
-	setDeclaredMethodByQName(name, nsNameAndKind(getSystemState(),ns, NAMESPACE), o, type, isBorrowed,isEnumerable);
+	setDeclaredMethodByQName(name, nsNameAndKind(getSystemState(), ns, NAMESPACE), o, type, isBorrowed,isEnumerable);
 }
 
 void ASObject::setDeclaredMethodByQName(const tiny_string& name, const nsNameAndKind& ns, IFunction* o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
@@ -555,7 +555,8 @@ void ASObject::setDeclaredMethodByQName(uint32_t nameId, const nsNameAndKind& ns
 	{
 		case NORMAL_METHOD:
 		{
-			obj->setVar(asAtom::fromObject(o),getSystemState());
+			asAtomR value = asAtom::fromObject(o);
+			obj->setVar(value,getSystemState());
 			break;
 		}
 		case GETTER_METHOD:
@@ -572,15 +573,15 @@ void ASObject::setDeclaredMethodByQName(uint32_t nameId, const nsNameAndKind& ns
 	o->functionname = nameId;
 }
 
-void ASObject::setDeclaredMethodAtomByQName(const tiny_string& name, const tiny_string& ns, asAtomR o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
+void ASObject::setDeclaredMethodAtomByQName(const tiny_string& name, const tiny_string& ns, asAtomR& o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
 {
 	setDeclaredMethodAtomByQName(name, nsNameAndKind(getSystemState(),ns, NAMESPACE), o, type, isBorrowed,isEnumerable);
 }
-void ASObject::setDeclaredMethodAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
+void ASObject::setDeclaredMethodAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR& o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
 {
 	setDeclaredMethodAtomByQName(getSystemState()->getUniqueStringId(name), ns, o, type, isBorrowed,isEnumerable);
 }
-void ASObject::setDeclaredMethodAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR f, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
+void ASObject::setDeclaredMethodAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR& f, METHOD_TYPE type, bool isBorrowed, bool isEnumerable)
 {
 	check();
 #ifndef NDEBUG
@@ -671,8 +672,8 @@ bool ASObject::deleteVariableByMultiname(const multiname& name)
 void ASObject::setVariableByMultiname_i(const multiname& name, int32_t value)
 {
 	check();
-	asAtom v(value);
-	setVariableByMultiname(name,_MAR(v),CONST_NOT_ALLOWED);
+	asAtomR v = _MAR(asAtom(value));
+	setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 }
 
 variable* ASObject::findSettableImpl(SystemState* sys,variables_map& map, const multiname& name, bool* has_getter)
@@ -698,7 +699,7 @@ variable* ASObject::findSettable(const multiname& name, bool* has_getter)
 }
 
 
-void ASObject::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst, Class_base* cls)
+void ASObject::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst, Class_base* cls)
 {
 	check();
 	assert(!cls || classdef->isSubClass(cls));
@@ -806,11 +807,11 @@ void ASObject::setVariableByQName(uint32_t nameId, const nsNameAndKind& ns, ASOb
 	asAtomR v = asAtom::fromObject(o);
 	setVariableAtomByQName(nameId, ns, v, traitKind, isEnumerable);
 }
-void ASObject::setVariableAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR o, TRAIT_KIND traitKind, bool isEnumerable)
+void ASObject::setVariableAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR& o, TRAIT_KIND traitKind, bool isEnumerable)
 {
 	setVariableAtomByQName(getSystemState()->getUniqueStringId(name), ns, o, traitKind,isEnumerable);
 }
-void ASObject::setVariableAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR o, TRAIT_KIND traitKind, bool isEnumerable)
+void ASObject::setVariableAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR& o, TRAIT_KIND traitKind, bool isEnumerable)
 {
 	assert_and_throw(Variables.findObjVar(nameId,ns,NO_CREATE_TRAIT,traitKind)==NULL);
 	variable* obj=Variables.findObjVar(nameId,ns,traitKind,traitKind);
@@ -819,7 +820,12 @@ void ASObject::setVariableAtomByQName(uint32_t nameId, const nsNameAndKind& ns, 
 	++varcount;
 }
 
-void ASObject::initializeVariableByMultiname(const multiname& name, asAtomR o, multiname* typemname,
+void ASObject::setStringConstant(const tiny_string& name, const tiny_string& value) {
+	asAtomR valueAtom = asAtom::fromString(getSystemState(), value);
+	setVariableAtomByQName(name,nsNameAndKind(), valueAtom, CONSTANT_TRAIT);
+}
+
+void ASObject::initializeVariableByMultiname(const multiname& name, asAtomR& o, multiname* typemname,
 		ABCContext* context, TRAIT_KIND traitKind, uint32_t slot_id, bool isenumerable)
 {
 	check();
@@ -827,7 +833,7 @@ void ASObject::initializeVariableByMultiname(const multiname& name, asAtomR o, m
 	++varcount;
 }
 
-variable::variable(TRAIT_KIND _k, asAtomR _v, multiname* _t, const Type* _type, const nsNameAndKind& _ns, bool _isenumerable)
+variable::variable(TRAIT_KIND _k, asAtomR& _v, multiname* _t, const Type* _type, const nsNameAndKind& _ns, bool _isenumerable)
 		: var(_v),typeUnion(NULL),ns(_ns),kind(_k),traitState(NO_STATE),isenumerable(_isenumerable),issealed(false)
 {
 	if(_type)
@@ -842,7 +848,7 @@ variable::variable(TRAIT_KIND _k, asAtomR _v, multiname* _t, const Type* _type, 
 	}
 }
 
-void variable::setVar(asAtomR v, SystemState* sys)
+void variable::setVar(asAtomR& v, SystemState* sys)
 {
 	//Resolve the typename if we have one
 	//currentCallContext may be NULL when inserting legacy
@@ -858,7 +864,7 @@ void variable::setVar(asAtomR v, SystemState* sys)
 	var=v;
 }
 
-void variable::setVarNoCoerce(asAtomR v)
+void variable::setVarNoCoerce(asAtomR& v)
 {
 	var=v;
 }
@@ -945,7 +951,7 @@ variable* variables_map::findObjVar(SystemState* sys,const multiname& mname, TRA
 	return &inserted->second;
 }
 
-void variables_map::initializeVar(const multiname& mname, asAtomR obj, multiname* typemname, ABCContext* context, TRAIT_KIND traitKind, ASObject* mainObj, uint32_t slot_id,bool isenumerable)
+void variables_map::initializeVar(const multiname& mname, asAtomR& obj, multiname* typemname, ABCContext* context, TRAIT_KIND traitKind, ASObject* mainObj, uint32_t slot_id,bool isenumerable)
 {
 	const Type* type = NULL;
 	if (typemname->isStatic)
@@ -989,8 +995,9 @@ void variables_map::initializeVar(const multiname& mname, asAtomR obj, multiname
 				// avoid recursive construction
 				value = _MAR(asAtom::undefinedAtom);
 			}
-			else
-				value = type->coerce(mainObj->getSystemState(),_MAR(asAtom::undefinedAtom));
+			else {
+				value = type->coerce(mainObj->getSystemState(),asAtomR::undefinedAtomR);
+			}
 		}
 		else
 			value = obj;
@@ -1498,7 +1505,7 @@ asAtomR variables_map::getSlot(unsigned int n)
 	}
 	return _MAR(asAtom::invalidAtom);
 }
-void variables_map::setSlot(unsigned int n,asAtomR o,SystemState* sys)
+void variables_map::setSlot(unsigned int n, asAtomR& o,SystemState* sys)
 {
 	validateSlotId(n);
 	var_iterator it = Variables.find(slots_vars[n-1].nameId);
@@ -1513,7 +1520,7 @@ void variables_map::setSlot(unsigned int n,asAtomR o,SystemState* sys)
 	}
 }
 
-void variables_map::setSlotNoCoerce(unsigned int n, asAtomR o)
+void variables_map::setSlotNoCoerce(unsigned int n, asAtomR& o)
 {
 	validateSlotId(n);
 	var_iterator it = Variables.find(slots_vars[n-1].nameId);
@@ -1836,7 +1843,7 @@ ASObject *ASObject::describeType() const
 	return XML::createFromNode(root);
 }
 
-tiny_string ASObject::toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces,const tiny_string& filter)
+tiny_string ASObject::toJSON(std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string &spaces,const tiny_string& filter)
 {
 	bool ok;
 	tiny_string res = call_toJSON(ok,path,replacer,spaces,filter);
@@ -1988,7 +1995,7 @@ tiny_string ASObject::toJSON(std::vector<ASObject *> &path, asAtomR replacer, co
 						params.push_back(asAtom::fromStringID(varIt->first));
 						params.push_back(asAtom::fromObject(v));
 						//TODO ASATOM_INCREF(params[1]);
-						asAtomR funcret=replacer->callFunction(_MAR(asAtom::nullAtom), params, 2,true);
+						asAtomR funcret=replacer->callFunction(asAtomR::nullAtomR, params, 2,true);
 						if (funcret->type != T_INVALID)
 							res += funcret->toString();
 						else
@@ -2068,8 +2075,10 @@ void ASObject::setprop_prototype(_NR<ASObject>& o)
 		params.push_back(arg1);
 		ret->setter->callFunction(v,params,1,false);
 	}
-	else
-		ret->setVar(asAtom::fromObject(obj),getSystemState());
+	else {
+		asAtomR value = asAtom::fromObject(obj);
+		ret->setVar(value, getSystemState());
+	}
 }
 
 tiny_string ASObject::getClassName() const
@@ -2085,6 +2094,12 @@ asAtom asAtom::nullAtom(T_NULL);
 asAtom asAtom::invalidAtom(T_INVALID);
 asAtom asAtom::trueAtom(true);
 asAtom asAtom::falseAtom(false);
+
+asAtomR asAtomR::undefinedAtomR = asAtomR(asAtom::undefinedAtom);
+asAtomR asAtomR::nullAtomR = asAtomR(asAtom::nullAtom);
+asAtomR asAtomR::invalidAtomR = asAtomR(asAtom::invalidAtom);
+asAtomR asAtomR::trueAtomR = asAtomR(asAtom::trueAtom);
+asAtomR asAtomR::falseAtomR = asAtomR(asAtom::falseAtom);
 
 ASObject *asAtom::toObject(SystemState *sys)
 {
@@ -2131,7 +2146,7 @@ asAtomR asAtom::fromString(SystemState* sys, const tiny_string& s)
 	return _MAR(a);
 }
 
-asAtomR asAtom::callFunction(asAtomR obj, std::vector<asAtomR>& args, uint32_t num_args, bool args_refcounted)
+asAtomR asAtom::callFunction(asAtomR& obj, std::vector<asAtomR>& args, uint32_t num_args, bool args_refcounted)
 {
 	assert_and_throw(type == T_FUNCTION);
 		
@@ -2491,7 +2506,7 @@ void asAtom::convert_b()
 	setBool(v);
 }
 
-void asAtom::add(asAtomR v2, SystemState* sys)
+void asAtom::add(asAtomR& v2, SystemState* sys)
 {
 	//Implement ECMA add algorithm, for XML and default (see avm2overview)
 
@@ -2586,17 +2601,17 @@ lightspark::asAtomR::asAtomR(const asAtomR& r):m(r.m)
 	if (m.getObject()) m.getObject()->incRef();
 }
 
-asAtomR lightspark::asAtomR::operator=(asAtomR r)
+asAtomR& lightspark::asAtomR::operator=(const asAtomR& r)
 {
 	//incRef before decRef to make sure this works even if the pointer is the same
 	if (r.m.getObject()) r.m.getObject()->incRef();
 
-	asAtom old=m;
+	asAtom& old=m;
 	m=r.m;
 
 	//decRef as the very last function call, because it
 	//may cause this Ref to be deleted (if old owns this Ref)
-	if (old.getObject()) old.getObject()->incRef();
+	if (old.getObject()) old.getObject()->decRef();
 
 	return *this;
 }

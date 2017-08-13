@@ -38,7 +38,7 @@ struct scope_entry
 {
 	asAtomR object;
 	bool considerDynamic;
-	scope_entry(asAtomR o, bool c):object(o),considerDynamic(c)
+	scope_entry(asAtomR& o, bool c):object(o),considerDynamic(c)
 	{
 	}
 };
@@ -94,7 +94,7 @@ if(context->stack_index<context->max_stack) \
 	context->stack[context->stack_index++]=_MAR(val); \
 else context->handleError(kStackOverflowError)
 
-inline void runtime_stack_push_ref(call_context* context, asAtomR val) {
+inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 	if(context->stack_index<context->max_stack) {
 		if (val->getObject()) val->getObject()->incRef();
 		context->stack[context->stack_index++]=val;

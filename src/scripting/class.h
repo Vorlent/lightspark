@@ -219,10 +219,10 @@ public:
 	}
 	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
 	{
-		asAtomR ret=T::generator(getSystemState(), _MAR(asAtom::invalidAtom), args, argslen);
+		asAtomR ret=T::generator(getSystemState(), asAtomR::invalidAtomR, args, argslen);
 		return ret;
 	}
-	asAtomR coerce(SystemState* sys,asAtomR o) const
+	asAtomR coerce(SystemState* sys, asAtomR& o) const
 	{
 		return Class_base::coerce(sys,o);
 	}
@@ -232,7 +232,7 @@ template<>
 asAtomR Class<Global>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass);
 
 template<>
-inline asAtomR Class<Number>::coerce(SystemState* sys,asAtomR o) const
+inline asAtomR Class<Number>::coerce(SystemState* sys, asAtomR& o) const
 {
 	switch (o->type)
 	{
@@ -249,7 +249,7 @@ inline asAtomR Class<Number>::coerce(SystemState* sys,asAtomR o) const
 }
 
 template<>
-inline asAtomR Class<UInteger>::coerce(SystemState* sys,asAtomR o) const
+inline asAtomR Class<UInteger>::coerce(SystemState* sys, asAtomR& o) const
 {
 	if (o->type == T_UINTEGER)
 		return o;
@@ -258,7 +258,7 @@ inline asAtomR Class<UInteger>::coerce(SystemState* sys,asAtomR o) const
 }
 
 template<>
-inline asAtomR Class<Integer>::coerce(SystemState* sys,asAtomR o) const
+inline asAtomR Class<Integer>::coerce(SystemState* sys, asAtomR& o) const
 {
 	if (o->type == T_INTEGER)
 		return o;
@@ -267,7 +267,7 @@ inline asAtomR Class<Integer>::coerce(SystemState* sys,asAtomR o) const
 }
 
 template<>
-inline asAtomR Class<Boolean>::coerce(SystemState* sys,asAtomR o) const
+inline asAtomR Class<Boolean>::coerce(SystemState* sys,asAtomR& o) const
 {
 	if (o->type == T_BOOLEAN)
 		return o;
@@ -428,7 +428,7 @@ public:
 		types.push_back(type);
 	}
 
-	asAtomR coerce(SystemState* sys,asAtomR o) const
+	asAtomR coerce(SystemState* sys,asAtomR& o) const
 	{
 		if (o->type == T_UNDEFINED)
 		{

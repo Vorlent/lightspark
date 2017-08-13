@@ -53,7 +53,7 @@ ASFUNCTIONBODY(Proxy,_isAttribute)
 	return abstract_b(obj->getSystemState(),mname.isAttribute);
 }
 
-void Proxy::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
+void Proxy::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
 {
 	//If a variable named like this already exist, use that
 	if(ASObject::hasPropertyByMultiname(name, true, false) || !implEnable)

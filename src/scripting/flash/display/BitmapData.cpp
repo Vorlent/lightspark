@@ -579,8 +579,8 @@ ASFUNCTIONBODY_ATOM(BitmapData,histogram)
 		Vector *histogram = Template<Vector>::getInstanceS(sys,Class<Number>::getClass(sys),NullRef)->as<Vector>();
 		for (int level=0; level<256; level++)
 		{
-			asAtom v(counts[channelOrder[j]][level]);
-			histogram->append(_MAR(v));
+			asAtomR v = _MAR(asAtom(counts[channelOrder[j]][level]));
+			histogram->append(v);
 		}
 		asAtomR v = asAtom::fromObject(histogram);
 		result->append(v);
@@ -672,8 +672,8 @@ ASFUNCTIONBODY_ATOM(BitmapData,getVector)
 	vector<uint32_t>::const_iterator it;
 	for (it=pixelvec.begin(); it!=pixelvec.end(); ++it)
 	{
-		asAtom v(*it);
-		result->append(_MAR(v));
+		asAtomR v = _MAR(asAtom(*it));
+		result->append(v);
 	}
 	return asAtom::fromObject(result);
 }

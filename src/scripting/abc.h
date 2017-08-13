@@ -159,7 +159,7 @@ public:
 	method_info* get_method(unsigned int m);
 	uint32_t getString(unsigned int s) const;
 	//Qname getQname(unsigned int m, call_context* th=NULL) const;
-	static multiname* s_getMultiname(ABCContext*, asAtomR &rt1, ASObject* rt2, int m);
+	static multiname* s_getMultiname(ABCContext*, asAtomR& rt1, asAtomR& rt2, int m);
 	static multiname* s_getMultiname_i(call_context*, uint32_t i , int m);
 	static multiname* s_getMultiname_d(call_context*, number_t i , int m);
 	asAtomR getConstant(int kind, int index);
@@ -189,7 +189,7 @@ public:
 		@param deferred_initialization A pointer to a function that can be used to build the given trait later
 	*/
 	void buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed, int scriptid=-1, bool checkExisting=true);
-	void runScriptInit(unsigned int scriptid, asAtomR g);
+	void runScriptInit(unsigned int scriptid, asAtomR& g);
 
 	void linkTrait(Class_base* obj, const traits_info* t);
 	void getOptionalConstant(const option_detail& opt);
@@ -226,7 +226,7 @@ public:
 	}
 	
 	multiname* getMultiname(unsigned int m, call_context* th);
-	multiname* getMultinameImpl(asAtomR &rt1, ASObject* rt2, unsigned int m);
+	multiname* getMultinameImpl(asAtomR& rt1, asAtomR& rt2, unsigned int m);
 	void buildInstanceTraits(ASObject* obj, int class_index);
 	ABCContext(_R<RootMovieClip> r, std::istream& in, ABCVm* vm) DLL_PUBLIC;
 	void exec(bool lazy);
@@ -290,7 +290,7 @@ private:
 	static void callSuper(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callProperty(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callMethod(call_context* th, int n, int m);
-	static void callImpl(call_context* th, asAtomR f, asAtomR obj, std::vector<asAtomR> &args, int m, bool keepReturn);
+	static void callImpl(call_context* th, asAtomR& f, asAtomR& obj, std::vector<asAtomR> &args, int m, bool keepReturn);
 	static void constructProp(call_context* th, int n, int m); 
 	static void setLocal(int n); 
 	static void setLocal_int(int n,int v); 
@@ -342,7 +342,7 @@ private:
 	static void decLocal_i(call_context* th, int n);
 	static void decLocal(call_context* th, int n);
 	static void coerce(call_context* th, int n);
-	static void checkDeclaredTraits(asAtomR obj);
+	static void checkDeclaredTraits(asAtomR& obj);
 	static ASObject* getProperty(ASObject* obj, multiname* name);
 	static int32_t getProperty_i(ASObject* obj, multiname* name);
 	static void setProperty(ASObject* value,ASObject* obj, multiname* name);
@@ -442,7 +442,7 @@ private:
 	static void SetAllClassLinks();
 	static void AddClassLinks(Class_base* target);
 	static bool newClassRecursiveLink(Class_base* target, Class_base* c);
-	static asAtomR constructFunction(call_context* th, asAtomR f, std::vector<asAtomR> args, int argslen);
+	static asAtomR constructFunction(call_context* th, asAtomR& f, std::vector<asAtomR> args, int argslen);
 	void parseRPCMessage(_R<ByteArray> message, _NR<ASObject> client, _NR<Responder> responder);
 
 	//Opcode tables

@@ -88,7 +88,7 @@ public:
 	 * The returned object must be decRef'ed by caller.
 	 * If the argument cannot be converted, it throws a TypeError
 	 */
-	virtual asAtomR coerce(SystemState* sys, asAtomR o) const=0;
+	virtual asAtomR coerce(SystemState* sys, asAtomR& o) const=0;
 
 	/* Return "any" for anyType, "void" for voidType and class_name.name for Class_base */
 	virtual tiny_string getName() const=0;
@@ -105,7 +105,7 @@ template<> inline const Type* ASObject::as<Type>() const { return dynamic_cast<c
 class Any: public Type
 {
 public:
-	asAtomR coerce(SystemState* sys,asAtomR o) const { return o; }
+	asAtomR coerce(SystemState* sys,asAtomR& o) const { return o; }
 	virtual ~Any() {}
 	tiny_string getName() const { return "any"; }
 	EARLY_BIND_STATUS resolveMultinameStatically(const multiname& name) const { return CANNOT_BIND; }
@@ -115,7 +115,7 @@ public:
 class Void: public Type
 {
 public:
-	asAtomR coerce(SystemState* sys,asAtomR o) const;
+	asAtomR coerce(SystemState* sys,asAtomR& o) const;
 	virtual ~Void() {}
 	tiny_string getName() const { return "void"; }
 	EARLY_BIND_STATUS resolveMultinameStatically(const multiname& name) const { return NOT_BINDED; }
@@ -131,7 +131,7 @@ private:
 	const method_info* mi;
 public:
 	ActivationType(const method_info* m):mi(m){}
-	asAtomR coerce(SystemState* sys,asAtomR o) const { throw RunTimeException("Coercing to an ActivationType should not happen");}
+	asAtomR coerce(SystemState* sys,asAtomR& o) const { throw RunTimeException("Coercing to an ActivationType should not happen");}
 	virtual ~ActivationType() {}
 	tiny_string getName() const { return "activation"; }
 	EARLY_BIND_STATUS resolveMultinameStatically(const multiname& name) const;
@@ -226,7 +226,7 @@ public:
 	void addPrototypeGetter();
 	void addLengthGetter();
 	inline virtual void setupDeclaredTraits(ASObject *target) const { target->traitsInitialized = true; }
-	void handleConstruction(asAtomR target, std::vector<asAtomR> &args, unsigned int argslen, bool buildAndLink);
+	void handleConstruction(asAtomR& target, std::vector<asAtomR> &args, unsigned int argslen, bool buildAndLink);
 	void setConstructor(IFunction* c);
 	bool hasConstructor() { return constructor != NULL; }
 	Class_base(const QName& name, MemoryAccount* m);
@@ -258,7 +258,7 @@ public:
 	 * It consumes one reference of 'o'.
 	 * The returned object must be decRef'ed by caller.
 	 */
-	virtual asAtomR coerce(SystemState* sys, asAtomR o) const;
+	virtual asAtomR coerce(SystemState* sys, asAtomR& o) const;
 
 	void setSuper(_R<Class_base> super_);
 	inline const variable* findBorrowedGettable(const multiname& name, uint32_t* nsRealId = NULL) const DLL_LOCAL
@@ -343,7 +343,7 @@ public:
 	ObjectPrototype(Class_base* c);
 	inline void finalize() { prevPrototype.reset(); }
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 	bool isEqual(ASObject* r);
 };
 
@@ -425,7 +425,7 @@ friend class Class<IFunction>;
 friend class Class_base;
 public:
 	typedef ASObject* (*as_function)(ASObject*, ASObject* const *, const unsigned int);
-	typedef asAtomR (*as_atom_function)(SystemState*, asAtomR, std::vector<asAtomR>&, const unsigned int);
+	typedef asAtomR (*as_atom_function)(SystemState*, asAtomR&, std::vector<asAtomR>&, const unsigned int);
 protected:
 	/* Function pointer to the C-function implementation */
 	// TODO this can be removed once all builtin functions are using the asAtom-based function pointer
@@ -437,7 +437,7 @@ protected:
 	Function(Class_base* c, as_function v=NULL):IFunction(c,SUBTYPE_FUNCTION),val(v),val_atom(NULL) {}
 	method_info* getMethodInfo() const { return NULL; }
 public:
-	asAtomR call(asAtomR obj, std::vector<asAtomR> &args, uint32_t num_args);
+	asAtomR call(asAtomR& obj, std::vector<asAtomR> &args, uint32_t num_args);
 	bool isEqual(ASObject* r);
 };
 
@@ -477,7 +477,7 @@ private:
 	method_info* getMethodInfo() const { return mi; }
 public:
 	~SyntheticFunction() {}
-	asAtomR call(asAtomR obj, std::vector<asAtomR> &args, uint32_t num_args);
+	asAtomR call(asAtomR& obj, std::vector<asAtomR> &args, uint32_t num_args);
 	inline bool destruct()
 	{
 		func_scope.reset();
@@ -595,7 +595,7 @@ public:
 	void serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 				std::map<const ASObject*, uint32_t>& objMap,
 				std::map<const Class_base*, uint32_t>& traitsMap);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 };
 
 class Null: public ASObject
@@ -608,7 +608,7 @@ public:
 	int64_t toInt64();
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
 	int32_t getVariableByMultiname_i(const multiname& name);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 
 	//Serialization interface
 	void serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
@@ -708,8 +708,8 @@ ASObject* escape(ASObject* obj,ASObject* const* args, const unsigned int argslen
 ASObject* unescape(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* print(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* trace(ASObject* obj,ASObject* const* args, const unsigned int argslen);
-bool isXMLName(SystemState *sys, asAtomR &obj);
-asAtomR _isXMLName(SystemState* sys, asAtomR obj,std::vector<asAtomR>& args, const unsigned int argslen);
+bool isXMLName(SystemState *sys, asAtomR& obj);
+asAtomR _isXMLName(SystemState* sys, asAtomR& obj,std::vector<asAtomR>& args, const unsigned int argslen);
 number_t parseNumber(const tiny_string str);
 };
 

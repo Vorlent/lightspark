@@ -178,7 +178,7 @@ ExtVariant::ExtVariant(bool value) :
 	strValue(""), doubleValue(0), intValue(0), type(EV_BOOLEAN), booleanValue(value)
 {
 }
-ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtomR other) :
+ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtomR& other) :
 	strValue(""), doubleValue(0), intValue(0), booleanValue(false)
 {
 	switch(other->getObject()->getObjectType())
@@ -343,7 +343,7 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 }
 
 /* -- ExtASCallback -- */
-ExtASCallback::ExtASCallback(asAtomR _func):funcWasCalled(false), func(_func), result(_MAR(asAtom::nullAtom)), asArgs(NULL)
+ExtASCallback::ExtASCallback(asAtomR& _func):funcWasCalled(false), func(_func), result(_MAR(asAtom::nullAtom)), asArgs(NULL)
 {
 }
 
@@ -375,7 +375,7 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 
 	if(!synchronous)
 	{
-		funcEvent = _MR(new (func->getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
+		funcEvent = _IMR(new (func->getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
 		// Add the callback function event to the top of the VM event queue
 		funcWasCalled=getVm(func->getObject()->getSystemState())->prependEvent(NullRef,funcEvent);
 		if(!funcWasCalled)
@@ -399,7 +399,7 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 			}
 
 			/* TODO: shouldn't we pass some global object instead of Null? */
-			result = func->callFunction(_MAR(asAtom::nullAtom), newArgs, argc,false);
+			result = func->callFunction(asAtomR::nullAtomR, newArgs, argc,false);
 		}
 		// Catch AS exceptions and pass them on
 		catch(ASObject* _exception)

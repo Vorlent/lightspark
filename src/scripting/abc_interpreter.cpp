@@ -839,7 +839,8 @@ void ABCVm::abc_dup(call_context* context,memorystream& code)
 	//dup
 	dup();
 	RUNTIME_STACK_PEEK_CREATE(context,o);
-	runtime_stack_push_ref(context,_IMAR(o));
+	asAtomR value = _IMAR(o);
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_swap(call_context* context,memorystream& code)
 {
@@ -856,7 +857,8 @@ void ABCVm::abc_pushstring(call_context* context,memorystream& code)
 	//pushstring
 	uint32_t t = code.readu30();
 	LOG_CALL( _("pushString ") << context->context->root->getSystemState()->getStringFromUniqueId(context->context->getString(t)) );
-	runtime_stack_push_ref(context,asAtom::fromStringID(context->context->getString(t)));
+	asAtomR value = asAtom::fromStringID(context->context->getString(t));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_pushint(call_context* context,memorystream& code)
 {
@@ -894,7 +896,8 @@ void ABCVm::abc_pushnamespace(call_context* context,memorystream& code)
 {
 	//pushnamespace
 	uint32_t t = code.readu30();
-	runtime_stack_push_ref(context,asAtom::fromObject(pushNamespace(context, t) ));
+	asAtomR value = asAtom::fromObject(pushNamespace(context, t) );
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_hasnext2(call_context* context,memorystream& code)
 {
@@ -970,7 +973,8 @@ void ABCVm::abc_newfunction(call_context* context,memorystream& code)
 {
 	//newfunction
 	uint32_t t = code.readu30();
-	runtime_stack_push_ref(context,asAtom::fromObject(newFunction(context,t)));
+	asAtomR value = asAtom::fromObject(newFunction(context,t));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_call(call_context* context,memorystream& code)
 {
@@ -1110,7 +1114,8 @@ void ABCVm::abc_newarray(call_context* context,memorystream& code)
 void ABCVm::abc_newactivation(call_context* context,memorystream& code)
 {
 	//newactivation
-	runtime_stack_push_ref(context,asAtom::fromObject(newActivation(context, context->mi)));
+	asAtomR value = asAtom::fromObject(newActivation(context, context->mi));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_newclass(call_context* context,memorystream& code)
 {
@@ -1128,7 +1133,8 @@ void ABCVm::abc_newcatch(call_context* context,memorystream& code)
 {
 	//newcatch
 	uint32_t t = code.readu30();
-	runtime_stack_push_ref(context,asAtom::fromObject(newCatch(context,t)));
+	asAtomR value = asAtom::fromObject(newCatch(context,t));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_findpropstrict(call_context* context,memorystream& code)
 {
@@ -1146,7 +1152,8 @@ void ABCVm::abc_findproperty(call_context* context,memorystream& code)
 	//findproperty
 	uint32_t t = code.readu30();
 	multiname* name=context->context->getMultiname(t,context);
-	runtime_stack_push_ref(context,asAtom::fromObject(findProperty(context,name)));
+	asAtomR value = asAtom::fromObject(findProperty(context,name));
+	runtime_stack_push_ref(context, value);
 	name->resetNameIfObject();
 }
 void ABCVm::abc_finddef(call_context* context,memorystream& code)
@@ -1165,7 +1172,8 @@ void ABCVm::abc_getlex(call_context* context,memorystream& code)
 	if (cachepos->type == method_body_info_cache::CACHE_TYPE_OBJECT)
 	{
 		code.seekcachepos(cachepos->nextcachepos);
-		runtime_stack_push_ref(context,asAtom::fromFunction(_IMR(cachepos->obj.getPtr()),cachepos->closure));
+		asAtomR value = asAtom::fromFunction(_IMR(cachepos->obj.getPtr()),cachepos->closure);
+		runtime_stack_push_ref(context, value);
 //		cachepos->obj->incRef();
 		return;
 	}
@@ -1233,7 +1241,8 @@ void ABCVm::abc_setlocal(call_context* context,memorystream& code)
 void ABCVm::abc_getglobalscope(call_context* context,memorystream& code)
 {
 	//getglobalscope
-	runtime_stack_push_ref(context,asAtom::fromObject(getGlobalScope(context)));
+	asAtomR value = asAtom::fromObject(getGlobalScope(context));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_getscopeobject(call_context* context,memorystream& code)
 {
@@ -1327,7 +1336,8 @@ void ABCVm::abc_getglobalSlot(call_context* context,memorystream& code)
 	uint32_t t = code.readu30();
 
 	Global* globalscope = getGlobalScope(context);
-	runtime_stack_push_ref(context,globalscope->getSlot(t));
+	asAtomR value = globalscope->getSlot(t);
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_setglobalSlot(call_context* context,memorystream& code)
 {
@@ -1439,7 +1449,8 @@ void ABCVm::abc_astypelate(call_context* context,memorystream& code)
 	*pval = pval->asTypelate(v1);*/
 	RUNTIME_STACK_POP_CREATE_REF(context,v1);
 	RUNTIME_STACK_POP_CREATE_REF(context,pval);
-	runtime_stack_push_ref(context, _MAR(pval->asTypelate(v1)));
+	asAtomR value = _MAR(pval->asTypelate(v1));
+	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_negate(call_context* context,memorystream& code)
 {

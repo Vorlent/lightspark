@@ -61,7 +61,8 @@ ElementFormat::ElementFormat(Class_base *c): ASObject(c,T_OBJECT,SUBTYPE_ELEMENT
 void ElementFormat::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("GRAPHIC_ELEMENT",nsNameAndKind(),_MAR(asAtom((uint32_t)0xFDEF)),CONSTANT_TRAIT);
+	asAtomR graphicElement = _MAR(asAtom((uint32_t)0xFDEF));
+	c->setVariableAtomByQName("GRAPHIC_ELEMENT",nsNameAndKind(),graphicElement,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("clone","",Class<IFunction>::getFunction(c->getSystemState(),_clone),NORMAL_METHOD,true);
 
 	REGISTER_GETTER_SETTER(c,alignmentBaseline);
@@ -140,8 +141,8 @@ ASFUNCTIONBODY_ATOM(ElementFormat, _clone)
 void FontLookup::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DEVICE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"device"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("EMBEDDED_CFF",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"embeddedCFF"),CONSTANT_TRAIT);
+	c->setStringConstant("DEVICE","device");
+	c->setStringConstant("EMBEDDED_CFF","embeddedCFF");
 }
 
 void FontDescription::sinit(Class_base* c)
@@ -188,14 +189,14 @@ ASFUNCTIONBODY_ATOM(FontDescription, _clone)
 void FontPosture::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("ITALIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"italic"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
+	c->setStringConstant("ITALIC","italic");
+	c->setStringConstant("NORMAL","normal");
 }
 void FontWeight::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("BOLD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"bold"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
+	c->setStringConstant("BOLD","bold");
+	c->setStringConstant("NORMAL","normal");
 }
 
 void FontMetrics::sinit(Class_base* c)
@@ -212,29 +213,29 @@ ASFUNCTIONBODY_ATOM(FontMetrics, _constructor)
 void Kerning::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("AUTO",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"auto"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("OFF",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"off"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ON",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"on"),CONSTANT_TRAIT);
+	c->setStringConstant("AUTO","auto");
+	c->setStringConstant("OFF","off");
+	c->setStringConstant("ON","on");
 }
 
 void LineJustification::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("ALL_BUT_LAST",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"allButLast"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ALL_BUT_MANDATORY_BREAK",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"allButMandatoryBreak"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ALL_INCLUDING_LAST",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"allIncludingLast"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("UNJUSTIFIED",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"unjustified"),CONSTANT_TRAIT);
+	c->setStringConstant("ALL_BUT_LAST","allButLast");
+	c->setStringConstant("ALL_BUT_MANDATORY_BREAK","allButMandatoryBreak");
+	c->setStringConstant("ALL_INCLUDING_LAST","allIncludingLast");
+	c->setStringConstant("UNJUSTIFIED","unjustified");
 }
 void TextBaseline::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("ASCENT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"ascent"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("DESCENT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"descent"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("IDEOGRAPHIC_BOTTOM",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"ideographicBottom"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("IDEOGRAPHIC_CENTER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"ideographicCenter"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("IDEOGRAPHIC_TOP",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"ideographicTop"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ROMAN",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"roman"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("USE_DOMINANT_BASELINE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"useDominantBaseline"),CONSTANT_TRAIT);
+	c->setStringConstant("ASCENT","ascent");
+	c->setStringConstant("DESCENT","descent");
+	c->setStringConstant("IDEOGRAPHIC_BOTTOM","ideographicBottom");
+	c->setStringConstant("IDEOGRAPHIC_CENTER","ideographicCenter");
+	c->setStringConstant("IDEOGRAPHIC_TOP","ideographicTop");
+	c->setStringConstant("ROMAN","roman");
+	c->setStringConstant("USE_DOMINANT_BASELINE","useDominantBaseline");
 }
 
 void TextJustifier::sinit(Class_base* c)
@@ -518,7 +519,8 @@ TextLine::TextLine(Class_base* c, tiny_string linetext, _NR<TextBlock> owner)
 void TextLine::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, DisplayObjectContainer, _constructor, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("MAX_LINE_WIDTH",nsNameAndKind(),_MAR(asAtom((uint32_t)MAX_LINE_WIDTH)),CONSTANT_TRAIT);
+	asAtomR max_line_width = _MAR(asAtom((uint32_t)MAX_LINE_WIDTH));
+	c->setVariableAtomByQName("MAX_LINE_WIDTH",nsNameAndKind(),max_line_width,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("getBaselinePosition","",Class<IFunction>::getFunction(c->getSystemState(),getBaselinePosition),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("descent","",Class<IFunction>::getFunction(c->getSystemState(),getDescent),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("ascent","",Class<IFunction>::getFunction(c->getSystemState(),getAscent),GETTER_METHOD,true);
@@ -676,75 +678,76 @@ ASFUNCTIONBODY_ATOM(TabStop, _constructor)
 void BreakOpportunity::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("ALL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"all"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ANY",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"any"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("AUTO",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"auto"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
+	c->setStringConstant("ALL","all");
+	c->setStringConstant("ANY","any");
+	c->setStringConstant("AUTO","auto");
+	c->setStringConstant("NONE","none");
 }
 void CFFHinting::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("HORIZONTAL_STEM",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"horizontalStem"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
+	c->setStringConstant("HORIZONTAL_STEM","horizontalStem");
+	c->setStringConstant("NONE","none");
 }
 void DigitCase::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DEFAULT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"default"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LINING",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"lining"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("OLD_STYLE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"oldStyle"),CONSTANT_TRAIT);
+	c->setStringConstant("DEFAULT","default");
+	c->setStringConstant("LINING","lining");
+	c->setStringConstant("OLD_STYLE","oldStyle");
 }
 void DigitWidth::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DEFAULT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"default"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("PROPORTIONAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"proportional"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("TABULAR",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"tabular"),CONSTANT_TRAIT);
+	c->setStringConstant("DEFAULT","default");
+	c->setStringConstant("PROPORTIONAL","proportional");
+	c->setStringConstant("TABULAR","tabular");
 }
 void JustificationStyle::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("PRIORITIZE_LEAST_ADJUSTMENT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"prioritizeLeastAdjustment"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("PUSH_IN_KINSOKU",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"pushInKinsoku"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("PUSH_OUT_ONLY",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"pushOutOnly"),CONSTANT_TRAIT);
+	c->setStringConstant("PRIORITIZE_LEAST_ADJUSTMENT","prioritizeLeastAdjustment");
+	c->setStringConstant("PUSH_IN_KINSOKU","pushInKinsoku");
+	c->setStringConstant("PUSH_OUT_ONLY","pushOutOnly");
 }
 void LigatureLevel::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("COMMON",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"common"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("EXOTIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"exotic"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MINIMUM",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"minimum"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("UNCOMMON",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"uncommon"),CONSTANT_TRAIT);
+	c->setStringConstant("COMMON", "common");
+	c->setStringConstant("EXOTIC", "exotic");
+	c->setStringConstant("MINIMUM", "minimum");
+	c->setStringConstant("NONE", "none");
+	c->setStringConstant("UNCOMMON", "uncommon");
 }
 void RenderingMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("CFF",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"cff"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
+	c->setStringConstant("CFF", "cff");
+	c->setStringConstant("NORMAL", "normal");
 }
 void TabAlignment::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("CENTER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"center"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("DECIMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"decimal"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("END",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"end"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("START",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"start"),CONSTANT_TRAIT);
+	c->setStringConstant("CENTER","center");
+	c->setStringConstant("DECIMAL","decimal");
+	c->setStringConstant("END","end");
+	c->setStringConstant("START","start");
 }
+
 void TextLineValidity::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("INVALID",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"invalid"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("POSSIBLY_INVALID",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"possiblyInvalid"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("STATIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"static"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("VALID",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"valid"),CONSTANT_TRAIT);
+	c->setStringConstant("INVALID","invalid");
+	c->setStringConstant("POSSIBLY_INVALID","possiblyInvalid");
+	c->setStringConstant("STATIC","static");
+	c->setStringConstant("VALID","valid");
 }
 void TextRotation::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("AUTO",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"auto"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ROTATE_0",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"rotate0"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ROTATE_180",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"rotate180"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ROTATE_270",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"rotate270"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ROTATE_90",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"rotate90"),CONSTANT_TRAIT);
+	c->setStringConstant("AUTO","auto");
+	c->setStringConstant("ROTATE_0","rotate0");
+	c->setStringConstant("ROTATE_180","rotate180");
+	c->setStringConstant("ROTATE_270","rotate270");
+	c->setStringConstant("ROTATE_90","rotate90");
 }

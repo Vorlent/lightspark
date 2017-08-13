@@ -237,7 +237,8 @@ ASFUNCTIONBODY_ATOM(ASString,match)
 			prevLastIndex = re->lastIndex;
 
 			assert(match->is<Array>());
-			resarr->push(match->as<Array>()->at(0));
+			asAtomR element = match->as<Array>()->at(0);
+			resarr->push(element);
 		}
 
 		// According to ECMA we should return Null if resarr
@@ -275,7 +276,8 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 	uint32_t limit = 0x7fffffff;
 	if(argslen == 0 )
 	{
-		ret->push(asAtom::fromObject(abstract_s(sys,data)));
+		asAtomR dataAtom = asAtom::fromObject(abstract_s(sys,data));
+		ret->push(dataAtom);
 		return asAtom::fromObject(ret);
 	}
 	if (argslen > 1 && !args[1]->is<Undefined>())
@@ -293,7 +295,8 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 			{
 				if (ret->size() >= limit)
 					break;
-				ret->push(asAtom::fromObject(abstract_s(sys, tiny_string::fromChar(*i) ) ));
+				asAtomR element = asAtom::fromObject(abstract_s(sys, tiny_string::fromChar(*i) ) );
+				ret->push(element);
 			}
 			return asAtom::fromObject(ret);
 		}
@@ -331,7 +334,8 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 				break;
 			//Extract string from last match until the beginning of the current match
 			ASString* s=abstract_s(sys,data.substr_bytes(lastMatch,end-lastMatch));
-			ret->push(asAtom::fromObject(s));
+			asAtomR element = asAtom::fromObject(s);
+			ret->push(element);
 			lastMatch=offset=ovector[1];
 
 			//Insert capturing groups
@@ -341,14 +345,16 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 					break;
 				//use string interface through raw(), because we index on bytes, not on UTF-8 characters
 				ASString* s=abstract_s(sys,data.substr_bytes(ovector[i*2],ovector[i*2+1]-ovector[i*2]));
-				ret->push(asAtom::fromObject(s));
+				asAtomR element = asAtom::fromObject(s);
+				ret->push(element);
 			}
 		}
 		while(end<data.numBytes() && ret->size() < limit);
 		if(ret->size() < limit && lastMatch != data.numBytes()+1)
 		{
 			ASString* s=abstract_s(sys,data.substr_bytes(lastMatch,data.numBytes()-lastMatch));
-			ret->push(asAtom::fromObject(s));
+			asAtomR element = asAtom::fromObject(s);
+			ret->push(element);
 		}
 		pcre_free(pcreRE);
 	}
@@ -361,7 +367,8 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 
 			if (data.numChars() == 0)
 			{
-				ret->push(asAtom::fromStringID(BUILTIN_STRINGS::EMPTY));
+				asAtomR empty = asAtom::fromStringID(BUILTIN_STRINGS::EMPTY);
+				ret->push(empty);
 			}
 			uint32_t j = 0;
 			for(auto i=data.begin();i!=data.end();++i)
@@ -369,7 +376,8 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 				if (j >= limit)
 					break;
 				j++;
-				ret->push(asAtom::fromObject(abstract_s(sys, tiny_string::fromChar(*i) ) ));
+				asAtomR element = asAtom::fromObject(abstract_s(sys, tiny_string::fromChar(*i) ) );
+				ret->push(element);
 			}
 			return asAtom::fromObject(ret);
 		}
@@ -385,10 +393,13 @@ ASFUNCTIONBODY_ATOM(ASString,split)
 			ASString* s=abstract_s(sys,data.substr(start,(match-start)));
 			if (ret->size() >= limit)
 				break;
-			ret->push(asAtom::fromObject(s));
+			asAtomR element = asAtom::fromObject(s);
+			ret->push(element);
 			start=match+del.numChars();
-			if (start == len)
-				ret->push(asAtom::fromStringID(BUILTIN_STRINGS::EMPTY));
+			if (start == len) {
+				asAtomR empty = asAtom::fromStringID(BUILTIN_STRINGS::EMPTY);
+				ret->push(empty);
+			}
 		}
 		while(start<len && ret->size() < limit);
 	}
@@ -828,7 +839,7 @@ ASFUNCTIONBODY_ATOM(ASString,replace)
 				subargs[capturingGroups+1]=_MAR(asAtom((int32_t)(ovector[0]-retDiff)));
 				
 				subargs[capturingGroups+2]=asAtom::fromObject(abstract_s(sys,data));
-				asAtomR ret=args[1]->callFunction(_MAR(asAtom::nullAtom), subargs, 3+capturingGroups,true);
+				asAtomR ret=args[1]->callFunction(asAtomR::nullAtomR, subargs, 3+capturingGroups,true);
 				replaceWithTmp=ret->toString().raw_buf();
 			} else {
 					size_t pos, ipos = 0;

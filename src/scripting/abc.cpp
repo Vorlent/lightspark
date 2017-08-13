@@ -753,7 +753,7 @@ multiname* ABCContext::getMultiname(unsigned int n, call_context* context)
 	}
 	
 	asAtomR rt1;
-	ASObject* rt2 = NULL;
+	asAtomR rt2 = _MAR(asAtom::nullAtom);
 	if(fromStack > 0)
 	{
 		assert_and_throw(context);
@@ -762,7 +762,8 @@ multiname* ABCContext::getMultiname(unsigned int n, call_context* context)
 	}
 	if(fromStack > 1)
 	{
-		RUNTIME_STACK_POP_ASOBJECT(context,rt2,this->root->getSystemState());
+		RUNTIME_STACK_POP_CREATE_REF(context,rt2temp);
+		rt2 = rt2temp;
 	}
 	return getMultinameImpl(rt1,rt2,n);
 }
@@ -774,7 +775,7 @@ multiname* ABCContext::getMultiname(unsigned int n, call_context* context)
  * must be provided if getMultinameRTData(midx) returns 2.
  * This is a helper used by codesynt.
  */
-multiname* ABCContext::s_getMultiname(ABCContext* th, asAtomR& n, ASObject* n2, int midx)
+multiname* ABCContext::s_getMultiname(ABCContext* th, asAtomR& n, asAtomR& n2, int midx)
 {
 	return th->getMultinameImpl(n,n2,midx);
 }
@@ -790,7 +791,7 @@ multiname* ABCContext::s_getMultiname(ABCContext* th, asAtomR& n, ASObject* n2, 
  * with the next invocation of getMultinameImpl if
  * getMultinameRTData(midx) != 0.
  */
-multiname* ABCContext::getMultinameImpl(asAtomR& n, ASObject* n2, unsigned int midx)
+multiname* ABCContext::getMultinameImpl(asAtomR& n, asAtomR& n2, unsigned int midx)
 {
 	if (constant_pool.multiname_count == 0)
 		return NULL;
@@ -940,13 +941,13 @@ multiname* ABCContext::getMultinameImpl(asAtomR& n, ASObject* n2, unsigned int m
 		case 0x0e: //MultinameA
 		{
 			//Nothing to do, everything is static
-			assert(!n2);
+			assert(!n2 && n2->type != T_INVALID);
 			break;
 		}
 		case 0x1b: //MultinameL
 		case 0x1c: //MultinameLA
 		{
-			assert(n.type != T_INVALID && !n2);
+			assert(n.type != T_INVALID && n2->type != T_INVALID);
 
 			//Testing shows that the namespace from a
 			//QName is used even in MultinameL
@@ -980,7 +981,7 @@ multiname* ABCContext::getMultinameImpl(asAtomR& n, ASObject* n2, unsigned int m
 		case 0x0f: //RTQName
 		case 0x10: //RTQNameA
 		{
-			assert(n.type != T_INVALID && !n2);
+			assert(n.type != T_INVALID && n2->type != T_INVALID);
 			assert_and_throw(n->type== T_NAMESPACE);
 			Namespace* tmpns=static_cast<Namespace*>(n->objval);
 			ret->ns.clear();
@@ -993,16 +994,15 @@ multiname* ABCContext::getMultinameImpl(asAtomR& n, ASObject* n2, unsigned int m
 		case 0x11: //RTQNameL
 		case 0x12: //RTQNameLA
 		{
-			assert(n.type != T_INVALID && n2);
-			assert_and_throw(n2->classdef==Class<Namespace>::getClass(n2->getSystemState()));
-			Namespace* tmpns=static_cast<Namespace*>(n2);
+			assert(n.type != T_INVALID && n2->type != T_INVALID);
+			assert_and_throw(n2->getObject()->classdef==Class<Namespace>::getClass(n2->getObject()->getSystemState()));
+			Namespace* tmpns=n2->as<Namespace>();
 			ret->ns.clear();
 			ret->ns.emplace_back(root->getSystemState(),tmpns->uri,tmpns->nskind);
 			ret->hasEmptyNS = (ret->ns.begin()->hasEmptyName());
 			ret->hasBuiltinNS=(ret->ns.begin()->hasBuiltinName());
 			ret->hasGlobalNS=(ret->ns.begin()->kind == NAMESPACE);
 			ret->setName(n,root->getSystemState());
-			n2->decRef();
 			break;
 		}
 		default:
@@ -1187,8 +1187,9 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 {
 	std::deque<_R<DisplayObject>> parents;
 	//Only set the default target is it's not overridden
+	asAtomR target = asAtom::fromObject(dispatcher.getPtr());
 	if(event->target->type == T_INVALID)
-		event->setTarget(asAtom::fromObject(dispatcher.getPtr()));
+		event->setTarget(target);
 	/** rollOver/Out are special: according to spec 
 	http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/InteractiveObject.html?  		
 	filter_flash=cs5&filter_flashplayer=10.2&filter_air=2.6#event:rollOver 
@@ -1308,7 +1309,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 
 	//Reset events so they might be recycled
 	event->currentTarget=NullRef;
-	event->setTarget(_MAR(asAtom::invalidAtom));
+	event->setTarget(asAtomR::invalidAtomR);
 }
 
 void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
@@ -1373,7 +1374,7 @@ void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
 							newArgs.push_back(asAtom::fromObject(ev->args[i]));
 						}
 					}
-					*(ev->result) = ev->f->callFunction(_MAR(asAtom::nullAtom),newArgs,ev->numArgs,true);
+					*(ev->result) = ev->f->callFunction(asAtomR::nullAtomR,newArgs,ev->numArgs,true);
 				}
 				catch(ASObject* exception)
 				{
@@ -1741,7 +1742,7 @@ void ABCContext::exec(bool lazy)
 	LOG(LOG_CALLS, _("End of Entry Point"));
 }
 
-void ABCContext::runScriptInit(unsigned int i, asAtomR g)
+void ABCContext::runScriptInit(unsigned int i, asAtomR& g)
 {
 	LOG(LOG_CALLS, "Running script init for script " << i );
 
@@ -2342,14 +2343,16 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 				if(isBorrowed)
 				{
 					obj->incRef();
-					f->addToScope(scope_entry(asAtom::fromObject(obj),false));
+					asAtomR o = asAtom::fromObject(obj);
+					f->addToScope(scope_entry(o,false));
 				}
 			}
 			else
 			{
 				assert(scriptid != -1);
 				obj->incRef();
-				f->addToScope(scope_entry(asAtom::fromObject(obj),false));
+				asAtomR o = asAtom::fromObject(obj);
+				f->addToScope(scope_entry(o,false));
 			}
 			if(kind == traits_info::Getter)
 				obj->setDeclaredMethodByQName(mname->name_s_id,mname->ns[0],f,GETTER_METHOD,isBorrowed,isenumerable);
@@ -2402,7 +2405,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 		}
 		default:
 			LOG(LOG_ERROR,_("Trait not supported ") << *mname << _(" ") << t->kind);
-			obj->setVariableByMultiname(*mname, _MAR(asAtom::undefinedAtom), ASObject::CONST_NOT_ALLOWED);
+			obj->setVariableByMultiname(*mname, asAtomR::undefinedAtomR, ASObject::CONST_NOT_ALLOWED);
 			break;
 	}
 }

@@ -32,8 +32,8 @@ using namespace lightspark;
 void lightspark::AntiAliasType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("ADVANCED",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"advanced"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
+	c->setStringConstant("ADVANCED","advanced");
+	c->setStringConstant("NORMAL","normal");
 }
 
 void ASFont::sinit(Class_base* c)
@@ -1149,28 +1149,40 @@ uint32_t TextField::HtmlTextParser::parseFontSize(const Glib::ustring& sizestr,
 void TextFieldAutoSize::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("CENTER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"center"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LEFT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"left"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("RIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"right"),CONSTANT_TRAIT);
+	asAtomR center = asAtom::fromString(c->getSystemState(),"center");
+	asAtomR left = asAtom::fromString(c->getSystemState(),"left");
+	asAtomR none = asAtom::fromString(c->getSystemState(),"none");
+	asAtomR right = asAtom::fromString(c->getSystemState(),"right");
+	c->setVariableAtomByQName("CENTER",nsNameAndKind(),center,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LEFT",nsNameAndKind(),left,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NONE",nsNameAndKind(),none,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("RIGHT",nsNameAndKind(),right,CONSTANT_TRAIT);
 }
 
 void TextFieldType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DYNAMIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"dynamic"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("INPUT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"input"),CONSTANT_TRAIT);
+	asAtomR dynamic = asAtom::fromString(c->getSystemState(),"dynamic");
+	asAtomR input = asAtom::fromString(c->getSystemState(),"input");
+	c->setVariableAtomByQName("DYNAMIC",nsNameAndKind(),dynamic,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("INPUT",nsNameAndKind(),input,CONSTANT_TRAIT);
 }
 
 void TextFormatAlign::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("CENTER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"center"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("END",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"end"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("JUSTIFY",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"justify"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LEFT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"left"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("RIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"right"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("START",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"start"),CONSTANT_TRAIT);
+	asAtomR center = asAtom::fromString(c->getSystemState(),"center");
+	asAtomR end = asAtom::fromString(c->getSystemState(),"end");
+	asAtomR justify = asAtom::fromString(c->getSystemState(),"justify");
+	asAtomR left = asAtom::fromString(c->getSystemState(),"left");
+	asAtomR right = asAtom::fromString(c->getSystemState(),"right");
+	asAtomR start = asAtom::fromString(c->getSystemState(),"start");
+	c->setVariableAtomByQName("CENTER",nsNameAndKind(), center, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("END",nsNameAndKind(), end, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("JUSTIFY",nsNameAndKind(), justify,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LEFT",nsNameAndKind(), left, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("RIGHT",nsNameAndKind(), right, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("START",nsNameAndKind(), start, CONSTANT_TRAIT);
 }
 
 void TextFormat::sinit(Class_base* c)
@@ -1326,8 +1338,10 @@ ASFUNCTIONBODY_ATOM(StyleSheet,_getStyleNames)
 	assert_and_throw(argslen==0);
 	Array* ret=Class<Array>::getInstanceSNoArgs(sys);
 	map<tiny_string, asAtomR>::const_iterator it=th->styles.begin();
-	for(;it!=th->styles.end();++it)
-		ret->push(asAtom::fromObject(abstract_s(sys,it->first)));
+	for(;it!=th->styles.end();++it) {
+		asAtomR element = asAtom::fromObject(abstract_s(sys,it->first));
+		ret->push(element);
+	}
 	return asAtom::fromObject(ret);
 }
 
@@ -1349,48 +1363,65 @@ ASFUNCTIONBODY_ATOM(StaticText,_getText)
 void FontStyle::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("BOLD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"bold"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("BOLD_ITALIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"boldItalic"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ITALIC",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"italic"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("REGULAR",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"regular"),CONSTANT_TRAIT);
+	asAtomR bold = asAtom::fromString(c->getSystemState(),"bold");
+	asAtomR boldItalic = asAtom::fromString(c->getSystemState(),"boldItalic");
+	asAtomR italic = asAtom::fromString(c->getSystemState(),"italic");
+	asAtomR regular = asAtom::fromString(c->getSystemState(),"regular");
+	c->setVariableAtomByQName("BOLD",nsNameAndKind(), bold, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("BOLD_ITALIC",nsNameAndKind(), boldItalic, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("ITALIC",nsNameAndKind(), italic, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("REGULAR",nsNameAndKind(), regular, CONSTANT_TRAIT);
 }
 
 void FontType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DEVICE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"device"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("EMBEDDED",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"embedded"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("EMBEDDED_CFF",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"embeddedCFF"),CONSTANT_TRAIT);
+	asAtomR device = asAtom::fromString(c->getSystemState(),"device");
+	asAtomR embedded = asAtom::fromString(c->getSystemState(),"embedded");
+	asAtomR embeddedCFF = asAtom::fromString(c->getSystemState(),"embeddedCFF");
+	c->setVariableAtomByQName("DEVICE",nsNameAndKind(), device, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("EMBEDDED",nsNameAndKind(), embedded, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("EMBEDDED_CFF",nsNameAndKind(), embeddedCFF, CONSTANT_TRAIT);
 }
 
 void TextDisplayMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("CRT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"crt"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("DEFAULT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"default"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LCD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"lcd"),CONSTANT_TRAIT);
+	asAtomR crt = asAtom::fromString(c->getSystemState(),"crt");
+	asAtomR _default = asAtom::fromString(c->getSystemState(),"default");
+	asAtomR lcd = asAtom::fromString(c->getSystemState(),"lcd");
+	c->setVariableAtomByQName("CRT",nsNameAndKind(),crt,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("DEFAULT",nsNameAndKind(),_default,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LCD",nsNameAndKind(),lcd,CONSTANT_TRAIT);
 }
 
 void TextColorType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("DARK_COLOR",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"dark"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LIGHT_COLOR",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"light"),CONSTANT_TRAIT);
+	asAtomR dark = asAtom::fromString(c->getSystemState(),"dark");
+	asAtomR light = asAtom::fromString(c->getSystemState(),"light");
+	c->setVariableAtomByQName("DARK_COLOR",nsNameAndKind(), dark, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LIGHT_COLOR",nsNameAndKind(), light, CONSTANT_TRAIT);
 }
 
 void GridFitType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("PIXEL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"pixel"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("SUBPIXEL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"subpixel"),CONSTANT_TRAIT);
+	asAtomR none = asAtom::fromString(c->getSystemState(), "none");
+	asAtomR pixel = asAtom::fromString(c->getSystemState(), "pixel");
+	asAtomR subpixel = asAtom::fromString(c->getSystemState(), "subpixel");
+	c->setVariableAtomByQName("NONE",nsNameAndKind(), none, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("PIXEL",nsNameAndKind(), pixel, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("SUBPIXEL",nsNameAndKind(), subpixel, CONSTANT_TRAIT);
 }
 
 void TextInteractionMode::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_FINAL | CLASS_SEALED);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("SELECTION",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"selection"),CONSTANT_TRAIT);
+	asAtomR normal = asAtom::fromString(c->getSystemState(), "normal");
+	asAtomR selection = asAtom::fromString(c->getSystemState(), "selection");
+	c->setVariableAtomByQName("NORMAL",nsNameAndKind(), normal, CONSTANT_TRAIT);
+	c->setVariableAtomByQName("SELECTION",nsNameAndKind(), selection, CONSTANT_TRAIT);
 }
 
 void TextLineMetrics::sinit(Class_base* c)

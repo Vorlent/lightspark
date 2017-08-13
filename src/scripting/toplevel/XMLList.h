@@ -95,7 +95,7 @@ public:
 	ASFUNCTION(_propertyIsEnumerable);
 	ASFUNCTION(_prependChild);
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
 	bool deleteVariableByMultiname(const multiname& name);
 	void getDescendantsByQName(const tiny_string& name, uint32_t ns, bool bIsAttribute, XML::XMLVector& ret);

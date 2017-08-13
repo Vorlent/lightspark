@@ -2126,8 +2126,10 @@ void DisplayObjectContainer::getObjectsFromPoint(Point* point, Array *ar)
 			(*it)->incRef();
 			(*it)->getBounds(xmin,xmax,ymin,ymax,m);
 			if (xmin <= point->getX() && xmax >= point->getX()
-					&& ymin <= point->getY() && ymax >= point->getY())
-					ar->push(asAtom::fromObject((*it).getPtr()));
+					&& ymin <= point->getY() && ymax >= point->getY()) {
+				asAtomR element = asAtom::fromObject((*it).getPtr());
+				ar->push(element);
+			}
 			if ((*it)->is<DisplayObjectContainer>())
 				(*it)->as<DisplayObjectContainer>()->getObjectsFromPoint(point,ar);
 			it++;
@@ -2531,40 +2533,59 @@ ASFUNCTIONBODY_ATOM(Stage,_setColor)
 void StageScaleMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("EXACT_FIT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"exactFit"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NO_BORDER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"noBorder"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NO_SCALE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"noScale"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("SHOW_ALL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"showAll"),CONSTANT_TRAIT);
+	asAtomR exactFit = asAtom::fromString(c->getSystemState(),"exactFit");
+	asAtomR noBorder = asAtom::fromString(c->getSystemState(),"noBorder");
+	asAtomR noScale = asAtom::fromString(c->getSystemState(),"noScale");
+	asAtomR showAll = asAtom::fromString(c->getSystemState(),"showAll");
+	c->setVariableAtomByQName("EXACT_FIT",nsNameAndKind(),exactFit,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NO_BORDER",nsNameAndKind(),noBorder,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NO_SCALE",nsNameAndKind(),noScale,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("SHOW_ALL",nsNameAndKind(),showAll,CONSTANT_TRAIT);
 }
 
 void StageAlign::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("BOTTOM",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"B"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("BOTTOM_LEFT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"BL"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("BOTTOM_RIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"BR"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LEFT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"L"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("RIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"R"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("TOP",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"T"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("TOP_LEFT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"TL"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("TOP_RIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"TR"),CONSTANT_TRAIT);
+	asAtomR b = asAtom::fromString(c->getSystemState(),"B");
+	asAtomR bl = asAtom::fromString(c->getSystemState(),"BL");
+	asAtomR br = asAtom::fromString(c->getSystemState(),"BR");
+	asAtomR l = asAtom::fromString(c->getSystemState(),"L");
+	asAtomR r = asAtom::fromString(c->getSystemState(),"R");
+	asAtomR t = asAtom::fromString(c->getSystemState(),"T");
+	asAtomR tl = asAtom::fromString(c->getSystemState(),"TL");
+	asAtomR tr = asAtom::fromString(c->getSystemState(),"TR");
+	c->setVariableAtomByQName("BOTTOM",nsNameAndKind(),b,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("BOTTOM_LEFT",nsNameAndKind(),bl,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("BOTTOM_RIGHT",nsNameAndKind(),br,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LEFT",nsNameAndKind(),l,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("RIGHT",nsNameAndKind(),r,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("TOP",nsNameAndKind(),t,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("TOP_LEFT",nsNameAndKind(),tl,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("TOP_RIGHT",nsNameAndKind(),tr,CONSTANT_TRAIT);
 }
 
 void StageQuality::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("BEST",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"best"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("HIGH",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"high"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LOW",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"low"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MEDIUM",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"medium"),CONSTANT_TRAIT);
+	asAtomR best = asAtom::fromString(c->getSystemState(),"best");
+	asAtomR high = asAtom::fromString(c->getSystemState(),"high");
+	asAtomR low = asAtom::fromString(c->getSystemState(),"low");
+	asAtomR medium = asAtom::fromString(c->getSystemState(),"medium");
+	c->setVariableAtomByQName("BEST",nsNameAndKind(),best,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("HIGH",nsNameAndKind(),high,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LOW",nsNameAndKind(),low,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MEDIUM",nsNameAndKind(),medium,CONSTANT_TRAIT);
 }
 
 void StageDisplayState::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("FULL_SCREEN",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"fullScreen"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("FULL_SCREEN_INTERACTIVE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"fullScreenInteractive"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
+	asAtomR fullScreen = asAtom::fromString(c->getSystemState(),"fullScreen");
+	asAtomR fullScreenInteractive = asAtom::fromString(c->getSystemState(),"fullScreenInteractive");
+	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
+	c->setVariableAtomByQName("FULL_SCREEN",nsNameAndKind(),fullScreen,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("FULL_SCREEN_INTERACTIVE",nsNameAndKind(),fullScreenInteractive,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),normal,CONSTANT_TRAIT);
 }
 
 Bitmap::Bitmap(Class_base* c, _NR<LoaderInfo> li, std::istream *s, FILE_TYPE type):
@@ -2987,69 +3008,104 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getUseHandCursor)
 void GradientType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("LINEAR",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"linear"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("RADIAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"radial"),CONSTANT_TRAIT);
+	asAtomR linear = asAtom::fromString(c->getSystemState(),"linear");
+	asAtomR radial = asAtom::fromString(c->getSystemState(),"radial");
+	c->setVariableAtomByQName("LINEAR",nsNameAndKind(),linear,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("RADIAL",nsNameAndKind(),radial,CONSTANT_TRAIT);
 }
 
 void BlendMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("ADD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"add"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"alpha"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("DARKEN",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"darken"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("DIFFERENCE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"difference"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("ERASE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"erase"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("HARDLIGHT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"hardlight"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("INVERT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"invert"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LAYER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"layer"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LIGHTEN",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"lighten"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MULTIPLY",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"multiply"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("OVERLAY",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"overlay"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("SCREEN",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"screen"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("SUBTRACT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"subtract"),CONSTANT_TRAIT);
+	asAtomR add = asAtom::fromString(c->getSystemState(),"add");
+	asAtomR alpha = asAtom::fromString(c->getSystemState(),"alpha");
+	asAtomR darken = asAtom::fromString(c->getSystemState(),"darken");
+	asAtomR difference = asAtom::fromString(c->getSystemState(),"difference");
+	asAtomR erase = asAtom::fromString(c->getSystemState(),"erase");
+	asAtomR hardlight = asAtom::fromString(c->getSystemState(),"hardlight");
+	asAtomR invert = asAtom::fromString(c->getSystemState(),"invert");
+	asAtomR layer = asAtom::fromString(c->getSystemState(),"layer");
+	asAtomR lighten = asAtom::fromString(c->getSystemState(),"lighten");
+	asAtomR multiply = asAtom::fromString(c->getSystemState(),"multiply");
+	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
+	asAtomR overlay = asAtom::fromString(c->getSystemState(),"overlay");
+	asAtomR screen = asAtom::fromString(c->getSystemState(),"screen");
+	asAtomR subtract = asAtom::fromString(c->getSystemState(),"subtract");
+
+	c->setVariableAtomByQName("ADD",nsNameAndKind(),add,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),alpha,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("DARKEN",nsNameAndKind(),darken,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("DIFFERENCE",nsNameAndKind(),difference,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("ERASE",nsNameAndKind(),erase,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("HARDLIGHT",nsNameAndKind(),hardlight,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("INVERT",nsNameAndKind(),invert,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LAYER",nsNameAndKind(),layer,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LIGHTEN",nsNameAndKind(),lighten,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MULTIPLY",nsNameAndKind(),multiply,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),normal,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("OVERLAY",nsNameAndKind(),overlay,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("SCREEN",nsNameAndKind(),screen,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("SUBTRACT",nsNameAndKind(),subtract,CONSTANT_TRAIT);
 }
 
 void SpreadMethod::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("PAD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"pad"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("REFLECT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"reflect"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("REPEAT",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"repeat"),CONSTANT_TRAIT);
+	asAtomR pad = asAtom::fromString(c->getSystemState(),"pad");
+	asAtomR reflect = asAtom::fromString(c->getSystemState(),"reflect");
+	asAtomR repeat = asAtom::fromString(c->getSystemState(),"repeat");
+	c->setVariableAtomByQName("PAD",nsNameAndKind(),pad,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("REFLECT",nsNameAndKind(),reflect,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("REPEAT",nsNameAndKind(),repeat,CONSTANT_TRAIT);
 }
 
 void InterpolationMethod::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("RGB",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"rgb"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LINEAR_RGB",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"linearRGB"),CONSTANT_TRAIT);
+	asAtomR rgb = asAtom::fromString(c->getSystemState(),"rgb");
+	asAtomR linearRGB = asAtom::fromString(c->getSystemState(),"linearRGB");
+	c->setVariableAtomByQName("RGB",nsNameAndKind(),rgb,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LINEAR_RGB",nsNameAndKind(),linearRGB,CONSTANT_TRAIT);
 }
 
 void GraphicsPathCommand::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("CUBIC_CURVE_TO",nsNameAndKind(),_MAR(asAtom(6)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("CURVE_TO",nsNameAndKind(),_MAR(asAtom(3)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("LINE_TO",nsNameAndKind(),_MAR(asAtom(2)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MOVE_TO",nsNameAndKind(),_MAR(asAtom(1)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NO_OP",nsNameAndKind(),_MAR(asAtom(0)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("WIDE_LINE_TO",nsNameAndKind(),_MAR(asAtom(5)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("WIDE_MOVE_TO",nsNameAndKind(),_MAR(asAtom(4)),CONSTANT_TRAIT);
+	asAtomR cubic_curve_to = _MAR(asAtom(6));
+	asAtomR curve_to = _MAR(asAtom(3));
+	asAtomR line_to = _MAR(asAtom(2));
+	asAtomR move_to = _MAR(asAtom(1));
+	asAtomR no_op = _MAR(asAtom(0));
+	asAtomR wide_line_to = _MAR(asAtom(5));
+	asAtomR wide_move_to = _MAR(asAtom(4));
+
+	c->setVariableAtomByQName("CUBIC_CURVE_TO",nsNameAndKind(), cubic_curve_to,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("CURVE_TO",nsNameAndKind(), curve_to,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("LINE_TO",nsNameAndKind(), line_to,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MOVE_TO",nsNameAndKind(), move_to,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NO_OP",nsNameAndKind(), no_op,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("WIDE_LINE_TO",nsNameAndKind(), wide_line_to,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("WIDE_MOVE_TO",nsNameAndKind(), wide_move_to,CONSTANT_TRAIT);
 }
 
 void GraphicsPathWinding::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("EVEN_ODD",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"evenOdd"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NON_ZERO",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"nonZero"),CONSTANT_TRAIT);
+	asAtomR evenOdd = asAtom::fromString(c->getSystemState(),"evenOdd");
+	asAtomR nonZero = asAtom::fromString(c->getSystemState(),"nonZero");
+	c->setVariableAtomByQName("EVEN_ODD",nsNameAndKind(),evenOdd,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NON_ZERO",nsNameAndKind(),nonZero,CONSTANT_TRAIT);
 }
 
 void PixelSnapping::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("ALWAYS",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"always"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("AUTO",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"auto"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NEVER",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"never"),CONSTANT_TRAIT);
+	asAtomR always = asAtom::fromString(c->getSystemState(),"always");
+	asAtomR _auto = asAtom::fromString(c->getSystemState(),"auto");
+	asAtomR never = asAtom::fromString(c->getSystemState(),"never");
+	c->setVariableAtomByQName("ALWAYS",nsNameAndKind(), always,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("AUTO",nsNameAndKind(),_auto,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NEVER",nsNameAndKind(),never,CONSTANT_TRAIT);
 
 }
 
@@ -3139,7 +3195,7 @@ void MovieClip::initFrame()
 	if(newFrame && frameScripts.count(state.FP))
 	{
 		std::vector<asAtomR> empty;
-		asAtomR v=frameScripts[state.FP]->callFunction(_MAR(asAtom::invalidAtom),empty,0,false);
+		asAtomR v=frameScripts[state.FP]->callFunction(asAtomR::invalidAtomR,empty,0,false);
 	}
 
 }
@@ -3232,10 +3288,14 @@ ASFUNCTIONBODY_ATOM(Shader,_constructor)
 void BitmapDataChannel::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),_MAR(asAtom((uint32_t)8)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("BLUE",nsNameAndKind(),_MAR(asAtom((uint32_t)4)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("GREEN",nsNameAndKind(),_MAR(asAtom((uint32_t)2)),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("RED",nsNameAndKind(),_MAR(asAtom((uint32_t)1)),CONSTANT_TRAIT);
+	asAtomR alpha = _MAR(asAtom((uint32_t)8));
+	asAtomR blue = _MAR(asAtom((uint32_t)4));
+	asAtomR green = _MAR(asAtom((uint32_t)2));
+	asAtomR red = _MAR(asAtom((uint32_t)1));
+	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),alpha,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("BLUE",nsNameAndKind(),blue,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("GREEN",nsNameAndKind(),green,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("RED",nsNameAndKind(),red,CONSTANT_TRAIT);
 }
 
 unsigned int BitmapDataChannel::channelShift(uint32_t channelConstant)
@@ -3264,8 +3324,12 @@ unsigned int BitmapDataChannel::channelShift(uint32_t channelConstant)
 void LineScaleMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	c->setVariableAtomByQName("HORIZONTAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"horizontal"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NONE",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"none"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"normal"),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("VERTICAL",nsNameAndKind(),asAtom::fromString(c->getSystemState(),"vertical"),CONSTANT_TRAIT);
+	asAtomR horizontal = asAtom::fromString(c->getSystemState(),"horizontal");
+	asAtomR none = asAtom::fromString(c->getSystemState(),"none");
+	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
+	asAtomR vertical = asAtom::fromString(c->getSystemState(),"vertical");
+	c->setVariableAtomByQName("HORIZONTAL",nsNameAndKind(),horizontal,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NONE",nsNameAndKind(),none,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),normal,CONSTANT_TRAIT);
+	c->setVariableAtomByQName("VERTICAL",nsNameAndKind(),vertical,CONSTANT_TRAIT);
 }

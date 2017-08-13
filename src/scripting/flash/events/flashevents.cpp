@@ -487,7 +487,7 @@ void MouseEvent::buildTraits(ASObject* o)
 	//o->setVariableByQName("localY","",abstract_d(0),DECLARED_TRAIT);
 }
 
-void MouseEvent::setTarget(asAtomR t)
+void MouseEvent::setTarget(asAtomR& t)
 {
 	target = t;
 	//If t is NULL, it means MouseEvent is being reset
@@ -743,7 +743,7 @@ void EventDispatcher::handleEvent(_R<Event> e)
 		//tmpListener is now also owned by the vector
 		asAtomR f = tmpListener[i].f;
 		//If the f is a class method, the 'this' is ignored
-		asAtomR arg0= asAtom::fromObject(e.getPtr());
+		asAtomR arg0 = asAtom::fromObject(e.getPtr());
 		asAtomR v = asAtom::fromObject(this);
 		std::vector<asAtomR> arg0s;
 		arg0s.reserve(1);
@@ -1106,7 +1106,7 @@ ASFUNCTIONBODY(HTTPStatusEvent,_constructor)
 	return NULL;
 }
 
-FunctionEvent::FunctionEvent(asAtomR _f, asAtomR _obj, std::vector<asAtomR> _args, uint32_t _numArgs):
+FunctionEvent::FunctionEvent(asAtomR& _f, asAtomR& _obj, std::vector<asAtomR> _args, uint32_t _numArgs):
 		WaitableEvent("FunctionEvent"),f(_f),obj(_obj),args(_args), numArgs(_numArgs)
 {
 	/*args = new asAtom[numArgs];
@@ -1123,7 +1123,7 @@ FunctionEvent::~FunctionEvent()
 	//delete[] args;
 }
 
-ExternalCallEvent::ExternalCallEvent(asAtomR _f, ASObject* const* _args,
+ExternalCallEvent::ExternalCallEvent(asAtomR& _f, ASObject* const* _args,
 	uint32_t _numArgs, asAtomR *_result, bool* _thrown, tiny_string* _exception):
 		WaitableEvent("ExternalCallEvent"),
 		f(_f),args(_args),result(_result),thrown(_thrown),exception(_exception),numArgs(_numArgs)

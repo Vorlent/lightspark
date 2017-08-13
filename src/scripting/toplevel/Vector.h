@@ -48,7 +48,7 @@ class Vector: public ASObject
 		asAtomR comparator;
 		const Type* vec_type;
 	public:
-		sortComparatorWrapper(asAtomR c, const Type* v):comparator(c),vec_type(v){}
+		sortComparatorWrapper(asAtomR& c, const Type* v):comparator(c),vec_type(v){}
 		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 public:
@@ -63,19 +63,19 @@ public:
 	
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o) {}
-	static asAtomR generator(SystemState* sys, asAtomR o_class, std::vector<asAtomR>& args, const unsigned int argslen);
+	static asAtomR generator(SystemState* sys, asAtomR& o_class, std::vector<asAtomR>& args, const unsigned int argslen);
 
 	void setTypes(const std::vector<const Type*>& types);
 	bool sameType(const Class_base* cls) const;
 
 	//Overloads
 	tiny_string toString();
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
 	static bool isValidMultiname(SystemState* sys,const multiname& name, uint32_t& index);
 
-	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces,const tiny_string& filter);
+	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string &spaces,const tiny_string& filter);
 
 	uint32_t nextNameIndex(uint32_t cur_index);
 	asAtomR nextName(uint32_t index);
@@ -91,11 +91,11 @@ public:
 	}
 	//Get value at index, or return defaultValue (a borrowed
 	//reference) if index is out-of-range
-	asAtomR at(unsigned int index, asAtomR defaultValue) const;
+	asAtomR at(unsigned int index, asAtomR& defaultValue) const;
 
 	//Appends an object to the Vector. o is coerced to vec_type.
 	//Takes ownership of o.
-	void append(asAtomR o);
+	void append(asAtomR& o);
 	void setFixed(bool v) { fixed = v; }
 
 	//TODO: do we need to implement generator?

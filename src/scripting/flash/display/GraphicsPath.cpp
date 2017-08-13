@@ -92,8 +92,8 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, curveTo)
 	ARG_UNPACK_ATOM (cx) (cy) (ax) (ay);
 
 	th->ensureValid();
-	asAtom v((int32_t)GraphicsPathCommand::CURVE_TO);
-	th->commands->append(_MAR(v));
+	asAtomR v =_MAR(asAtom((int32_t)(GraphicsPathCommand::CURVE_TO)));
+	th->commands->append(v);
 	th->data->append(ax);
 	th->data->append(ay);
 	th->data->append(cx);
@@ -110,8 +110,8 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, lineTo)
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
-	asAtom v((int32_t)(GraphicsPathCommand::LINE_TO));
-	th->commands->append(_MAR(v));
+	asAtomR v =_MAR(asAtom((int32_t)(GraphicsPathCommand::LINE_TO)));
+	th->commands->append(v);
 	th->data->append(x);
 	th->data->append(y);
 
@@ -126,8 +126,8 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, moveTo)
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
-	asAtom v((int32_t)(GraphicsPathCommand::MOVE_TO));
-	th->commands->append(_MAR(v));
+	asAtomR v =_MAR(asAtom((int32_t)(GraphicsPathCommand::MOVE_TO)));
+	th->commands->append(v);
 	th->data->append(x);
 	th->data->append(y);
 
@@ -142,11 +142,11 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, wideLineTo)
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
-	asAtom v((int32_t)(GraphicsPathCommand::LINE_TO));
-	th->commands->append(_MAR(v));
-	asAtom n(0.0);
-	th->data->append(_MAR(n));
-	th->data->append(_MAR(n));
+	asAtomR v =_MAR(asAtom((int32_t)(GraphicsPathCommand::LINE_TO)));
+	th->commands->append(v);
+	asAtomR n =_MAR(asAtom(0.0));
+	th->data->append(n);
+	th->data->append(n);
 	th->data->append(x);
 	th->data->append(y);
 
@@ -161,11 +161,11 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, wideMoveTo)
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
-	asAtom v((int32_t)(GraphicsPathCommand::MOVE_TO));
-	th->commands->append(_MAR(v));
-	asAtom n(0.0);
-	th->data->append(_MAR(n));
-	th->data->append(_MAR(n));
+	asAtomR v =_MAR(asAtom((int32_t)(GraphicsPathCommand::MOVE_TO)));
+	th->commands->append(v);
+	asAtomR n =_MAR(asAtom(0.0));
+	th->data->append(n);
+	th->data->append(n);
 	th->data->append(x);
 	th->data->append(y);
 

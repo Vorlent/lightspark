@@ -36,7 +36,7 @@ using namespace std;
 using namespace lightspark;
 
 URLRequest::URLRequest(Class_base* c):ASObject(c),method(GET),contentType("application/x-www-form-urlencoded"),
-	requestHeaders(Class<Array>::getInstanceSNoArgs(c->getSystemState()))
+	requestHeaders(asAtom::fromObject(Class<Array>::getInstanceSNoArgs(c->getSystemState())))
 {
 }
 
@@ -821,7 +821,8 @@ ASFUNCTIONBODY(NetConnection,call)
 	for(uint32_t i=2;i<argslen;i++)
 	{
 		args[i]->incRef();
-		rest->push(asAtom::fromObject(args[i]));
+		asAtomR argi = asAtom::fromObject(args[i]);
+		rest->push(argi);
 	}
 
 	_R<ByteArray> message=_MR(Class<ByteArray>::getInstanceS(obj->getSystemState()));
@@ -1996,8 +1997,9 @@ void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtom
 			asAtomR arg = (*it);
 			callbackArgs.push_back(arg);
 		}
+		asAtomR clientAtom = asAtom::fromObject(client.getPtr());
 		_R<FunctionEvent> event(new (getSys()->unaccountedMemory) FunctionEvent(callback,
-				asAtom::fromObject(client.getPtr()), callbackArgs, arglist.size()));
+				clientAtom, callbackArgs, arglist.size()));
 		getVm(getSystemState())->addEvent(NullRef,event);
 	}
 }
@@ -2156,7 +2158,8 @@ void URLVariables::decode(const tiny_string& s)
 				else
 					arr=Class<Array>::cast(curValue->getObject());
 
-				arr->push(asAtom::fromObject(abstract_s(getSystemState(),value)));
+				asAtomR ele = asAtom::fromObject(abstract_s(getSystemState(),value));
+				arr->push(ele);
 			}
 			else
 			{
@@ -2376,7 +2379,7 @@ ASFUNCTIONBODY_ATOM(Responder, onResult)
 	std::vector<asAtomR> arg0;
 	arg0.reserve(1);
 	arg0.push_back(args[0]);
-	asAtomR ret=th->result->callFunction(_MAR(asAtom::nullAtom), arg0, argslen,false);
+	asAtomR ret=th->result->callFunction(asAtomR::nullAtomR, arg0, argslen,false);
 	return _MAR(asAtom::invalidAtom);
 }
 

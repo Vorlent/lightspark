@@ -62,7 +62,7 @@ private:
 	private:
 		asAtomR comparator;
 	public:
-		sortComparatorWrapper(asAtomR c):comparator(c){}
+		sortComparatorWrapper(asAtomR& c):comparator(c){}
 		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 	class sortOnComparator
@@ -124,13 +124,13 @@ public:
 	ASFUNCTION_ATOM(removeAt);
 
 	asAtomR at(unsigned int index);
-	void set(unsigned int index, asAtomR o, bool checkbounds = true);
+	void set(unsigned int index, asAtomR& o, bool checkbounds = true);
 	uint64_t size();
-	void push(asAtomR o);
+	void push(asAtomR& o);
 	void resize(uint64_t n);
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
 	int32_t getVariableByMultiname_i(const multiname& name);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 	bool deleteVariableByMultiname(const multiname& name);
 	void setVariableByMultiname_i(const multiname& name, int32_t value);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
@@ -142,7 +142,7 @@ public:
 	void serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 				std::map<const ASObject*, uint32_t>& objMap,
 				std::map<const Class_base*, uint32_t>& traitsMap);
-	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces, const tiny_string& filter);
+	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string &spaces, const tiny_string& filter);
 };
 
 

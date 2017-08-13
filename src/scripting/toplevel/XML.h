@@ -157,7 +157,7 @@ public:
 	void getElementNodes(const tiny_string& name, XMLVector& foundElements);
 	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
-	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
 	bool deleteVariableByMultiname(const multiname& name);
 	static bool isValidMultiname(SystemState *sys, const multiname& name, uint32_t& index);
 

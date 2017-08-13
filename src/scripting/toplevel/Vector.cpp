@@ -119,7 +119,7 @@ bool Vector::sameType(const Class_base *cls) const
 	return (clsname.startsWith(cls->class_name.getQualifiedName(getSystemState()).raw_buf()));
 }
 
-asAtomR Vector::generator(SystemState *sys, asAtomR o_class, std::vector<asAtomR> &args, const unsigned int argslen)
+asAtomR Vector::generator(SystemState *sys, asAtomR& o_class, std::vector<asAtomR> &args, const unsigned int argslen)
 {
 	assert_and_throw(argslen == 1);
 	assert_and_throw(args[0]->toObject(sys)->getClass());
@@ -244,7 +244,7 @@ ASFUNCTIONBODY_ATOM(Vector,filter)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(_MAR(asAtom::nullAtom), params, 3,false);
+			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -282,7 +282,7 @@ ASFUNCTIONBODY_ATOM(Vector, some)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(_MAR(asAtom::nullAtom), params, 3,false);
+			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -321,7 +321,7 @@ ASFUNCTIONBODY_ATOM(Vector, every)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(_MAR(asAtom::nullAtom), params, 3,false);
+			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -340,7 +340,7 @@ ASFUNCTIONBODY_ATOM(Vector, every)
 	return _MAR(asAtom::trueAtom);
 }
 
-void Vector::append(asAtomR o)
+void Vector::append(asAtomR& o)
 {
 	if (fixed)
 	{
@@ -465,7 +465,7 @@ ASFUNCTIONBODY_ATOM(Vector,forEach)
 		asAtomR funcret;
 		if( argslen == 1 )
 		{
-			funcret=f->callFunction(_MAR(asAtom::nullAtom), params, 3,false);
+			funcret=f->callFunction(asAtomR::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -769,7 +769,7 @@ bool Vector::sortComparatorWrapper::operator()(asAtomR& d1, asAtomR& d2)
 	else
 		objs[1] = _MAR(asAtom::nullAtom);
 
-	asAtomR ret= comparator->callFunction(_MAR(asAtom::nullAtom), objs, 2,false);
+	asAtomR ret= comparator->callFunction(asAtomR::nullAtomR, objs, 2,false);
 	assert_and_throw(ret->type != T_INVALID);
 	return (ret->toNumber()<0); //Less
 }
@@ -876,14 +876,14 @@ ASFUNCTIONBODY_ATOM(Vector,_toString)
 {
 	tiny_string ret;
 	Vector* th = obj->as<Vector>();
-	asAtom natom(T_NULL);
+	asAtomR natom = _MAR(asAtom(T_NULL));
 	for(size_t i=0; i < th->vec.size(); ++i)
 	{
 		if (th->vec[i]->type != T_INVALID)
 			ret += th->vec[i]->toString();
 		else
 			// use the type's default value
-			ret += th->vec_type->coerce(th->getSystemState(), _MAR(natom))->toString();
+			ret += th->vec_type->coerce(th->getSystemState(), natom)->toString();
 
 		if(i!=th->vec.size()-1)
 			ret += ',';
@@ -986,8 +986,8 @@ asAtomR Vector::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 		}
 		else
 		{
-			asAtom natom(T_NULL);
-			return vec_type->coerce(getSystemState(), _MAR(natom) );
+			asAtomR natom = _MAR(asAtom(T_NULL));
+			return vec_type->coerce(getSystemState(), natom );
 		}
 	}
 	else
@@ -1000,7 +1000,7 @@ asAtomR Vector::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 	return _MAR(asAtom::invalidAtom);
 }
 
-void Vector::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
+void Vector::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
 {
 	assert_and_throw(name.ns.size()>0);
 	if(!name.hasEmptyNS)
@@ -1041,7 +1041,7 @@ tiny_string Vector::toString()
 {
 	//TODO: test
 	tiny_string t;
-	asAtom natom(T_NULL);
+	asAtomR natom = asAtomR(asAtomR(T_NULL));
 	for(size_t i = 0; i < vec.size(); ++i)
 	{
 		if( i )
@@ -1049,7 +1049,7 @@ tiny_string Vector::toString()
 		if (vec[i]->type != T_INVALID)
 			t += vec[i]->toString();
 		else
-			t += vec_type->coerce(getSystemState(), _MAR(natom) )->toString();
+			t += vec_type->coerce(getSystemState(), natom)->toString();
 	}
 	return t;
 }
@@ -1078,8 +1078,8 @@ asAtomR Vector::nextValue(uint32_t index)
 		{
 			return vec[index-1];
 		}
-		asAtom natom(T_NULL);
-		return vec_type->coerce(getSystemState(), _MAR(natom));
+		asAtomR natom = _MAR(asAtom(T_NULL));
+		return vec_type->coerce(getSystemState(), natom);
 	}
 	else
 		throw RunTimeException("Vector::nextValue out of bounds");
@@ -1098,7 +1098,7 @@ bool Vector::isValidMultiname(SystemState* sys,const multiname& name, uint32_t& 
 	return validIndex;
 }
 
-tiny_string Vector::toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces, const tiny_string &filter)
+tiny_string Vector::toJSON(std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string &spaces, const tiny_string &filter)
 {
 	bool ok;
 	tiny_string res = call_toJSON(ok,path,replacer,spaces,filter);
@@ -1123,9 +1123,9 @@ tiny_string Vector::toJSON(std::vector<ASObject *> &path, asAtomR replacer, cons
 			std::vector<asAtomR> params(2);
 			params[0] = _MAR(asAtom(i));
 			params[1] = o;
-			asAtomR funcret=replacer->callFunction(_MAR(asAtom::nullAtom), params, 2,false);
+			asAtomR funcret=replacer->callFunction(asAtomR::nullAtomR, params, 2,false);
 			if (funcret->type != T_INVALID)
-				subres = funcret->toObject(getSystemState())->toJSON(path,_MAR(asAtom::invalidAtom),spaces,filter);
+				subres = funcret->toObject(getSystemState())->toJSON(path,asAtomR::invalidAtomR,spaces,filter);
 		}
 		else
 		{
@@ -1148,7 +1148,7 @@ tiny_string Vector::toJSON(std::vector<ASObject *> &path, asAtomR replacer, cons
 	return res;
 }
 
-asAtomR Vector::at(unsigned int index, asAtomR defaultValue) const
+asAtomR Vector::at(unsigned int index, asAtomR& defaultValue) const
 {
 	if (index < vec.size())
 		return vec.at(index);

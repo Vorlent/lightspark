@@ -45,7 +45,7 @@ IntervalManager::~IntervalManager()
 	}
 }
 
-uint32_t IntervalManager::setInterval(asAtomR callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR obj, uint32_t interval)
+uint32_t IntervalManager::setInterval(asAtomR& callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR& obj, uint32_t interval)
 {
 	Mutex::Lock l(mutex);
 
@@ -62,7 +62,7 @@ uint32_t IntervalManager::setInterval(asAtomR callback, std::vector<asAtomR>& ar
 
 	return currentID-1;
 }
-uint32_t IntervalManager::setTimeout(asAtomR callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR obj, uint32_t interval)
+uint32_t IntervalManager::setTimeout(asAtomR& callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR& obj, uint32_t interval)
 {
 	Mutex::Lock l(mutex);
 

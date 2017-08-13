@@ -35,17 +35,17 @@ public:
 	ASFUNCTION_ATOM(generator);
 	ASFUNCTION_ATOM(_parse);
 	ASFUNCTION_ATOM(_stringify);
-	static ASObject* doParse(const tiny_string &jsonstring, asAtomR reviver);
+	static ASObject* doParse(const tiny_string &jsonstring, asAtomR& reviver);
 private:
-	static void parseAll(const tiny_string &jsonstring, ASObject** parent , const multiname& key, asAtomR reviver);
-	static int parse(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR reviver);
+	static void parseAll(const tiny_string &jsonstring, ASObject** parent , const multiname& key, asAtomR& reviver);
+	static int parse(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR& reviver);
 	static int parseTrue(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key);
 	static int parseFalse(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key);
 	static int parseNull(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key);
 	static int parseString(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, tiny_string *result = NULL);
 	static int parseNumber(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key);
-	static int parseObject(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR reviver);
-	static int parseArray(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR reviver);
+	static int parseObject(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR& reviver);
+	static int parseArray(const tiny_string &jsonstring, int pos, ASObject **parent, const multiname &key, asAtomR& reviver);
 };
 
 }

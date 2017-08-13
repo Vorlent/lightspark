@@ -850,7 +850,8 @@ ASFUNCTIONBODY(XML,inScopeNamespaces)
 			if(seen_prefix.find(tmpns->getPrefix(b))==seen_prefix.end())
 			{
 				tmpns->incRef();
-				namespaces->push(asAtom::fromObject(tmpns.getPtr()));
+				asAtomR element = asAtom::fromObject(tmpns.getPtr());
+				namespaces->push(element);
 				seen_prefix.insert(tmp->nodenamespace_prefix);
 			}
 		}
@@ -1493,7 +1494,7 @@ asAtomR XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION o
 	}
 }
 
-void XML::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
+void XML::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
 {
 	unsigned int index=0;
 	bool isAttr=name.isAttribute;
@@ -2028,16 +2029,16 @@ ASFUNCTIONBODY(XML,_getDefaultSettings)
 	mn.isAttribute = true;
 
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreComments");
-	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,asAtomR::trueAtomR,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreProcessingInstructions");
-	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,asAtomR::trueAtomR,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreWhitespace");
-	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,asAtomR::trueAtomR,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyIndent");
-	asAtom v((int32_t)2);
-	res->setVariableByMultiname(mn,_MAR(v),CONST_NOT_ALLOWED);
+	asAtomR v = _MAR(asAtom((int32_t)2));
+	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyPrinting");
-	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,asAtomR::trueAtomR,CONST_NOT_ALLOWED);
 	return res;
 }
 ASFUNCTIONBODY(XML,_toJSON)
@@ -2234,7 +2235,8 @@ ASFUNCTIONBODY(XML,namespaceDeclarations)
 		if (tmpns->getPrefix(b) != BUILTIN_STRINGS::EMPTY)
 		{
 			tmpns->incRef();
-			namespaces->push(asAtom::fromObject(tmpns.getPtr()));
+			asAtomR element = asAtom::fromObject(tmpns.getPtr());
+			namespaces->push(element);
 		}
 	}
 	return namespaces;
