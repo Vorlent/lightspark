@@ -2596,39 +2596,3 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 	}
 }
 
-lightspark::asAtomR::asAtomR(const asAtomR& r):m(r.m)
-{
-	if (m.getObject()) m.getObject()->incRef();
-}
-
-asAtomR& lightspark::asAtomR::operator=(const asAtomR& r)
-{
-	//incRef before decRef to make sure this works even if the pointer is the same
-	if (r.m.getObject()) r.m.getObject()->incRef();
-
-	asAtom& old=m;
-	m=r.m;
-
-	//decRef as the very last function call, because it
-	//may cause this Ref to be deleted (if old owns this Ref)
-	if (old.getObject()) old.getObject()->decRef();
-
-	return *this;
-}
-
-lightspark::asAtomR::~asAtomR()
-{
-	if (m.getObject()) m.getObject()->incRef();
-}
-
-
-asAtomR lightspark::_IMAR(asAtom a)
-{
-	if (a.getObject()) a.getObject()->incRef();
-	return asAtomR(a);
-}
-
-asAtomR lightspark::_MAR(asAtom a)
-{
-	return asAtomR(a);
-}

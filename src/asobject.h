@@ -311,13 +311,13 @@ class asAtomR
 private:
 	asAtom m;
 public:
-	asAtomR():m() {}
-	explicit asAtomR(asAtom o):m(o)
+	inline asAtomR():m() {}
+	inline explicit asAtomR(asAtom o):m(o)
 	{
 		assert(m);
 	}
-	asAtomR(const asAtomR& r);
-	asAtomR& operator=(const  asAtomR& r);
+	inline asAtomR(const asAtomR& r);
+	inline asAtomR& operator=(const  asAtomR& r);
 	inline bool operator==(asAtomR& r)
 	{
 		return &m==r.getPtr();
@@ -335,7 +335,8 @@ public:
 	{
 		return &m<&r.m;
 	}
-	~asAtomR();
+	inline ~asAtomR();
+
 	inline asAtom* operator->()
 	{
 		return &m;
@@ -881,6 +882,42 @@ public:
 	}
 	CLASS_SUBTYPE getSubtype() const { return subtype;}
 };
+
+inline asAtomR::~asAtomR() {
+	if (m.getObject()) m.getObject()->incRef();
+}
+
+
+inline asAtomR::asAtomR(const asAtomR& r):m(r.m)
+{
+	if (m.getObject()) m.getObject()->incRef();
+}
+
+inline asAtomR& asAtomR::operator=(const asAtomR& r)
+{
+	//incRef before decRef to make sure this works even if the pointer is the same
+	if (r.m.getObject()) r.m.getObject()->RefCountable::incRef();
+
+	asAtom& old=m;
+	m=r.m;
+
+	//decRef as the very last function call, because it
+	//may cause this Ref to be deleted (if old owns this Ref)
+	if (old.getObject()) old.getObject()->RefCountable::decRef();
+
+	return *this;
+}
+
+inline asAtomR _IMAR(asAtom a)
+{
+	if (a.getObject()) a.getObject()->incRef();
+	return asAtomR(a);
+}
+
+inline asAtomR _MAR(asAtom a)
+{
+	return asAtomR(a);
+}
 
 class ApplicationDomain;
 class Array;
