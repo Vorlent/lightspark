@@ -28,13 +28,13 @@ using namespace lightspark;
 
 ASFUNCTIONBODY_ATOM(Integer,_toString)
 {
-	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj.getObject())
+	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj->getObject())
 		return asAtom::fromString(sys,"0");
 
-	Integer* th=obj.as<Integer>();
+	Integer* th=obj->as<Integer>();
 	int radix=10;
 	if(argslen==1)
-		radix=args[0].toUInt();
+		radix=args[0]->toUInt();
 
 	if(radix==10)
 	{
@@ -51,10 +51,10 @@ ASFUNCTIONBODY_ATOM(Integer,_toString)
 
 ASFUNCTIONBODY_ATOM(Integer,_valueOf)
 {
-	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj.getObject())
-		return asAtom(0);
+	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj->getObject())
+		return _MAR(asAtom(0));
 
-	if(!obj.is<Integer>())
+	if(!obj->is<Integer>())
 			throw Class<TypeError>::getInstanceS(sys,"");
 
 	return obj;
@@ -62,21 +62,21 @@ ASFUNCTIONBODY_ATOM(Integer,_valueOf)
 
 ASFUNCTIONBODY_ATOM(Integer,_constructor)
 {
-	Integer* th=obj.as<Integer>();
+	Integer* th=obj->as<Integer>();
 	if(argslen==0)
 	{
 		//The int is already initialized to 0
-		return asAtom::invalidAtom;
+		return _MAR(asAtom::invalidAtom);
 	}
-	th->val=args[0].toInt();
-	return asAtom::invalidAtom;
+	th->val=args[0]->toInt();
+	return _MAR(asAtom::invalidAtom);
 }
 
 ASFUNCTIONBODY_ATOM(Integer,generator)
 {
 	if (argslen == 0)
-		return asAtom((int32_t)0);
-	return asAtom(args[0].toInt());
+		return _MAR(asAtom((int32_t)0));
+	return _MAR(asAtom(args[0]->toInt()));
 }
 
 TRISTATE Integer::isLess(ASObject* o)
@@ -196,8 +196,8 @@ void Integer::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),asAtom(numeric_limits<int32_t>::max()),CONSTANT_TRAIT);
-	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),asAtom(numeric_limits<int32_t>::min()),CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),_MAR(asAtom(numeric_limits<int32_t>::max())),CONSTANT_TRAIT);
+	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),_MAR(asAtom(numeric_limits<int32_t>::min())),CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("toFixed",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toFixed,1),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("toExponential",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toExponential,1),NORMAL_METHOD,true);
@@ -294,11 +294,11 @@ int32_t Integer::stringToASInteger(const char* cur, int radix)
 
 ASFUNCTIONBODY_ATOM(Integer,_toExponential)
 {
-	Integer *th=obj.as<Integer>();
+	Integer *th=obj->as<Integer>();
 	double v = (double)th->val;
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
-	if (argslen == 0 || args[0].is<Undefined>())
+	if (argslen == 0 || args[0]->is<Undefined>())
 	{
 		if (v == 0)
 			fractionDigits = 1;
@@ -310,7 +310,7 @@ ASFUNCTIONBODY_ATOM(Integer,_toExponential)
 
 ASFUNCTIONBODY_ATOM(Integer,_toFixed)
 {
-	Integer *th=obj.as<Integer>();
+	Integer *th=obj->as<Integer>();
 	int fractiondigits;
 	ARG_UNPACK_ATOM (fractiondigits, 0);
 	return asAtom::fromObject(abstract_s(sys,Number::toFixedString(th->val, fractiondigits)));
@@ -318,8 +318,8 @@ ASFUNCTIONBODY_ATOM(Integer,_toFixed)
 
 ASFUNCTIONBODY_ATOM(Integer,_toPrecision)
 {
-	Integer *th=obj.as<Integer>();
-	if (argslen == 0 || args[0].is<Undefined>())
+	Integer *th=obj->as<Integer>();
+	if (argslen == 0 || args[0]->is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,th->toString()));
 	int precision;
 	ARG_UNPACK_ATOM (precision);

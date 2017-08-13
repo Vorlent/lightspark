@@ -111,7 +111,7 @@ public:
 	bool hasOptional() { return info.hasOptional(); }
 	bool hasDXNS() { return info.hasDXNS(); }
 	bool hasParamNames() { return info.hasParamNames(); }
-	asAtom getOptional(unsigned int i);
+	asAtomR getOptional(unsigned int i);
 	uint32_t numOptions() { return info.option_count; }
 	uint32_t numArgs() { return info.param_count; }
 	const multiname* paramTypeName(uint32_t i) const;
@@ -159,10 +159,10 @@ public:
 	method_info* get_method(unsigned int m);
 	uint32_t getString(unsigned int s) const;
 	//Qname getQname(unsigned int m, call_context* th=NULL) const;
-	static multiname* s_getMultiname(ABCContext*, asAtom& rt1, ASObject* rt2, int m);
+	static multiname* s_getMultiname(ABCContext*, asAtomR &rt1, ASObject* rt2, int m);
 	static multiname* s_getMultiname_i(call_context*, uint32_t i , int m);
 	static multiname* s_getMultiname_d(call_context*, number_t i , int m);
-	asAtom getConstant(int kind, int index);
+	asAtomR getConstant(int kind, int index);
 	u16 minor;
 	u16 major;
 	cpool_info constant_pool;
@@ -189,7 +189,7 @@ public:
 		@param deferred_initialization A pointer to a function that can be used to build the given trait later
 	*/
 	void buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed, int scriptid=-1, bool checkExisting=true);
-	void runScriptInit(unsigned int scriptid, asAtom& g);
+	void runScriptInit(unsigned int scriptid, asAtomR g);
 
 	void linkTrait(Class_base* obj, const traits_info* t);
 	void getOptionalConstant(const option_detail& opt);
@@ -226,7 +226,7 @@ public:
 	}
 	
 	multiname* getMultiname(unsigned int m, call_context* th);
-	multiname* getMultinameImpl(asAtom& rt1, ASObject* rt2, unsigned int m);
+	multiname* getMultinameImpl(asAtomR &rt1, ASObject* rt2, unsigned int m);
 	void buildInstanceTraits(ASObject* obj, int class_index);
 	ABCContext(_R<RootMovieClip> r, std::istream& in, ABCVm* vm) DLL_PUBLIC;
 	void exec(bool lazy);
@@ -290,7 +290,7 @@ private:
 	static void callSuper(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callProperty(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callMethod(call_context* th, int n, int m);
-	static void callImpl(call_context* th, asAtom& f, asAtom &obj, asAtom *args, int m, bool keepReturn);
+	static void callImpl(call_context* th, asAtomR f, asAtomR obj, std::vector<asAtomR> &args, int m, bool keepReturn);
 	static void constructProp(call_context* th, int n, int m); 
 	static void setLocal(int n); 
 	static void setLocal_int(int n,int v); 
@@ -330,7 +330,7 @@ private:
 	static void newClass(call_context* th, int n);
 	static void newArray(call_context* th, int n); 
 	static ASObject* findPropStrict(call_context* th, multiname* name);
-	static asAtom findPropStrictCache(call_context* th, memorystream& code);
+	static asAtomR findPropStrictCache(call_context* th, memorystream& code);
 	static ASObject* findProperty(call_context* th, multiname* name);
 	static int32_t pushByte(intptr_t n);
 	static int32_t pushShort(intptr_t n);
@@ -342,7 +342,7 @@ private:
 	static void decLocal_i(call_context* th, int n);
 	static void decLocal(call_context* th, int n);
 	static void coerce(call_context* th, int n);
-	static void checkDeclaredTraits(ASObject* obj);
+	static void checkDeclaredTraits(asAtomR obj);
 	static ASObject* getProperty(ASObject* obj, multiname* name);
 	static int32_t getProperty_i(ASObject* obj, multiname* name);
 	static void setProperty(ASObject* value,ASObject* obj, multiname* name);
@@ -417,8 +417,8 @@ private:
 	static bool greaterEquals(ASObject*,ASObject*);
 	static bool lessEquals(ASObject*,ASObject*);
 	static bool lessThan(ASObject*,ASObject*);
-	static ASObject* nextName(ASObject* index, ASObject* obj);
-	static ASObject* nextValue(ASObject* index, ASObject* obj);
+	static asAtomR nextName(ASObject* index, ASObject* obj);
+	static asAtomR nextValue(ASObject* index, ASObject* obj);
 	static uint32_t increment_i(ASObject*);
 	static uint64_t increment_di(ASObject*);
 	static number_t increment(ASObject*);
@@ -442,7 +442,7 @@ private:
 	static void SetAllClassLinks();
 	static void AddClassLinks(Class_base* target);
 	static bool newClassRecursiveLink(Class_base* target, Class_base* c);
-	static asAtom constructFunction(call_context* th, asAtom& f, asAtom* args, int argslen);
+	static asAtomR constructFunction(call_context* th, asAtomR f, std::vector<asAtomR> args, int argslen);
 	void parseRPCMessage(_R<ByteArray> message, _NR<ASObject> client, _NR<Responder> responder);
 
 	//Opcode tables
@@ -718,7 +718,7 @@ public:
 	/* The current recursion level. Each call increases this by one,
 	 * each return from a call decreases this. */
 	uint32_t cur_recursion;
-	std::vector<std::pair<uint32_t,asAtom> > stacktrace;
+	std::vector<std::pair<uint32_t,asAtomR> > stacktrace;
 
 	struct abc_limits {
 		/* maxmium number of recursion allowed. See ScriptLimitsTag */

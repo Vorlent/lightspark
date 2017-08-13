@@ -34,7 +34,7 @@ using namespace std;
 using namespace lightspark;
 
 URLStreamThread::URLStreamThread(_R<URLRequest> request, _R<URLStream> ldr, _R<ByteArray> bytes)
-  : DownloaderThreadBase(request, ldr.getPtr()), loader(ldr), data(bytes),streambuffer(NULL),timestamp_last_progress(0),bytes_total(0)
+  : DownloaderThreadBase(_IMR(request.getPtr()), ldr.getPtr()), loader(ldr), data(bytes),streambuffer(NULL),timestamp_last_progress(0),bytes_total(0)
 {
 }
 
@@ -165,7 +165,8 @@ void URLStream::threadFinished(IThreadJob* finishedJob)
 
 ASFUNCTIONBODY_ATOM(URLStream,_constructor)
 {
-	return EventDispatcher::_constructor(sys,obj,NULL,0);
+	std::vector<asAtomR> empty;
+	return EventDispatcher::_constructor(sys,obj,empty,0);
 }
 
 ASFUNCTIONBODY(URLStream,load)
@@ -282,8 +283,8 @@ ASFUNCTIONBODY(URLStream,readMultiByte) {
 }
 
 ASFUNCTIONBODY_ATOM(URLStream,readObject) {
-	URLStream* th=obj.as<URLStream>();
-	asAtom v = asAtom::fromObject(th->data.getPtr());
+	URLStream* th=obj->as<URLStream>();
+	asAtomR v = asAtom::fromObject(th->data.getPtr());
 	return ByteArray::readObject(sys,v, args, argslen);
 }
 

@@ -816,7 +816,7 @@ inline llvm::Value* getMultiname(llvm::ExecutionEngine* ex,llvm::IRBuilder<>& Bu
 	if(rtdata==0)
 	{
 		//Multinames without runtime date persist
-		asAtom atom;
+		asAtomR atom;
 		multiname* mname = ABCContext::s_getMultiname(abccontext,atom,NULL,multinameIndex);
 		name = llvm::ConstantExpr::getIntToPtr(llvm::ConstantInt::get(ptr_type, (intptr_t)mname),voidptr_type);
 	}

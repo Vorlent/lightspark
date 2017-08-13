@@ -34,7 +34,7 @@
 #define ASFUNCTION(name) \
 	static ASObject* name(ASObject* , ASObject* const* args, const unsigned int argslen)
 #define ASFUNCTION_ATOM(name) \
-	static asAtom name(SystemState* sys, asAtom& , asAtom* args, const unsigned int argslen)
+	static asAtomR name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen)
 
 /* declare setter/getter and associated member variable */
 #define ASPROPERTY_GETTER(type,name) \
@@ -67,73 +67,73 @@
 	ASObject* c::name(ASObject* obj, ASObject* const* args, const unsigned int argslen)
 
 #define ASFUNCTIONBODY_ATOM(c,name) \
-	asAtom c::name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen)
+	asAtomR c::name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen)
 
 /* full body for a getter declared by ASPROPERTY_GETTER or ASFUNCTION_GETTER */
 #define ASFUNCTIONBODY_GETTER(c,name) \
-	asAtom c::_getter_##name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen) \
+	asAtomR c::_getter_##name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen) \
 	{ \
-		if(!obj.is<c>()) \
+		if(!obj->is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj.as<c>(); \
+		c* th = obj->as<c>(); \
 		if(argslen != 0) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		return ArgumentConversionAtom<decltype(th->name)>::toAbstract(sys,th->name); \
 	}
 
 #define ASFUNCTIONBODY_GETTER_NOT_IMPLEMENTED(c,name) \
-	asAtom c::_getter_##name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen) \
+	asAtomR c::_getter_##name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen) \
 	{ \
-		if(!obj.is<c>()) \
+		if(!obj->is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj.as<c>(); \
+		c* th = obj->as<c>(); \
 		if(argslen != 0) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
-		LOG(LOG_NOT_IMPLEMENTED,obj.getObject()->getClassName() <<"."<< #name << " getter is not implemented"); \
+		LOG(LOG_NOT_IMPLEMENTED,obj->getObject()->getClassName() <<"."<< #name << " getter is not implemented"); \
 		return ArgumentConversionAtom<decltype(th->name)>::toAbstract(sys,th->name); \
 	}
 
 /* full body for a getter declared by ASPROPERTY_SETTER or ASFUNCTION_SETTER */
 #define ASFUNCTIONBODY_SETTER(c,name) \
-	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen) \
+	asAtomR c::_setter_##name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen) \
 	{ \
-		if(!obj.is<c>()) \
+		if(!obj->is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj.as<c>(); \
+		c* th = obj->as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return asAtom::invalidAtom; \
+		return _MAR(asAtom::invalidAtom); \
 	}
 
 #define ASFUNCTIONBODY_SETTER_NOT_IMPLEMENTED(c,name) \
-	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen) \
+	asAtomR c::_setter_##name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen) \
 	{ \
-		if(!obj.is<c>()) \
+		if(!obj->is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj.as<c>(); \
+		c* th = obj->as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
-		LOG(LOG_NOT_IMPLEMENTED,obj.getObject()->getClassName() <<"."<< #name << " setter is not implemented"); \
+		LOG(LOG_NOT_IMPLEMENTED,obj->getObject()->getClassName() <<"."<< #name << " setter is not implemented"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return asAtom::invalidAtom; \
+		return _MAR(asAtom::invalidAtom); \
 	}
 
 /* full body for a getter declared by ASPROPERTY_SETTER or ASFUNCTION_SETTER.
  * After the property has been updated, the callback member function is called with the old value
  * as parameter */
 #define ASFUNCTIONBODY_SETTER_CB(c,name,callback) \
-	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, asAtom* args, const unsigned int argslen) \
+	asAtomR c::_setter_##name(SystemState* sys, asAtomR obj, std::vector<asAtomR>& args, const unsigned int argslen) \
 	{ \
-		if(!obj.is<c>()) \
+		if(!obj->is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj.as<c>(); \
+		c* th = obj->as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		decltype(th->name) oldValue = th->name; \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
 		th->callback(oldValue); \
-		return asAtom::invalidAtom; \
+		return _MAR(asAtom::invalidAtom); \
 	}
 
 /* full body for a getter declared by ASPROPERTY_GETTER_SETTER or ASFUNCTION_GETTER_SETTER */
@@ -183,6 +183,7 @@ using namespace std;
 namespace lightspark
 {
 
+class asAtomR;
 class ASObject;
 class IFunction;
 template<class T> class Class;
@@ -226,31 +227,12 @@ public:
 	ASObject* toObject(SystemState* sys);
 	// returns NULL if this atom is a primitive;
 	inline ASObject* getObject() const { return objval; }
-	static asAtom fromObject(ASObject* obj)
-	{
-		asAtom a;
-		if (obj)
-			a.replace(obj);
-		return a;
-	}
+	static asAtomR fromObject(ASObject* obj);
 	
-	static asAtom fromFunction(ASObject *f, ASObject *closure)
-	{
-		asAtom a;
-		a.replace(f);
-		a.closure_this = closure;
-		return a;
-	}
-	static asAtom fromStringID(uint32_t sID)
-	{
-		asAtom a;
-		a.type = T_STRING;
-		a.stringID = sID;
-		a.objval = NULL;
-		return a;
-	}
+	static asAtomR fromFunction(Ref<ASObject> f, ASObject *closure);
+	static asAtomR fromStringID(uint32_t sID);
 	// only use this for strings that should get an internal stringID
-	static asAtom fromString(SystemState *sys, const tiny_string& s);
+	static asAtomR fromString(SystemState *sys, const tiny_string& s);
 	inline bool isBound() const { return type == T_FUNCTION && closure_this; }
 	inline ASObject* getClosure() const  { return type == T_FUNCTION ? closure_this : NULL; }
 	static asAtom undefinedAtom;
@@ -263,7 +245,7 @@ public:
 	 * if args_refcounted is true, one reference of obj and of each arg is consumed by this method.
 	 * Return the asAtom the function returned.
 	 */
-	asAtom callFunction(asAtom& obj, asAtom* args, uint32_t num_args, bool args_refcounted);
+	asAtomR callFunction(asAtomR obj, std::vector<asAtomR> &args, uint32_t num_args, bool args_refcounted);
 	void replace(ASObject* obj);
 	std::string toDebugString();
 	inline void applyProxyProperty(SystemState *sys, multiname& name);
@@ -275,7 +257,7 @@ public:
 	inline bool isNumeric() const { return (type==T_NUMBER || type==T_INTEGER || type==T_UINTEGER); }
 	inline bool checkArgumentConversion(const asAtom& obj) const;
 	inline ASObject* checkObject();
-	asAtom asTypelate(asAtom& atomtype);
+	asAtom asTypelate(asAtomR &atomtype);
 	inline number_t toNumber();
 	inline int32_t toInt();
 	inline int64_t toInt64();
@@ -283,7 +265,7 @@ public:
 	tiny_string toString();
 	tiny_string toLocaleString();
 	uint32_t toStringId(SystemState *sys);
-	asAtom typeOf(SystemState *sys);
+	asAtomR typeOf(SystemState *sys);
 	bool Boolean_concrete();
 	inline void convert_i();
 	inline void convert_u();
@@ -299,43 +281,91 @@ public:
 	inline void decrement();
 	inline void increment_i();
 	inline void decrement_i();
-	void add(asAtom& v2, SystemState *sys);
+	void add(asAtomR v2, SystemState *sys);
 	inline void bitnot();
-	inline void subtract(asAtom& v2);
-	inline void multiply(asAtom& v2);
-	inline void divide(asAtom& v2);
-	inline void modulo(asAtom& v2);
-	inline void lshift(asAtom& v1);
-	inline void rshift(asAtom& v1);
-	inline void urshift(asAtom& v1);
-	inline void bit_and(asAtom& v1);
-	inline void bit_or(asAtom& v1);
-	inline void bit_xor(asAtom& v1);
+	inline void subtract(asAtomR v2);
+	inline void multiply(asAtomR v2);
+	inline void divide(asAtomR v2);
+	inline void modulo(asAtomR &v2);
+	inline void lshift(asAtomR v1);
+	inline void rshift(asAtomR v1);
+	inline void urshift(asAtomR v1);
+	inline void bit_and(asAtomR v1);
+	inline void bit_or(asAtomR v1);
+	inline void bit_xor(asAtomR v1);
 	inline void _not();
 	inline void negate_i();
-	inline void add_i(asAtom& v2);
-	inline void subtract_i(asAtom& v2);
-	inline void multiply_i(asAtom& v2);
+	inline void add_i(asAtomR v2);
+	inline void subtract_i(asAtomR v2);
+	inline void multiply_i(asAtomR v2);
 	template<class T> bool is() const;
 	template<class T> const T* as() const { return static_cast<const T*>(this->objval); }
 	template<class T> T* as() { return static_cast<T*>(this->objval); }
 };
-#define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRef()
-#define ASATOM_DECREF(a) do { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
-#define ASATOM_DECREF_POINTER(a) { ASObject* b = a->getObject(); if (b) b->decRef(); } while (0)
+//#define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRef()
+//#define ASATOM_DECREF(a) do { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
+//#define ASATOM_DECREF_POINTER(a) { ASObject* b = a->getObject(); if (b) b->decRef(); } while (0)
 
+class asAtomR
+{
+private:
+	asAtom m;
+public:
+	asAtomR():m() {}
+	explicit asAtomR(asAtom o):m(o)
+	{
+		assert(m);
+	}
+	asAtomR(const asAtomR& r);
+	asAtomR operator=(asAtomR r);
+	inline bool operator==(asAtomR& r)
+	{
+		return &m==r.getPtr();
+	}
+	inline bool operator!=(asAtomR& r)
+	{
+		return &m!=r.getPtr();
+	}
+	inline bool operator==(asAtomR* r)
+	{
+		return &m==&(r->m);
+	}
+	//Order operator for Dictionary map
+	inline bool operator<(asAtomR& r)
+	{
+		return &m<&r.m;
+	}
+	~asAtomR();
+	inline asAtom* operator->()
+	{
+		return &m;
+	}
+	inline asAtom* getPtr()
+	{
+		return &m;
+	}
+	inline const asAtom* getPtrC() const
+	{
+		return &m;
+	}
+};
+
+#define _AR asAtomR
+
+asAtomR _IMAR(asAtom a);
+asAtomR _MAR(asAtom a);
 
 struct variable
 {
-	asAtom var;
+	asAtomR var;
 	union
 	{
 		multiname* traitTypemname;
 		const Type* type;
 		void* typeUnion;
 	};
-	asAtom setter;
-	asAtom getter;
+	asAtomR setter;
+	asAtomR getter;
 	nsNameAndKind ns;
 	TRAIT_KIND kind:4;
 	TRAIT_STATE traitState:2;
@@ -343,12 +373,12 @@ struct variable
 	bool issealed:1;
 	variable(TRAIT_KIND _k,const nsNameAndKind& _ns)
 		: typeUnion(NULL),ns(_ns),kind(_k),traitState(NO_STATE),isenumerable(true),issealed(false) {}
-	variable(TRAIT_KIND _k, asAtom _v, multiname* _t, const Type* type, const nsNameAndKind &_ns, bool _isenumerable);
-	void setVar(asAtom v, SystemState* sys);
+	variable(TRAIT_KIND _k, asAtomR _v, multiname* _t, const Type* type, const nsNameAndKind &_ns, bool _isenumerable);
+	void setVar(asAtomR v, SystemState* sys);
 	/*
 	 * To be used only if the value is guaranteed to be of the right type
 	 */
-	void setVarNoCoerce(asAtom &v);
+	void setVarNoCoerce(asAtomR v);
 };
 
 struct varName
@@ -476,19 +506,19 @@ public:
 	}
 	
 	//Initialize a new variable specifying the type (TODO: add support for const)
-	void initializeVar(const multiname& mname, asAtom &obj, multiname *typemname, ABCContext* context, TRAIT_KIND traitKind, ASObject* mainObj, uint32_t slot_id, bool isenumerable);
+	void initializeVar(const multiname& mname, asAtomR obj, multiname *typemname, ABCContext* context, TRAIT_KIND traitKind, ASObject* mainObj, uint32_t slot_id, bool isenumerable);
 	void killObjVar(SystemState* sys, const multiname& mname);
-	asAtom getSlot(unsigned int n);
+	asAtomR getSlot(unsigned int n);
 	/*
 	 * This method does throw if the slot id is not valid
 	 */
 	void validateSlotId(unsigned int n) const;
-	void setSlot(unsigned int n,asAtom o,SystemState* sys);
+	void setSlot(unsigned int n, asAtomR o, SystemState* sys);
 	/*
 	 * This version of the call is guarantee to require no type conversion
 	 * this is verified at optimization time
 	 */
-	void setSlotNoCoerce(unsigned int n, asAtom o);
+	void setSlotNoCoerce(unsigned int n, asAtomR o);
 	void initSlot(unsigned int n, uint32_t nameId, const nsNameAndKind& ns);
 	inline unsigned int size() const
 	{
@@ -505,6 +535,7 @@ public:
 	void dumpVariables() const;
 	void destroyContents();
 };
+
 
 enum METHOD_TYPE { NORMAL_METHOD=0, SETTER_METHOD=1, GETTER_METHOD=2 };
 //for toPrimitive
@@ -532,7 +563,7 @@ private:
 		{
 			//It seems valid for a class to redefine only the setter, so if we can't find
 			//something to get, it's ok
-			if(!(ret->getter.type != T_INVALID || ret->var.type != T_INVALID))
+			if(!(ret->getter.getPtrC()->type != T_INVALID || ret->var.getPtrC()->type != T_INVALID))
 				ret=NULL;
 		}
 		return ret;
@@ -575,7 +606,7 @@ protected:
 		{
 			//It seems valid for a class to redefine only the setter, so if we can't find
 			//something to get, it's ok
-			if(!(ret->getter.type != T_INVALID || ret->var.type != T_INVALID))
+			if(!(ret->getter.getPtrC()->type != T_INVALID || ret->var.getPtrC()->type != T_INVALID))
 				ret=NULL;
 		}
 		return ret;
@@ -587,7 +618,7 @@ protected:
 		{
 			//It seems valid for a class to redefine only the setter, so if we can't find
 			//something to get, it's ok
-			if(!(ret->getter.type != T_INVALID || ret->var.type != T_INVALID))
+			if(!(ret->getter->type != T_INVALID || ret->var->type != T_INVALID))
 				ret=NULL;
 		}
 		return ret;
@@ -651,7 +682,7 @@ public:
 
 	enum GET_VARIABLE_OPTION {NONE=0x00, SKIP_IMPL=0x01, XML_STRICT=0x02};
 
-	virtual asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE)
+	virtual asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE)
 	{
 		return getVariableByMultiname(name,opt,classdef);
 	}
@@ -665,20 +696,20 @@ public:
 	 * then the prototype chain, and then instance variables.
 	 * If the property found is a getter, it is called and its return value returned.
 	 */
-	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt, Class_base* cls);
+	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt, Class_base* cls);
 	virtual int32_t getVariableByMultiname_i(const multiname& name);
 	/* Simple getter interface for the common case */
-	asAtom getVariableByMultiname(const tiny_string& name, std::list<tiny_string> namespaces);
+	asAtomR getVariableByMultiname(const tiny_string& name, std::list<tiny_string> namespaces);
 	/*
 	 * Execute a AS method on this object. Returns the value
 	 * returned by the function. One reference of each args[i] is
 	 * consumed. The method must exist, otherwise a TypeError is
 	 * thrown.
 	 */
-	asAtom executeASMethod(const tiny_string& methodName, std::list<tiny_string> namespaces, asAtom *args, uint32_t num_args);
+	asAtomR executeASMethod(const tiny_string& methodName, std::list<tiny_string> namespaces, std::vector<asAtomR> &args, uint32_t num_args);
 	virtual void setVariableByMultiname_i(const multiname& name, int32_t value);
 	enum CONST_ALLOWED_FLAG { CONST_ALLOWED=0, CONST_NOT_ALLOWED };
-	virtual void setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
+	virtual void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
 	{
 		setVariableByMultiname(name,o,allowConst,classdef);
 	}
@@ -689,35 +720,35 @@ public:
 	 * If no property is found, an instance variable is created.
 	 * Setting CONSTANT_TRAIT is only allowed if allowConst is true
 	 */
-	void setVariableByMultiname(const multiname& name, asAtom &o, CONST_ALLOWED_FLAG allowConst, Class_base* cls);
+	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst, Class_base* cls);
 	/*
 	 * Called by ABCVm::buildTraits to create DECLARED_TRAIT or CONSTANT_TRAIT and set their type
 	 */
-	void initializeVariableByMultiname(const multiname& name, asAtom& o, multiname* typemname,
+	void initializeVariableByMultiname(const multiname& name, asAtomR o, multiname* typemname,
 			ABCContext* context, TRAIT_KIND traitKind, uint32_t slot_id, bool isenumerable);
 	virtual bool deleteVariableByMultiname(const multiname& name);
 	void setVariableByQName(const tiny_string& name, const tiny_string& ns, ASObject* o, TRAIT_KIND traitKind, bool isEnumerable = true);
 	void setVariableByQName(const tiny_string& name, const nsNameAndKind& ns, ASObject* o, TRAIT_KIND traitKind, bool isEnumerable = true);
 	void setVariableByQName(uint32_t nameId, const nsNameAndKind& ns, ASObject* o, TRAIT_KIND traitKind, bool isEnumerable = true);
-	void setVariableAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtom o, TRAIT_KIND traitKind, bool isEnumerable = true);
-	void setVariableAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtom o, TRAIT_KIND traitKind, bool isEnumerable = true);
+	void setVariableAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR o, TRAIT_KIND traitKind, bool isEnumerable = true);
+	void setVariableAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR o, TRAIT_KIND traitKind, bool isEnumerable = true);
 	//NOTE: the isBorrowed flag is used to distinguish methods/setters/getters that are inside a class but on behalf of the instances
 	void setDeclaredMethodByQName(const tiny_string& name, const tiny_string& ns, IFunction* o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
 	void setDeclaredMethodByQName(const tiny_string& name, const nsNameAndKind& ns, IFunction* o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
 	void setDeclaredMethodByQName(uint32_t nameId, const nsNameAndKind& ns, IFunction* o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
-	void setDeclaredMethodAtomByQName(const tiny_string& name, const tiny_string& ns, asAtom o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
-	void setDeclaredMethodAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtom o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
-	void setDeclaredMethodAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtom f, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
+	void setDeclaredMethodAtomByQName(const tiny_string& name, const tiny_string& ns, asAtomR o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
+	void setDeclaredMethodAtomByQName(const tiny_string& name, const nsNameAndKind& ns, asAtomR o, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
+	void setDeclaredMethodAtomByQName(uint32_t nameId, const nsNameAndKind& ns, asAtomR f, METHOD_TYPE type, bool isBorrowed, bool isEnumerable = true);
 	virtual bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
-	asAtom getSlot(unsigned int n)
+	asAtomR getSlot(unsigned int n)
 	{
 		return Variables.getSlot(n);
 	}
-	void setSlot(unsigned int n,asAtom o)
+	void setSlot(unsigned int n,asAtomR o)
 	{
 		Variables.setSlot(n,o,getSystemState());
 	}
-	void setSlotNoCoerce(unsigned int n,asAtom o)
+	void setSlotNoCoerce(unsigned int n,asAtomR o)
 	{
 		Variables.setSlotNoCoerce(n,o);
 	}
@@ -727,7 +758,7 @@ public:
 	{
 		return Variables.getNameAt(sys,i);
 	}
-	asAtom getValueAt(int i);
+	asAtomR getValueAt(int i);
 	inline SWFOBJECT_TYPE getObjectType() const
 	{
 		return type;
@@ -766,7 +797,7 @@ public:
 	_R<ASObject> call_valueOf();
 	bool has_toString();
 	_R<ASObject> call_toString();
-	tiny_string call_toJSON(bool &ok, std::vector<ASObject *> &path, asAtom replacer, const tiny_string &spaces, const tiny_string &filter);
+	tiny_string call_toJSON(bool &ok, std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces, const tiny_string &filter);
 
 	/* Helper function for calling getClass()->getQualifiedClassName() */
 	virtual tiny_string getClassName() const;
@@ -788,8 +819,8 @@ public:
 
 	//Enumeration handling
 	virtual uint32_t nextNameIndex(uint32_t cur_index);
-	virtual asAtom nextName(uint32_t index);
-	virtual asAtom nextValue(uint32_t index);
+	virtual asAtomR nextName(uint32_t index);
+	virtual asAtomR nextValue(uint32_t index);
 
 	//Called when the object construction is completed. Used by MovieClip implementation
 	inline virtual void constructionComplete()
@@ -807,7 +838,7 @@ public:
 
 	virtual ASObject *describeType() const;
 
-	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtom replacer, const tiny_string &spaces,const tiny_string& filter);
+	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces, const tiny_string& filter);
 	/* returns true if the current object is of type T */
 	template<class T> bool is() const { 
 		LOG(LOG_INFO,"dynamic cast:"<<this->getClassName());
@@ -844,70 +875,6 @@ public:
 	}
 	CLASS_SUBTYPE getSubtype() const { return subtype;}
 };
-
-class asAtomR
-{
-private:
-	asAtom m;
-public:
-	asAtomR():m() {}
-	explicit asAtomR(asAtom o):m(o)
-	{
-		assert(m);
-	}
-	asAtomR(const asAtomR& r):m(r.m)
-	{
-		if (m.getObject()) m.getObject()->incRef();
-	}
-	asAtomR operator=(asAtomR r)
-	{
-		//incRef before decRef to make sure this works even if the pointer is the same
-		if (r.m.getObject()) r.m.getObject()->incRef();
-
-		asAtom old=m;
-		m=r.m;
-
-		//decRef as the very last function call, because it
-		//may cause this Ref to be deleted (if old owns this Ref)
-		if (old.getObject()) old.getObject()->incRef();
-
-		return *this;
-	}
-	inline bool operator==(asAtomR& r)
-	{
-		return &m==r.getPtr();
-	}
-	inline bool operator!=(asAtomR& r)
-	{
-		return &m!=r.getPtr();
-	}
-	inline bool operator==(asAtomR* r)
-	{
-		return &m==&(r->m);
-	}
-	//Order operator for Dictionary map
-	inline bool operator<(asAtomR& r)
-	{
-		return &m<&r.m;
-	}
-	~asAtomR()
-	{
-		if (m.getObject()) m.getObject()->incRef();
-	}
-	inline asAtom* operator->()
-	{
-		return &m;
-	}
-	inline asAtom* getPtr()
-	{
-		return &m;
-	}
-};
-
-#define _AR asAtomR
-
-asAtomR _IMAR(asAtom a);
-asAtomR _MAR(asAtom a);
 
 class ApplicationDomain;
 class Array;
@@ -1717,11 +1684,10 @@ void asAtom::convert_d()
 	setNumber(v);
 }
 
-void asAtom::bit_xor(asAtom &v1)
+void asAtom::bit_xor(asAtomR v1)
 {
-	int32_t i1=v1.toInt();
+	int32_t i1=v1->toInt();
 	int32_t i2=toInt();
-	ASATOM_DECREF(v1);
 	decRef();
 	LOG_CALL(_("bitXor ") << std::hex << i1 << '^' << i2 << std::dec);
 	setInt(i1^i2);
@@ -1735,16 +1701,15 @@ void asAtom::bitnot()
 	setInt(~i1);
 }
 
-void asAtom::subtract(asAtom &v2)
+void asAtom::subtract(asAtomR v2)
 {
 	if( (type == T_INTEGER || type == T_UINTEGER) &&
-		(v2.type == T_INTEGER || v2.type ==T_UINTEGER))
+		(v2->type == T_INTEGER || v2->type ==T_UINTEGER))
 	{
 		int64_t num1=toInt64();
-		int64_t num2=v2.toInt64();
+		int64_t num2=v2->toInt64();
 	
 		decRef();
-		ASATOM_DECREF(v2);
 		LOG_CALL(_("subtractI ") << num1 << '-' << num2);
 		int64_t res = num1-num2;
 		if (res > INT32_MIN && res < INT32_MAX)
@@ -1756,26 +1721,24 @@ void asAtom::subtract(asAtom &v2)
 	}
 	else
 	{
-		number_t num2=v2.toNumber();
+		number_t num2=v2->toNumber();
 		number_t num1=toNumber();
 	
 		decRef();
-		ASATOM_DECREF(v2);
 		LOG_CALL(_("subtract ") << num1 << '-' << num2);
 		setNumber(num1-num2);
 	}
 }
 
-void asAtom::multiply(asAtom &v2)
+void asAtom::multiply(asAtomR v2)
 {
 	if( (type == T_INTEGER || type == T_UINTEGER) &&
-		(v2.type == T_INTEGER || v2.type ==T_UINTEGER))
+		(v2->type == T_INTEGER || v2->type ==T_UINTEGER))
 	{
 		int64_t num1=toInt64();
-		int64_t num2=v2.toInt64();
+		int64_t num2=v2->toInt64();
 	
 		decRef();
-		ASATOM_DECREF(v2);
 		LOG_CALL(_("multiplyI ") << num1 << '*' << num2);
 		int64_t res = num1*num2;
 		if (res > INT32_MIN && res < INT32_MAX)
@@ -1787,7 +1750,7 @@ void asAtom::multiply(asAtom &v2)
 	}
 	else
 	{
-		double num1=v2.toNumber();
+		double num1=v2->toNumber();
 		double num2=toNumber();
 		LOG_CALL(_("multiply ")  << num1 << '*' << num2);
 	
@@ -1795,13 +1758,12 @@ void asAtom::multiply(asAtom &v2)
 	}
 }
 
-void asAtom::divide(asAtom &v2)
+void asAtom::divide(asAtomR v2)
 {
 	double num1=toNumber();
-	double num2=v2.toNumber();
+	double num2=v2->toNumber();
 
 	decRef();
-	ASATOM_DECREF(v2);
 	LOG_CALL(_("divide ")  << num1 << '/' << num2);
 	// handling of infinity according to ECMA-262, chapter 11.5.2
 	if (std::isinf(num1))
@@ -1818,14 +1780,14 @@ void asAtom::divide(asAtom &v2)
 		setNumber(num1/num2);
 }
 
-void asAtom::modulo(asAtom &v2)
+void asAtom::modulo(asAtomR &v2)
 {
 	// if both values are Integers the result is also an int
 	if( ((type == T_INTEGER) || (type == T_UINTEGER)) &&
-		((v2.type == T_INTEGER) || (v2.type == T_UINTEGER)))
+		((v2->type == T_INTEGER) || (v2->type == T_UINTEGER)))
 	{
 		int32_t num1=toInt();
-		int32_t num2=v2.toInt();
+		int32_t num2=v2->toInt();
 		LOG_CALL(_("moduloI ")  << num1 << '%' << num2);
 		if (num2 == 0)
 			setNumber(numeric_limits<double>::quiet_NaN());
@@ -1835,58 +1797,53 @@ void asAtom::modulo(asAtom &v2)
 	else
 	{
 		number_t num1=toNumber();
-		number_t num2=v2.toNumber();
+		number_t num2=v2->toNumber();
 
 		decRef();
-		ASATOM_DECREF(v2);
 		LOG_CALL(_("modulo ")  << num1 << '%' << num2);
 		/* fmod returns NaN if num2 == 0 as the spec mandates */
 		setNumber(::fmod(num1,num2));
 	}
 }
 
-void asAtom::lshift(asAtom &v1)
+void asAtom::lshift(asAtomR v1)
 {
 	int32_t i2=toInt();
-	uint32_t i1=v1.toUInt()&0x1f;
-	ASATOM_DECREF(v1);
+	uint32_t i1=v1->toUInt()&0x1f;
 	decRef();
 	LOG_CALL(_("lShift ")<<std::hex<<i2<<_("<<")<<i1<<std::dec);
 	//Left shift are supposed to always work in 32bit
 	setInt(i2<<i1);
 }
 
-void asAtom::rshift(asAtom &v1)
+void asAtom::rshift(asAtomR v1)
 {
 	int32_t i2=toInt();
-	uint32_t i1=v1.toUInt()&0x1f;
-	ASATOM_DECREF(v1);
+	uint32_t i1=v1->toUInt()&0x1f;
 	decRef();
 	LOG_CALL(_("rShift ")<<std::hex<<i2<<_(">>")<<i1<<std::dec);
 	setInt(i2>>i1);
 }
 
-void asAtom::urshift(asAtom &v1)
+void asAtom::urshift(asAtomR v1)
 {
 	uint32_t i2=toUInt();
-	uint32_t i1=v1.toUInt()&0x1f;
-	ASATOM_DECREF(v1);
+	uint32_t i1=v1->toUInt()&0x1f;
 	decRef();
 	LOG_CALL(_("urShift ")<<std::hex<<i2<<_(">>")<<i1<<std::dec);
 	setUInt(i2>>i1);
 }
-void asAtom::bit_and(asAtom &v1)
+void asAtom::bit_and(asAtomR v1)
 {
-	int32_t i1=v1.toInt();
+	int32_t i1=v1->toInt();
 	int32_t i2=toInt();
-	ASATOM_DECREF(v1);
 	decRef();
 	LOG_CALL(_("bitAnd_oo ") << std::hex << i1 << '&' << i2 << std::dec);
 	setInt(i1&i2);
 }
-void asAtom::bit_or(asAtom &v1)
+void asAtom::bit_or(asAtomR v1)
 {
-	int32_t i1=v1.toInt();
+	int32_t i1=v1->toInt();
 	int32_t i2=toInt();
 	LOG_CALL(_("bitOr ") << std::hex << i1 << '|' << i2 << std::dec);
 	setInt(i1|i2);
@@ -1908,34 +1865,31 @@ void asAtom::negate_i()
 	setInt(-n);
 }
 
-void asAtom::add_i(asAtom &v2)
+void asAtom::add_i(asAtomR v2)
 {
-	int32_t num2=v2.toInt();
+	int32_t num2=v2->toInt();
 	int32_t num1=toInt();
 
 	decRef();
-	ASATOM_DECREF(v2);
 	LOG_CALL(_("add_i ") << num1 << '+' << num2);
 	setInt(num1+num2);
 }
 
-void asAtom::subtract_i(asAtom &v2)
+void asAtom::subtract_i(asAtomR v2)
 {
-	int num2=v2.toInt();
+	int num2=v2->toInt();
 	int num1=toInt();
 
 	decRef();
-	ASATOM_DECREF(v2);
 	LOG_CALL(_("subtract_i ") << num1 << '-' << num2);
 	setInt(num1-num2);
 }
 
-void asAtom::multiply_i(asAtom &v2)
+void asAtom::multiply_i(asAtomR v2)
 {
 	int num1=toInt();
-	int num2=v2.toInt();
+	int num2=v2->toInt();
 	decRef();
-	ASATOM_DECREF(v2);
 	LOG_CALL(_("multiply ")  << num1 << '*' << num2);
 	setInt(num1*num2);
 }

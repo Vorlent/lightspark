@@ -48,20 +48,20 @@ public:
 	ASFUNCTION(_constructor);
 	ASFUNCTION(_toJSON);
 
-	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
+	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
 	int32_t getVariableByMultiname_i(const multiname& name)
 	{
 		assert_and_throw(implEnable);
 		throw UnsupportedException("getVariableByMultiName_i not supported for Dictionary");
 	}
-	void setVariableByMultiname(const multiname& name, asAtom &o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, lightspark::asAtomR o, CONST_ALLOWED_FLAG allowConst);
 	void setVariableByMultiname_i(const multiname& name, int32_t value);
 	bool deleteVariableByMultiname(const multiname& name);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
 	tiny_string toString();
 	uint32_t nextNameIndex(uint32_t cur_index);
-	asAtom nextName(uint32_t index);
-	asAtom nextValue(uint32_t index);
+	asAtomR nextName(uint32_t index);
+	asAtomR nextValue(uint32_t index);
 
 	void serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 				std::map<const ASObject*, uint32_t>& objMap,

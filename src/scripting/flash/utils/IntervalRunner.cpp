@@ -30,30 +30,30 @@ using namespace std;
 using namespace lightspark;
 
 
-IntervalRunner::IntervalRunner(IntervalRunner::INTERVALTYPE _type, uint32_t _id, asAtom _callback, asAtom* _args,
-		const unsigned int _argslen, asAtom _obj, uint32_t _interval):
-	EventDispatcher(NULL),type(_type), id(_id), callback(_callback),obj(_obj),argslen(_argslen),interval(_interval)
+IntervalRunner::IntervalRunner(IntervalRunner::INTERVALTYPE _type, uint32_t _id, asAtomR _callback, std::vector<asAtomR> _args,
+		const unsigned int _argslen, asAtomR _obj, uint32_t _interval):
+	EventDispatcher(NULL),type(_type), id(_id), callback(_callback),args(_args),obj(_obj),argslen(_argslen),interval(_interval)
 {
-	args = new asAtom[argslen];
+	/*args = new asAtom[argslen];
 	for(uint32_t i=0; i<argslen; i++)
-		args[i] = _args[i];
+		args[i] = _args[i];*/
 }
 
 IntervalRunner::~IntervalRunner()
 {
-	for(uint32_t i=0; i<argslen; i++)
-		ASATOM_DECREF(args[i]);
-	delete[] args;
+	/*for(uint32_t i=0; i<argslen; i++)
+		//ASATOM_DECREF(args[i]);
+	delete[] args;*/
 }
 
 void IntervalRunner::tick() 
 {
 	//incRef all arguments
-	uint32_t i;
+	/*uint32_t i;
 	for(i=0; i < argslen; i++)
 	{
-		ASATOM_INCREF(args[i]);
-	}
+		//ASATOM_INCREF(args[i]);
+	}*/
 	_R<FunctionEvent> event(new (getSys()->unaccountedMemory) FunctionEvent(callback, obj, args, argslen));
 	getVm(getSys())->addEvent(NullRef,event);
 	event->wait();

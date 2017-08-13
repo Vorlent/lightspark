@@ -37,17 +37,17 @@ void ExternalInterface::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getAvailable)
 {
-	return asAtom(sys->extScriptObject != NULL);
+	return _MAR(asAtom(sys->extScriptObject != NULL));
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
 {
 	if(sys->extScriptObject == NULL)
-		return abstract_s(sys,"");
+		return asAtom::fromObject(abstract_s(sys,""));
 
 	ExtScriptObject* so=sys->extScriptObject;
 	if(so->hasProperty("name")==false)
-		return abstract_s(sys,"");
+		return asAtom::fromObject(abstract_s(sys,""));
 
 	const ExtVariant& object = so->getProperty("name");
 	std::string result = object.getString();
@@ -57,44 +57,44 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
 ASFUNCTIONBODY_ATOM(ExternalInterface, _getMarshallExceptions)
 {
 	if(sys->extScriptObject == NULL)
-		return asAtom::falseAtom;
+		return _MAR(asAtom::falseAtom);
 	else
-		return asAtom(sys->extScriptObject->getMarshallExceptions());
+		return _MAR(asAtom(sys->extScriptObject->getMarshallExceptions()));
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface, _setMarshallExceptions)
 {
 	if(sys->extScriptObject != NULL)
-		sys->extScriptObject->setMarshallExceptions(args[0].Boolean_concrete());
-	return asAtom::invalidAtom;
+		sys->extScriptObject->setMarshallExceptions(args[0]->Boolean_concrete());
+	return _MAR(asAtom::invalidAtom);
 }
 
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,addCallback)
 {
 	if(sys->extScriptObject == NULL)
-		return asAtom::falseAtom;
+		return _MAR(asAtom::falseAtom);
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen == 2);
 
-	if(args[1].type == T_NULL)
-		sys->extScriptObject->removeMethod(args[0].toString().raw_buf());
+	if(args[1]->type == T_NULL)
+		sys->extScriptObject->removeMethod(args[0]->toString().raw_buf());
 	else
 	{
-		sys->extScriptObject->setMethod(args[0].toString().raw_buf(), new ExtASCallback(_AR(args[1])));
+		sys->extScriptObject->setMethod(args[0]->toString().raw_buf(), new ExtASCallback(_AR(args[1])));
 	}
-	return asAtom::trueAtom;
+	return _MAR(asAtom::trueAtom);
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 {
 	if(sys->extScriptObject == NULL)
-		return asAtom::nullAtom;
+		return _MAR(asAtom::nullAtom);
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen >= 1);
-	const tiny_string& arg0=args[0].toString();
+	const tiny_string& arg0=args[0]->toString();
 
 	// TODO: Check security constraints & throw SecurityException
 
@@ -103,8 +103,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 	std::map<const ASObject*, std::unique_ptr<ExtObject>> objectsMap;
 	for(uint32_t i = 0; i < argslen-1; i++)
 	{
-		ASATOM_INCREF(args[i+1]);
-		callArgs[i] = new ExtVariant(objectsMap,_MR(args[i+1].toObject(sys)));
+		callArgs[i] = new ExtVariant(objectsMap,args[i+1]);
 	}
 
 	ASObject* asobjResult = NULL;
@@ -120,7 +119,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 		assert(asobjResult==NULL);
 		LOG(LOG_INFO, "External function failed, returning null: " << arg0);
 		// If the call fails, return null
-		return asAtom::nullAtom;
+		return _MAR(asAtom::nullAtom);
 	}
 
 	return asAtom::fromObject(asobjResult);

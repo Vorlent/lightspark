@@ -160,36 +160,35 @@ ASFUNCTIONBODY_ATOM(XML,generator)
 	{
 		return asAtom::fromObject(Class<XML>::getInstanceSNoArgs(getSys()));
 	}
-	else if (args[0].is<Null>() || args[0].is<Undefined>())
+	else if (args[0]->is<Null>() || args[0]->is<Undefined>())
 	{
 		return asAtom::fromObject(Class<XML>::getInstanceSNoArgs(getSys()));
 	}
-	else if(args[0].is<ASString>() ||
-		args[0].is<Number>() ||
-		args[0].is<Integer>() ||
-		args[0].is<UInteger>() ||
-		args[0].is<Boolean>())
+	else if(args[0]->is<ASString>() ||
+		args[0]->is<Number>() ||
+		args[0]->is<Integer>() ||
+		args[0]->is<UInteger>() ||
+		args[0]->is<Boolean>())
 	{
-		return asAtom::fromObject(createFromString(getSys(),args[0].toString()));
+		return asAtom::fromObject(createFromString(getSys(),args[0]->toString()));
 	}
-	else if(args[0].is<XML>())
+	else if(args[0]->is<XML>())
 	{
-		ASATOM_INCREF(args[0]);
 		return args[0];
 	}
-	else if(args[0].is<XMLList>())
+	else if(args[0]->is<XMLList>())
 	{
-		_R<XML> ret=args[0].as<XMLList>()->reduceToXML();
+		_R<XML> ret=args[0]->as<XMLList>()->reduceToXML();
 		ret->incRef();
 		return asAtom::fromObject(ret.getPtr());
 	}
-	else if(args[0].is<XMLNode>())
+	else if(args[0]->is<XMLNode>())
 	{
-		return asAtom::fromObject(createFromNode(args[0].as<XMLNode>()->node));
+		return asAtom::fromObject(createFromNode(args[0]->as<XMLNode>()->node));
 	}
 	else
 	{
-		return asAtom::fromObject(createFromString(getSys(),args[0].toString()));
+		return asAtom::fromObject(createFromString(getSys(),args[0]->toString()));
 	}
 }
 
@@ -983,7 +982,7 @@ ASFUNCTIONBODY(XML,_setLocalName)
 
 void XML::setLocalName(const tiny_string& new_name)
 {
-	asAtom v =asAtom::fromObject(abstract_s(getSystemState(),new_name));
+	asAtomR v =asAtom::fromObject(abstract_s(getSystemState(),new_name));
 	if(!isXMLName(getSystemState(),v))
 	{
 		throwError<TypeError>(kXMLInvalidName, new_name);
@@ -1425,15 +1424,15 @@ XML::XMLVector XML::getValuesByMultiname(_NR<XMLList> nodelist, const multiname&
 	return ret;
 }
 
-asAtom XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtomR XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	if((opt & SKIP_IMPL)!=0)
 	{
-		asAtom res=ASObject::getVariableByMultiname(name,opt);
+		asAtomR res=ASObject::getVariableByMultiname(name,opt);
 
 		//If a method is not found on XML object and the
 		//object is a leaf node, delegate to ASString
-		if(res.type == T_INVALID && hasSimpleContent())
+		if(res->type == T_INVALID && hasSimpleContent())
 		{
 			_NR<ASString> contentstr=_MR(abstract_s(getSystemState(),toString_priv()));
 			res=contentstr->getVariableByMultiname(name, opt);
@@ -1486,15 +1485,15 @@ asAtom XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION op
 		{
 			const XMLVector& ret=getValuesByMultiname(childrenlist,name);
 			if(ret.empty() && (opt & XML_STRICT)!=0)
-				return asAtom::invalidAtom;
+				return _MAR(asAtom::invalidAtom);
 			
-			asAtom ch =asAtom::fromObject(XMLList::create(getSystemState(),ret,this->getChildrenlist(),name));
+			asAtomR ch =asAtom::fromObject(XMLList::create(getSystemState(),ret,this->getChildrenlist(),name));
 			return ch;
 		}
 	}
 }
 
-void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
+void XML::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
 {
 	unsigned int index=0;
 	bool isAttr=name.isAttribute;
@@ -1531,9 +1530,9 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 	if(isAttr)
 	{
 		tiny_string nodeval;
-		if(o.getObject() && o.getObject()->is<XMLList>())
+		if(o->getObject() && o->getObject()->is<XMLList>())
 		{
-			_NR<XMLList> x = _NR<XMLList>(o.getObject()->as<XMLList>());
+			_NR<XMLList> x = _NR<XMLList>(o->getObject()->as<XMLList>());
 			for (auto it2 = x->nodes.begin(); it2 != x->nodes.end(); it2++)
 			{
 				if (nodeval != "")
@@ -1543,7 +1542,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 		}
 		else
 		{
-			nodeval = o.toString();
+			nodeval = o->toString();
 		}
 		_NR<XML> a;
 		XMLList::XMLListVector::iterator it = attributelist->nodes.begin();
@@ -1587,17 +1586,17 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 			_R<XML> tmpnode = childrenlist->nodes.back();
 			if (tmpnode->nodenamespace_uri == ns_uri && tmpnode->nodename == normalizedName)
 			{
-				if(o.getObject() && o.getObject()->is<XMLList>())
+				if(o->getObject() && o->getObject()->is<XMLList>())
 				{
 					if (!found)
 					{
-						_NR<XMLList> x = _NR<XMLList>(Class<XMLList>::getInstanceS(getSystemState(),o.getObject()->as<XMLList>()->toXMLString_internal(false)));
+						_NR<XMLList> x = _NR<XMLList>(Class<XMLList>::getInstanceS(getSystemState(),o->getObject()->as<XMLList>()->toXMLString_internal(false)));
 						tmpnodes.insert(tmpnodes.end(), x->nodes.rbegin(),x->nodes.rend());
 					}
 				}
-				else if(o.getObject() && o.getObject()->is<XML>())
+				else if(o->getObject() && o->getObject()->is<XML>())
 				{
-					if (o.getObject()->as<XML>()->getNodeKind() == pugi::node_pcdata)
+					if (o->getObject()->as<XML>()->getNodeKind() == pugi::node_pcdata)
 					{
 						_R<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
 						tmp->parentNode = tmpnode;
@@ -1606,7 +1605,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 						tmp->nodename = "text";
 						tmp->nodenamespace_uri = BUILTIN_STRINGS::EMPTY;
 						tmp->nodenamespace_prefix = BUILTIN_STRINGS::EMPTY;
-						tmp->nodevalue = o.toString();
+						tmp->nodevalue = o->toString();
 						tmp->constructed = true;
 						tmpnode->childrenlist->clear();
 						tmpnode->childrenlist->append(tmp);
@@ -1615,7 +1614,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 					}
 					else
 					{
-						_NR<XML> tmp = _MR<XML>(o.getObject()->as<XML>());
+						_NR<XML> tmp = _MR<XML>(o->getObject()->as<XML>());
 						tmp->parentNode = _MR<XML>(this);
 						tmp->incRef();
 						if (!found)
@@ -1629,12 +1628,12 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 						tmpnode->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(getSystemState()));
 					
 					if (tmpnode->childrenlist->nodes.size() == 1 && tmpnode->childrenlist->nodes[0]->nodetype == pugi::node_pcdata)
-						tmpnode->childrenlist->nodes[0]->nodevalue = o.toString();
+						tmpnode->childrenlist->nodes[0]->nodevalue = o->toString();
 					else
 					{
-						XML* newnode = createFromString(this->getSystemState(),o.toString());
+						XML* newnode = createFromString(this->getSystemState(),o->toString());
 						tmpnode->childrenlist->clear();
-						asAtom v = asAtom::fromObject(newnode);
+						asAtomR v = asAtom::fromObject(newnode);
 						tmpnode->setVariableByMultiname(name,v,allowConst);
 					}
 					if (!found)
@@ -1654,9 +1653,9 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 		}
 		if (!found)
 		{
-			if(o.getObject() && o.getObject()->is<XML>())
+			if(o->getObject() && o->getObject()->is<XML>())
 			{
-				_R<XML> tmp = _MR<XML>(o.getObject()->as<XML>());
+				_R<XML> tmp = _MR<XML>(o->getObject()->as<XML>());
 				tmp->parentNode = _MR<XML>(this);
 				tmp->incRef();
 				tmpnodes.insert(tmpnodes.begin(),tmp);
@@ -1679,7 +1678,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 					tmpstr += "\"";
 				}
 				tmpstr +=">";
-				tmpstr += encodeToXML(o.toString(),false);
+				tmpstr += encodeToXML(o->toString(),false);
 				tmpstr +="</";
 				if (ns_prefix != BUILTIN_STRINGS::EMPTY)
 				{
@@ -1945,20 +1944,20 @@ ASFUNCTIONBODY(XML,_getSettings)
 	mn.isAttribute = true;
 
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreComments");
-	asAtom v;
-	v = asAtom(ignoreComments);
+	asAtomR v;
+	v = _MAR(asAtom(ignoreComments));
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreProcessingInstructions");
-	v = asAtom(ignoreProcessingInstructions);
+	v = _MAR(asAtom(ignoreProcessingInstructions));
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreWhitespace");
-	v = asAtom(ignoreWhitespace);
+	v = _MAR(asAtom(ignoreWhitespace));
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyIndent");
-	v = asAtom(prettyIndent);
+	v = _MAR(asAtom(prettyIndent));
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyPrinting");
-	v = asAtom(prettyPrinting);
+	v = _MAR(asAtom(prettyPrinting));
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	return res;
 }
@@ -1981,41 +1980,41 @@ ASFUNCTIONBODY(XML,_setSettings)
 	mn.ns.emplace_back(arg0->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 	mn.ns.emplace_back(arg0->getSystemState(),BUILTIN_STRINGS::STRING_AS3NS,NAMESPACE);
 	mn.isAttribute = true;
-	asAtom o;
+	asAtomR o;
 
 	mn.name_s_id=getSys()->getUniqueStringId("ignoreComments");
 	if (arg0->hasPropertyByMultiname(mn,true,true))
 	{
 		o=arg0->getVariableByMultiname(mn,SKIP_IMPL);
-		ignoreComments = o.toInt();
+		ignoreComments = o->toInt();
 	}
 
 	mn.name_s_id=getSys()->getUniqueStringId("ignoreProcessingInstructions");
 	if (arg0->hasPropertyByMultiname(mn,true,true))
 	{
 		o=arg0->getVariableByMultiname(mn,SKIP_IMPL);
-		ignoreProcessingInstructions = o.toInt();
+		ignoreProcessingInstructions = o->toInt();
 	}
 
 	mn.name_s_id=getSys()->getUniqueStringId("ignoreWhitespace");
 	if (arg0->hasPropertyByMultiname(mn,true,true))
 	{
 		o=arg0->getVariableByMultiname(mn,SKIP_IMPL);
-		ignoreWhitespace = o.toInt();
+		ignoreWhitespace = o->toInt();
 	}
 
 	mn.name_s_id=getSys()->getUniqueStringId("prettyIndent");
 	if (arg0->hasPropertyByMultiname(mn,true,true))
 	{
 		o=arg0->getVariableByMultiname(mn,SKIP_IMPL);
-		prettyIndent = o.toInt();
+		prettyIndent = o->toInt();
 	}
 
 	mn.name_s_id=getSys()->getUniqueStringId("prettyPrinting");
 	if (arg0->hasPropertyByMultiname(mn,true,true))
 	{
 		o=arg0->getVariableByMultiname(mn,SKIP_IMPL);
-		prettyPrinting = o.toInt();
+		prettyPrinting = o->toInt();
 	}
 	return getSys()->getNullRef();
 }
@@ -2029,16 +2028,16 @@ ASFUNCTIONBODY(XML,_getDefaultSettings)
 	mn.isAttribute = true;
 
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreComments");
-	res->setVariableByMultiname(mn,asAtom::trueAtom,CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreProcessingInstructions");
-	res->setVariableByMultiname(mn,asAtom::trueAtom,CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreWhitespace");
-	res->setVariableByMultiname(mn,asAtom::trueAtom,CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyIndent");
 	asAtom v((int32_t)2);
-	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,_MAR(v),CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyPrinting");
-	res->setVariableByMultiname(mn,asAtom::trueAtom,CONST_NOT_ALLOWED);
+	res->setVariableByMultiname(mn,_MAR(asAtom::trueAtom),CONST_NOT_ALLOWED);
 	return res;
 }
 ASFUNCTIONBODY(XML,_toJSON)
@@ -2516,15 +2515,15 @@ uint32_t XML::nextNameIndex(uint32_t cur_index)
 		return 0;
 }
 
-asAtom XML::nextName(uint32_t index)
+asAtomR XML::nextName(uint32_t index)
 {
 	if(index<=1)
-		return asAtom(index-1);
+		return _MAR(asAtom(index-1));
 	else
 		throw RunTimeException("XML::nextName out of bounds");
 }
 
-asAtom XML::nextValue(uint32_t index)
+asAtomR XML::nextValue(uint32_t index)
 {
 	if(index<=1)
 	{
@@ -2873,7 +2872,7 @@ ASFUNCTIONBODY(XML,_replace)
 		name.ns.emplace_back(obj->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 	}
 	uint32_t index=0;
-	asAtom v = asAtom::fromObject(value.getPtr());
+	asAtomR v = asAtom::fromObject(value.getPtr());
 	if(XML::isValidMultiname(obj->getSystemState(),name,index))
 	{
 		th->childrenlist->setVariableByMultiname(name,v,CONST_NOT_ALLOWED);

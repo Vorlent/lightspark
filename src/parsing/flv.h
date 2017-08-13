@@ -29,6 +29,7 @@
 namespace lightspark
 {
 class asAtom;
+class asAtomR;
 
 class FLV_HEADER
 {
@@ -63,7 +64,7 @@ class ScriptDataTag: public VideoTag
 {
 public:
 	tiny_string methodName;
-	std::list<asAtom> dataobjectlist;
+	std::list<asAtomR> dataobjectlist;
 	ScriptDataTag() {}
 	ScriptDataTag(std::istream& s);
 };

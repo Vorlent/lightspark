@@ -41,8 +41,8 @@ friend class ABCVm;
 protected:
 	uint64_t currentsize;
 	// data is split into a vector for the first ARRAY_SIZE_THRESHOLD indexes, and a map for bigger indexes
-	std::vector<asAtom> data_first;
-	std::unordered_map<uint32_t,asAtom> data_second;
+	std::vector<asAtomR> data_first;
+	std::unordered_map<uint32_t,asAtomR> data_second;
 	
 	void outofbounds(unsigned int index) const;
 	~Array();
@@ -55,15 +55,15 @@ private:
 		bool isDescending;
 	public:
 		sortComparatorDefault(bool n, bool ci, bool d):isNumeric(n),isCaseInsensitive(ci),isDescending(d){}
-		bool operator()(const asAtom& d1, const asAtom& d2);
+		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 	class sortComparatorWrapper
 	{
 	private:
-		asAtom comparator;
+		asAtomR comparator;
 	public:
-		sortComparatorWrapper(asAtom c):comparator(c){}
-		bool operator()(const asAtom& d1, const asAtom& d2);
+		sortComparatorWrapper(asAtomR c):comparator(c){}
+		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 	class sortOnComparator
 	{
@@ -71,9 +71,9 @@ private:
 		std::vector<sorton_field> fields;
 	public:
 		sortOnComparator(const std::vector<sorton_field>& sf):fields(sf){}
-		bool operator()(const asAtom& d1, const asAtom& d2);
+		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
-	void constructorImpl(asAtom *args, const unsigned int argslen);
+	void constructorImpl(std::vector<asAtomR> &args, const unsigned int argslen);
 	tiny_string toString_priv(bool localized=false);
 	int capIndex(int i);
 public:
@@ -82,14 +82,6 @@ public:
 	Array(Class_base* c);
 	bool destruct()
 	{
-		for (auto it=data_first.begin() ; it != data_first.end(); ++it)
-		{
-			ASATOM_DECREF_POINTER(it);
-		}
-		for (auto it=data_second.begin() ; it != data_second.end(); ++it)
-		{
-			ASATOM_DECREF(it->second);
-		}
 		data_first.clear();
 		data_second.clear();
 		currentsize=0;
@@ -131,26 +123,26 @@ public:
 	ASFUNCTION_ATOM(insertAt);
 	ASFUNCTION_ATOM(removeAt);
 
-	asAtom at(unsigned int index);
-	void set(unsigned int index, asAtom &o, bool checkbounds = true);
+	asAtomR at(unsigned int index);
+	void set(unsigned int index, asAtomR o, bool checkbounds = true);
 	uint64_t size();
-	void push(asAtom o);
+	void push(asAtomR o);
 	void resize(uint64_t n);
-	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
+	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
 	int32_t getVariableByMultiname_i(const multiname& name);
-	void setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
 	bool deleteVariableByMultiname(const multiname& name);
 	void setVariableByMultiname_i(const multiname& name, int32_t value);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
 	tiny_string toString();
 	uint32_t nextNameIndex(uint32_t cur_index);
-	asAtom nextName(uint32_t index);
-	asAtom nextValue(uint32_t index);
+	asAtomR nextName(uint32_t index);
+	asAtomR nextValue(uint32_t index);
 	//Serialization interface
 	void serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 				std::map<const ASObject*, uint32_t>& objMap,
 				std::map<const Class_base*, uint32_t>& traitsMap);
-	virtual tiny_string toJSON(std::vector<ASObject *> &path,asAtom replacer, const tiny_string &spaces,const tiny_string& filter);
+	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces, const tiny_string& filter);
 };
 
 

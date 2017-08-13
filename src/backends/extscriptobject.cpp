@@ -178,32 +178,32 @@ ExtVariant::ExtVariant(bool value) :
 	strValue(""), doubleValue(0), intValue(0), type(EV_BOOLEAN), booleanValue(value)
 {
 }
-ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, _R<ASObject> other) :
+ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtomR other) :
 	strValue(""), doubleValue(0), intValue(0), booleanValue(false)
 {
-	switch(other->getObjectType())
+	switch(other->getObject()->getObjectType())
 	{
 	case T_STRING:
-		strValue = other->toString().raw_buf();
+		strValue = other->getObject()->toString().raw_buf();
 		type = EV_STRING;
 		break;
 	case T_INTEGER:
-		intValue = other->toInt();
+		intValue = other->getObject()->toInt();
 		type = EV_INT32;
 		break;
 	case T_NUMBER:
-		doubleValue = other->toNumber();
+		doubleValue = other->getObject()->toNumber();
 		type = EV_DOUBLE;
 		break;
 	case T_BOOLEAN:
-		booleanValue = Boolean_concrete(other.getPtr());
+		booleanValue = Boolean_concrete(other->getObject());
 		type = EV_BOOLEAN;
 		break;
 	case T_ARRAY:
 	case T_OBJECT:
 		{
 			type = EV_OBJECT;
-			auto it=objectsMap.find(other.getPtr());
+			auto it=objectsMap.find(other->getObject());
 			if(it!=objectsMap.end())
 			{
 				objectValue = it->second.get();
@@ -212,24 +212,24 @@ ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& ob
 			objectValue = new ExtObject();
 			bool allNumericProperties = true;
 
-			objectsMap[other.getPtr()] = move(unique_ptr<ExtObject>(objectValue));
+			objectsMap[other->getObject()] = move(unique_ptr<ExtObject>(objectValue));
 
 			unsigned int index = 0;
-			while((index=other->nextNameIndex(index))!=0)
+			while((index=other->getObject()->nextNameIndex(index))!=0)
 			{
-				asAtom nextName=other->nextName(index);
-				asAtom nextValue=other->nextValue(index);
+				asAtomR nextName=other->getObject()->nextName(index);
+				asAtomR nextValue=other->getObject()->nextValue(index);
 
-				if(nextName.type == T_INTEGER)
-					objectValue->setProperty(nextName.toInt(), ExtVariant(objectsMap, _MR(nextValue.toObject(getSys()))));
+				if(nextName->type == T_INTEGER)
+					objectValue->setProperty(nextName->toInt(), ExtVariant(objectsMap, nextValue));
 				else
 				{
 					allNumericProperties = false;
-					objectValue->setProperty(nextName.toString().raw_buf(), ExtVariant(objectsMap, _MR(nextValue.toObject(getSys()))));
+					objectValue->setProperty(nextName->toString().raw_buf(), ExtVariant(objectsMap, nextValue));
 				}
 			}
 
-			if(other->getObjectType()==T_ARRAY && allNumericProperties)
+			if(other->getObject()->getObjectType()==T_ARRAY && allNumericProperties)
 			{
 				objectValue->setType(ExtObject::EO_ARRAY);
 			}
@@ -288,7 +288,7 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 				for(uint32_t i = 0; i < count; i++)
 				{
 					const ExtVariant& property = objValue->getProperty(i);
-					asAtom v = asAtom::fromObject(property.getASObject(objectsMap));
+					asAtomR v = asAtom::fromObject(property.getASObject(objectsMap));
 					static_cast<Array*>(asobj)->set(i, v);
 				}
 			}
@@ -343,7 +343,7 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 }
 
 /* -- ExtASCallback -- */
-ExtASCallback::ExtASCallback(asAtomR _func):funcWasCalled(false), func(_func), result(NULL), asArgs(NULL)
+ExtASCallback::ExtASCallback(asAtomR _func):funcWasCalled(false), func(_func), result(_MAR(asAtom::nullAtom)), asArgs(NULL)
 {
 }
 
@@ -388,18 +388,18 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 	{
 		try
 		{
-			asAtom* newArgs=NULL;
+			std::vector<asAtomR> newArgs;
 			if (argc > 0)
 			{
-				newArgs=g_newa(asAtom, argc);
+				newArgs.reserve(argc);
 				for (uint32_t i = 0; i < argc; i++)
 				{
-					newArgs[i] = asAtom::fromObject(asArgs[i]);
+					newArgs.push_back(asAtom::fromObject(asArgs[i]));
 				}
 			}
 
 			/* TODO: shouldn't we pass some global object instead of Null? */
-			result = func->callFunction(asAtom::nullAtom, newArgs, argc,false).toObject(func->getObject()->getSystemState());
+			result = func->callFunction(_MAR(asAtom::nullAtom), newArgs, argc,false);
 		}
 		// Catch AS exceptions and pass them on
 		catch(ASObject* _exception)
@@ -434,10 +434,9 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 	// Did the callback throw an AS exception?
 	if(exceptionThrown)
 	{
-		if(result != NULL)
+		if(result->getObject()->getObjectType() != T_NULL)
 		{
-			result->decRef();
-			result = NULL;
+			result = _MAR(asAtom::nullAtom);
 		}
 
 		// Pass on the exception to the container through the script object
@@ -451,10 +450,10 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 		success = false;
 	}
 	// Did the callback return a non-NULL result?
-	else if(result != NULL)
+	else if(result->getObject()->getObjectType() != T_NULL)
 	{
 		// Convert the result
-		*_result = new ExtVariant(objectsMap, _MR(result));
+		*_result = new ExtVariant(objectsMap, result);
 		success = true;
 	}
 	// No exception but also no result, still a success
@@ -462,7 +461,7 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 		success = true;
 
 	// Clean up pointers
-	result = NULL;
+	result = _MAR(asAtom::nullAtom);
 	exceptionThrown = false;
 	exception = "";
 	if (asArgs)

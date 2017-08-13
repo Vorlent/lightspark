@@ -128,7 +128,7 @@ public:
 	ExtVariant(int32_t value);
 	ExtVariant(double value);
 	ExtVariant(bool value);
-	ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, _R<ASObject> other);
+	ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtomR other);
 
 	~ExtVariant() {}
 
@@ -195,8 +195,8 @@ private:
 	bool funcWasCalled;
 	asAtomR func;
 	_NR<ExternalCallEvent> funcEvent;
-	ASObject* result;
-        ASObject** asArgs;
+	asAtomR result;
+		ASObject** asArgs;
 public:
 	ExtASCallback(asAtomR _func);
 	~ExtASCallback();

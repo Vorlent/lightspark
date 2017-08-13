@@ -77,7 +77,7 @@ tiny_string lightspark::createErrorMessage(int errorID, const tiny_string& arg1,
 		for (auto it = getVm(sys)->stacktrace.rbegin(); it != getVm(sys)->stacktrace.rend(); it++)
 		{
 			stacktrace += "    at ";
-			stacktrace += (*it).second.toObject(sys)->getClassName();
+			stacktrace += (*it).second->toObject(sys)->getClassName();
 			stacktrace += "/";
 			stacktrace += sys->getStringFromUniqueId((*it).first);
 			stacktrace += "()\n";
@@ -94,7 +94,7 @@ ASError::ASError(Class_base* c, const tiny_string& error_message, int id, const 
 	for (auto it = getVm(c->getSystemState())->stacktrace.rbegin(); it != getVm(c->getSystemState())->stacktrace.rend(); it++)
 	{
 		stacktrace += "    at ";
-		stacktrace += (*it).second.toObject(c->getSystemState())->getClassName();
+		stacktrace += (*it).second->toObject(c->getSystemState())->getClassName();
 		stacktrace += "/";
 		stacktrace += c->getSystemState()->getStringFromUniqueId((*it).first);
 		stacktrace += "()\n";
@@ -155,16 +155,16 @@ ASFUNCTIONBODY_ATOM(ASError,generator)
 	return asAtom::fromObject(th);
 }
 
-void ASError::errorGenerator(ASError* obj, asAtom* args, const unsigned int argslen)
+void ASError::errorGenerator(ASError* obj, std::vector<asAtomR>& args, const unsigned int argslen)
 {
 	assert_and_throw(argslen <= 2);
 	if(argslen >= 1)
 	{
-		obj->message = args[0].toString();
+		obj->message = args[0]->toString();
 	}
 	if(argslen == 2)
 	{
-		obj->errorID = args[1].toInt();
+		obj->errorID = args[1]->toInt();
 	}
 }
 

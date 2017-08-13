@@ -46,7 +46,8 @@ private:
 	tiny_string getContentTypeHeader() const;
 	void validateHeaderName(const tiny_string& headerName) const;
 	ASPROPERTY_GETTER_SETTER(tiny_string,contentType);
-	ASPROPERTY_GETTER_SETTER(_R<Array>,requestHeaders);
+	//TODO ASPROPERTY_GETTER_SETTER(_R<Array>,requestHeaders);
+	ASPROPERTY_GETTER_SETTER(asAtomR,requestHeaders);
 public:
 	URLRequest(Class_base* c);
 	void finalize();
@@ -62,7 +63,7 @@ public:
 	ASFUNCTION(_getDigest);
 	ASFUNCTION(_setDigest);
 	URLInfo getRequestURL() const;
-	std::list<tiny_string> getHeaders() const;
+	std::list<tiny_string> getHeaders();
 	void getPostData(std::vector<uint8_t>& data) const;
 };
 
@@ -118,7 +119,7 @@ public:
 	ASFUNCTION(close);
 	ASFUNCTION(connect);
 	ASFUNCTION(setProperty);
-	ASPROPERTY_GETTER_SETTER(_R<ASObject>,client);
+	ASPROPERTY_GETTER_SETTER(asAtomR,client);
 	ASPROPERTY_GETTER(_NR<ASObject>,data);
 	ASFUNCTION(_getDefaultObjectEncoding);
 	ASFUNCTION(_setDefaultObjectEncoding);
@@ -181,8 +182,8 @@ public:
 class Responder: public ASObject
 {
 private:
-	asAtom result;
-	asAtom status;
+	asAtomR result;
+	asAtomR status;
 public:
 	Responder(Class_base* c):ASObject(c){}
 	static void sinit(Class_base*);
@@ -335,7 +336,7 @@ public:
 	ASPROPERTY_GETTER_SETTER(number_t, maxPauseBufferTime);
 	ASPROPERTY_GETTER_SETTER(bool, useHardwareDecoder);
 
-	void sendClientNotification(const tiny_string& name, std::list<asAtom>& arglist);
+	void sendClientNotification(const tiny_string& name, std::list<asAtomR> &arglist);
 
 	//Interface for video
 	/**

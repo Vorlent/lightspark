@@ -275,17 +275,18 @@ void Sound::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(Sound,_constructor)
 {
-	EventDispatcher::_constructor(sys,obj, NULL, 0);
+	std::vector<asAtomR> empty;
+	EventDispatcher::_constructor(sys,obj, empty, 0);
 
 	if (argslen>0)
 		Sound::load(sys,obj, args, argslen);
 
-	return asAtom::invalidAtom;
+	return _MAR(asAtom::invalidAtom);
 }
 
 ASFUNCTIONBODY_ATOM(Sound,load)
 {
-	Sound* th=obj.as<Sound>();
+	Sound* th=obj->as<Sound>();
 	_NR<URLRequest> urlRequest;
 	_NR<SoundLoaderContext> context;
 	
@@ -302,7 +303,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	{
 		//Notify an error during loading
 		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
-		return asAtom::invalidAtom;
+		return _MAR(asAtom::invalidAtom);
 	}
 
 	//The URL is valid so we can start the download
@@ -325,7 +326,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	{
 		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
 	}
-	return asAtom::invalidAtom;
+	return _MAR(asAtom::invalidAtom);
 }
 
 ASFUNCTIONBODY(Sound,play)
@@ -485,9 +486,10 @@ void SoundChannel::validateSoundTransform(_NR<SoundTransform> oldValue)
 
 ASFUNCTIONBODY_ATOM(SoundChannel, _constructor)
 {
-	EventDispatcher::_constructor(sys,obj, NULL, 0);
+	std::vector<asAtomR> empty;
+	EventDispatcher::_constructor(sys,obj, empty, 0);
 
-	return asAtom::invalidAtom;
+	return _MAR(asAtom::invalidAtom);
 }
 
 ASFUNCTIONBODY(SoundChannel, stop)

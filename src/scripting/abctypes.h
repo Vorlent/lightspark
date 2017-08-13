@@ -266,8 +266,8 @@ struct method_body_info_cache
 	union {
 		uint32_t uvalue;
 		int32_t ivalue;
-		ASObject* obj;
 	};
+	_NR<ASObject> obj;
 	ASObject* closure;
 	const char* nextcodepos;
 	struct method_body_info_cache* nextcachepos;

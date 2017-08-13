@@ -38,10 +38,11 @@ ASFUNCTIONBODY_GETTER(PrintJob, isSupported);
 
 ASFUNCTIONBODY_ATOM(PrintJob, _constructor)
 {
-	EventDispatcher::_constructor(sys,obj, NULL, 0);
+	std::vector<asAtomR> empty;
+	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//PrintJob* th=Class<PrintJob>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"PrintJob is not implemented");
-	return asAtom::invalidAtom;
+	return _MAR(asAtom::invalidAtom);
 }
 
 PrintJobOptions::PrintJobOptions(Class_base* c):

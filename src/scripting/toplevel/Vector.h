@@ -30,7 +30,7 @@ class Vector: public ASObject
 {
 	const Type* vec_type;
 	bool fixed;
-	std::vector<asAtom, reporter_allocator<asAtom>> vec;
+	std::vector<asAtomR, reporter_allocator<asAtomR>> vec;
 	int capIndex(int i) const;
 	class sortComparatorDefault
 	{
@@ -40,26 +40,22 @@ class Vector: public ASObject
 		bool isDescending;
 	public:
 		sortComparatorDefault(bool n, bool ci, bool d):isNumeric(n),isCaseInsensitive(ci),isDescending(d){}
-		bool operator()(const asAtom& d1, const asAtom& d2);
+		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 	class sortComparatorWrapper
 	{
 	private:
-		asAtom comparator;
+		asAtomR comparator;
 		const Type* vec_type;
 	public:
-		sortComparatorWrapper(asAtom c, const Type* v):comparator(c),vec_type(v){}
-		bool operator()(const asAtom& d1, const asAtom& d2);
+		sortComparatorWrapper(asAtomR c, const Type* v):comparator(c),vec_type(v){}
+		bool operator()(asAtomR& d1, asAtomR& d2);
 	};
 public:
 	Vector(Class_base* c, const Type *vtype=NULL);
 	~Vector();
 	bool destruct()
 	{
-		for(unsigned int i=0;i<size();i++)
-		{
-			ASATOM_DECREF(vec[i]);
-		}
 		vec.clear();
 		return ASObject::destruct();
 	}
@@ -67,39 +63,39 @@ public:
 	
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o) {}
-	static asAtom generator(SystemState* sys, asAtom& o_class, asAtom* args, const unsigned int argslen);
+	static asAtomR generator(SystemState* sys, asAtomR o_class, std::vector<asAtomR>& args, const unsigned int argslen);
 
 	void setTypes(const std::vector<const Type*>& types);
 	bool sameType(const Class_base* cls) const;
 
 	//Overloads
 	tiny_string toString();
-	void setVariableByMultiname(const multiname& name, asAtom &o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
-	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
+	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
 	static bool isValidMultiname(SystemState* sys,const multiname& name, uint32_t& index);
 
-	tiny_string toJSON(std::vector<ASObject *> &path, asAtom replacer, const tiny_string &spaces,const tiny_string& filter);
+	virtual tiny_string toJSON(std::vector<ASObject *> &path, asAtomR replacer, const tiny_string &spaces,const tiny_string& filter);
 
 	uint32_t nextNameIndex(uint32_t cur_index);
-	asAtom nextName(uint32_t index);
-	asAtom nextValue(uint32_t index);
+	asAtomR nextName(uint32_t index);
+	asAtomR nextValue(uint32_t index);
 
 	uint32_t size() const
 	{
 		return vec.size();
 	}
-	asAtom at(unsigned int index) const
+	asAtomR at(unsigned int index) const
 	{
 		return vec.at(index);
 	}
 	//Get value at index, or return defaultValue (a borrowed
 	//reference) if index is out-of-range
-	asAtom at(unsigned int index, asAtom defaultValue) const;
+	asAtomR at(unsigned int index, asAtomR defaultValue) const;
 
 	//Appends an object to the Vector. o is coerced to vec_type.
 	//Takes ownership of o.
-	void append(asAtom& o);
+	void append(asAtomR o);
 	void setFixed(bool v) { fixed = v; }
 
 	//TODO: do we need to implement generator?

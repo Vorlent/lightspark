@@ -94,6 +94,7 @@ typedef double number_t;
 class Type;
 class SystemState;
 class ASObject;
+class asAtomR;
 class ASString;
 class ABCContext;
 class URLInfo;
@@ -408,7 +409,7 @@ struct multiname: public memory_reporter
 
 	const tiny_string qualifiedString(SystemState *sys, bool forDescribeType=false) const;
 	/* sets name_type, name_s/name_d based on the object n */
-	void setName(class asAtom &n, SystemState *sys);
+	void setName(class asAtomR &n, SystemState *sys);
 	void resetNameIfObject();
 	inline bool isQName() const { return ns.size() == 1; }
 	bool toUInt(SystemState *sys, uint32_t& out, bool acceptStringFractions=false) const;

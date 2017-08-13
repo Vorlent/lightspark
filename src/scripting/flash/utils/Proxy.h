@@ -37,17 +37,17 @@ public:
 	static void buildTraits(ASObject* o);
 //	ASFUNCTION(_constructor);
 	ASFUNCTION(_isAttribute);
-	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
+	lightspark::asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt=NONE);
 	int32_t getVariableByMultiname_i(const multiname& name)
 	{
 		assert_and_throw(implEnable);
 		throw UnsupportedException("getVariableByMultiName_i not supported for Proxy");
 	}
-	void setVariableByMultiname(const multiname& name, asAtom &o, CONST_ALLOWED_FLAG allowConst);
+	void setVariableByMultiname(const multiname& name, lightspark::asAtomR o, CONST_ALLOWED_FLAG allowConst);
 	void setVariableByMultiname_i(const multiname& name, int32_t value)
 	{
 		asAtom v(value);
-		setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
+		setVariableByMultiname(name,_MAR(v),CONST_NOT_ALLOWED);
 	}
 	
 	bool deleteVariableByMultiname(const multiname& name);
@@ -57,8 +57,8 @@ public:
 		throw UnsupportedException("Proxy is missing some stuff");
 	}
 	uint32_t nextNameIndex(uint32_t cur_index);
-	asAtom nextName(uint32_t index);
-	asAtom nextValue(uint32_t index);
+	asAtomR nextName(uint32_t index);
+	asAtomR nextValue(uint32_t index);
 	bool isConstructed() const;
 };
 }

@@ -975,19 +975,19 @@ ASFUNCTIONBODY(ByteArray,readMultiByte)
 
 ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 {
-	ByteArray* th=obj.as<ByteArray>();
+	ByteArray* th=obj->as<ByteArray>();
 	assert_and_throw(argslen==0);
 	th->lock();
 	if(th->bytes==NULL)
 	{
 		th->unlock();
 		// it seems that contrary to the specs Adobe returns Undefined when reading from an empty ByteArray
-		return asAtom::undefinedAtom;
+		return _MAR(asAtom::undefinedAtom);
 		//throwError<EOFError>(kEOFError);
 	}
 	//assert_and_throw(th->objectEncoding==ObjectEncoding::AMF3);
 	Amf3Deserializer d(th);
-	asAtom ret;
+	asAtomR ret;
 	try
 	{
 		ret=d.readObject();
@@ -1000,12 +1000,11 @@ ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 		//TODO: throw AS exception
 	}
 
-	if(ret.type == T_INVALID)
+	if(ret->type == T_INVALID)
 	{
 		LOG(LOG_ERROR,"No objects in the AMF3 data. Returning Undefined");
-		return asAtom::undefinedAtom;
+		return _MAR(asAtom::undefinedAtom);
 	}
-	ASATOM_INCREF(ret);
 	return ret;
 }
 
@@ -1038,7 +1037,7 @@ bool ByteArray::hasPropertyByMultiname(const multiname& name, bool considerDynam
 	return index<len;
 }
 
-asAtom ByteArray::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtomR ByteArray::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	unsigned int index=0;
 	if((opt & ASObject::SKIP_IMPL)!=0  || !implEnable || !Array::isValidMultiname(getSystemState(),name,index))
@@ -1047,10 +1046,10 @@ asAtom ByteArray::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPT
 	if(index<len)
 	{
 		uint8_t value = bytes[index];
-		return asAtom(static_cast<uint32_t>(value));
+		return _MAR(asAtom(static_cast<uint32_t>(value)));
 	}
 	else
-		return asAtom::undefinedAtom;
+		return _MAR(asAtom::undefinedAtom);
 }
 
 int32_t ByteArray::getVariableByMultiname_i(const multiname& name)
@@ -1069,7 +1068,7 @@ int32_t ByteArray::getVariableByMultiname_i(const multiname& name)
 		return _MNR(getSystemState()->getUndefinedRef());
 }
 
-void ByteArray::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
+void ByteArray::setVariableByMultiname(const multiname& name, asAtomR o, CONST_ALLOWED_FLAG allowConst)
 {
 	assert_and_throw(implEnable);
 	unsigned int index=0;
@@ -1087,15 +1086,13 @@ void ByteArray::setVariableByMultiname(const multiname& name, asAtom& o, CONST_A
 	}
 
 	// Fill the byte pointed to by index with the truncated uint value of the object.
-	uint8_t value = static_cast<uint8_t>(o.toUInt() & 0xff);
+	uint8_t value = static_cast<uint8_t>(o->toUInt() & 0xff);
 	bytes[index] = value;
-
-	ASATOM_DECREF(o);
 }
 
 void ByteArray::setVariableByMultiname_i(const multiname& name, int32_t value)
 {
-	asAtom v = asAtom(value);
+	asAtomR v = _MAR(asAtom(value));
 	setVariableByMultiname(name, v,ASObject::CONST_NOT_ALLOWED);
 }
 
@@ -1377,7 +1374,7 @@ ASFUNCTIONBODY(ByteArray,clear)
 // this seems to be how AS3 handles generic pop calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,pop)
 {
-	ByteArray* th=obj.as<ByteArray>();
+	ByteArray* th=obj->as<ByteArray>();
 	uint8_t res = 0;
 	th->lock();
 	if (th->readByte(res))
@@ -1386,29 +1383,29 @@ ASFUNCTIONBODY_ATOM(ByteArray,pop)
 		th->len--;
 	}
 	th->unlock();
-	return asAtom((uint32_t)res);
+	return _MAR(asAtom((uint32_t)res));
 	
 }
 
 // this seems to be how AS3 handles generic push calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,push)
 {
-	ByteArray* th=static_cast<ByteArray*>(obj.getObject());
+	ByteArray* th=static_cast<ByteArray*>(obj->getObject());
 	th->lock();
 	th->getBuffer(th->len+argslen,true);
 	for (unsigned int i = 0; i < argslen; i++)
 	{
-		th->bytes[th->len+i] = (uint8_t)args[i].toInt();
+		th->bytes[th->len+i] = (uint8_t)args[i]->toInt();
 	}
 	uint32_t res = th->getLength();
 	th->unlock();
-	return asAtom(res);
+	return _MAR(asAtom(res));
 }
 
 // this seems to be how AS3 handles generic shift calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,shift)
 {
-	ByteArray* th=obj.as<ByteArray>();
+	ByteArray* th=obj->as<ByteArray>();
 	uint8_t res = 0;
 	th->lock();
 	if (th->readByte(res))
@@ -1417,23 +1414,23 @@ ASFUNCTIONBODY_ATOM(ByteArray,shift)
 		th->len--;
 	}
 	th->unlock();
-	return asAtom((uint32_t)res);
+	return _MAR(asAtom((uint32_t)res));
 }
 
 // this seems to be how AS3 handles generic unshift calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,unshift)
 {
-	ByteArray* th=obj.as<ByteArray>();
+	ByteArray* th=obj->as<ByteArray>();
 	th->lock();
 	th->getBuffer(th->len+argslen,true);
 	for (unsigned int i = 0; i < argslen; i++)
 	{
 		memmove((th->bytes+argslen),(th->bytes),th->len);
-		th->bytes[i] = (uint8_t)args[i].toInt();
+		th->bytes[i] = (uint8_t)args[i]->toInt();
 	}
 	uint32_t res = th->getLength();
 	th->unlock();
-	return asAtom(res);
+	return _MAR(asAtom(res));
 }
 ASFUNCTIONBODY_GETTER_SETTER(ByteArray,shareable);
 

@@ -126,49 +126,49 @@ const tiny_string multiname::normalizedNameUnresolved(SystemState* sys) const
 	}
 }
 
-void multiname::setName(asAtom& n,SystemState* sys)
+void multiname::setName(asAtomR& n,SystemState* sys)
 {
 	if (name_type==NAME_OBJECT && name_o!=NULL) {
 		name_o->decRef();
 		name_o = NULL;
 	}
 
-	switch(n.type)
+	switch(n->type)
 	{
 	case T_INTEGER:
-		name_i=n.intval;
+		name_i=n->intval;
 		name_type = NAME_INT;
 		name_s_id = UINT32_MAX;
 		break;
 	case T_UINTEGER:
-		name_ui=n.uintval;
+		name_ui=n->uintval;
 		name_type = NAME_UINT;
 		name_s_id = UINT32_MAX;
 		break;
 	case T_NUMBER:
-		name_d=n.numberval;
+		name_d=n->numberval;
 		name_type = NAME_NUMBER;
 		name_s_id = UINT32_MAX;
 		break;
 	case T_BOOLEAN:
-		name_i=n.boolval ? 1 : 0;
+		name_i=n->boolval ? 1 : 0;
 		name_type = NAME_INT;
 		name_s_id = UINT32_MAX;
 		break;
 	case T_QNAME:
 		{
-			ASQName* qname=static_cast<ASQName*>(n.objval);
+			ASQName* qname=static_cast<ASQName*>(n->objval);
 			name_s_id=qname->local_name;
 			name_type = NAME_STRING;
 		}
 		break;
 	case T_STRING:
 		{
-			if (n.stringID != UINT32_MAX)
-				name_s_id=n.stringID;
+			if (n->stringID != UINT32_MAX)
+				name_s_id=n->stringID;
 			else
 			{
-				ASString* o=static_cast<ASString*>(n.objval);
+				ASString* o=static_cast<ASString*>(n->objval);
 				name_s_id=o->hasId ? o->toStringId() : o->getSystemState()->getUniqueStringId(o->getData());
 			}
 			name_type = NAME_STRING;
@@ -185,8 +185,8 @@ void multiname::setName(asAtom& n,SystemState* sys)
 		name_s_id = UINT32_MAX;
 		break;
 	default:
-		ASATOM_INCREF(n);
-		name_o=n.objval;
+		n->objval->incRef();
+		name_o=n->objval;
 		name_type = NAME_OBJECT;
 		name_s_id = UINT32_MAX;
 		break;
