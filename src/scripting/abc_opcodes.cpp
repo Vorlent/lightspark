@@ -336,7 +336,7 @@ void ABCVm::callProperty(call_context* th, int n, int m, method_info** called_mi
 		throwError<TypeError>(kConvertUndefinedToObjectError);
 	}
 	ASObject* pobj = obj->toObject(th->context->root->getSystemState());
-	checkDeclaredTraits(obj);
+	checkDeclaredTraits(pobj);
 	//We should skip the special implementation of get
 	asAtomR o=pobj->getVariableByMultiname(*name, ASObject::SKIP_IMPL);
 	name->resetNameIfObject();
@@ -446,51 +446,51 @@ void ABCVm::callMethod(call_context* th, int n, int m)
 	LOG_CALL( "callMethod " << n << ' ' << m);
 
 	RUNTIME_STACK_POP_CREATE_REF(th,obj);
-	checkDeclaredTraits(obj);
+	ASObject* objAS = obj->toObject(th->context->root->getSystemState());
+	checkDeclaredTraits(objAS);
 
-	if(obj->is<Null>())
+	if(objAS->is<Null>())
 	{
 		LOG(LOG_ERROR,"trying to call method on null:"<<n);
 		throwError<TypeError>(kConvertNullToObjectError);
 	}
-	if (obj->is<Undefined>())
+	if (objAS->is<Undefined>())
 	{
 		LOG(LOG_ERROR,"trying to call method on undefined:"<<n);
 		throwError<TypeError>(kConvertUndefinedToObjectError);
 	}
 
-	asAtomR o=obj->getObject()->getSlot(n);
+	asAtomR o=objAS->getSlot(n);
 	if(o->type != T_INVALID)
 	{
 		callImpl(th, o, obj, args, m, true);
 	}
 	else
 	{
-		tiny_string clsname = obj->getObject()->getClassName();
+		tiny_string clsname = objAS->getClassName();
 		throwError<TypeError>(kCallNotFoundError, "", clsname);
 	}
 	LOG_CALL(_("End of calling method ") << n);
 }
 
-void ABCVm::checkDeclaredTraits(asAtomR& obj)
+void ABCVm::checkDeclaredTraits(ASObject* obj)
 {
-	if(!obj->getObject()->isInitialized() &&
+	if(!obj->isInitialized() &&
 			!obj->is<Null>() &&
 			!obj->is<Undefined>() &&
 			!obj->is<IFunction>() &&
 			!obj->is<Function_object>() &&
 			!obj->is<Class_base>() &&
-			obj->getObject()->getClass() &&
-			(obj->getObject()->getClass() != Class_object::getClass(obj->getObject()->getSystemState())))
-		obj->getObject()->getClass()->setupDeclaredTraits(obj->getObject());
+			obj->getClass() &&
+			(obj->getClass() != Class_object::getClass(obj->getSystemState())))
+		obj->getClass()->setupDeclaredTraits(obj);
 }
 
 int32_t ABCVm::getProperty_i(ASObject* obj, multiname* name)
 {
 	_NR<ASObject> objRef = _MNR(obj);
 	LOG_CALL( _("getProperty_i ") << *name );
-	asAtomR value =asAtom::fromObject(objRef.getPtr());
-	checkDeclaredTraits(value);
+	checkDeclaredTraits(objRef.getPtr());
 
 	//TODO: implement exception handling to find out if no integer can be returned
 	return obj->getVariableByMultiname_i(*name);
@@ -500,8 +500,7 @@ ASObject* ABCVm::getProperty(ASObject* objPtr, multiname* name)
 {
 	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL( _("getProperty ") << *name << ' ' << obj->toDebugString() << ' '<<obj->isInitialized());
-	asAtomR value = asAtom::fromObject(obj.getPtr());
-	checkDeclaredTraits(value);
+	checkDeclaredTraits(obj.getPtr());
 		
 	asAtomR prop=obj->getVariableByMultiname(*name);
 	ASObject *ret;
@@ -1498,8 +1497,9 @@ bool ABCVm::getLex(call_context* th, int n)
 		else
 			canCache = false;
 
-		checkDeclaredTraits(s);
-		asAtomR prop=s->getObject()->getVariableByMultiname(*name, opt);
+		ASObject* objAS = s->toObject(th->context->root->getSystemState());
+		checkDeclaredTraits(objAS);
+		asAtomR prop=objAS->getVariableByMultiname(*name, opt);
 		if(prop->type != T_INVALID)
 		{;
 			o=prop;
@@ -1520,8 +1520,9 @@ bool ABCVm::getLex(call_context* th, int n)
 			else
 				canCache = false;
 	
-			checkDeclaredTraits(it->object);
-			asAtomR prop=it->object->toObject(th->context->root->getSystemState())->getVariableByMultiname(*name, opt);
+			ASObject* objAS = it->object->toObject(th->context->root->getSystemState());
+			checkDeclaredTraits(objAS);
+			asAtomR prop=objAS->getVariableByMultiname(*name, opt);
 			if(prop->type != T_INVALID)
 			{
 				o=prop;
@@ -1817,8 +1818,7 @@ bool ABCVm::lessEquals(ASObject* obj1Ptr, ASObject* obj2Ptr)
 
 void ABCVm::initProperty(ASObject* obj, ASObject* value, multiname* name)
 {
-	asAtomR objAtom = asAtom::fromObject(obj);
-	checkDeclaredTraits(objAtom);
+	checkDeclaredTraits(obj);
 
 	//Allow to set contant traits
 	asAtomR v = asAtom::fromObject(value);
@@ -2124,8 +2124,9 @@ void ABCVm::constructProp(call_context* th, int n, int m)
 
 	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 
-	checkDeclaredTraits(obj);
-	asAtomR o=obj->toObject(th->context->root->getSystemState())->getVariableByMultiname(*name);
+	ASObject* objAS = obj->toObject(th->context->root->getSystemState());
+	checkDeclaredTraits(objAS);
+	asAtomR o=objAS->getVariableByMultiname(*name);
 
 	if(o->type == T_INVALID)
 	{

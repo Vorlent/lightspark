@@ -996,7 +996,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				multiname* name=context->context->getMultiname(t,context);
 				LOG_CALL("initProperty "<<*name);
 				RUNTIME_STACK_POP_CREATE_REF(context,obj);
-				checkDeclaredTraits(obj);
+				checkDeclaredTraits(obj->toObject(context->context->root->getSystemState()));
 				obj->toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
 				name->resetNameIfObject();
 				break;

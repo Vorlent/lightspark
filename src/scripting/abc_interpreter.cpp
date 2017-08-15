@@ -1263,8 +1263,8 @@ void ABCVm::abc_getProperty(call_context* context,memorystream& code)
 	RUNTIME_STACK_POP_CREATE_REF(context,objAtom);
 
 	LOG_CALL( _("getProperty ") << *name << ' ' << obj->toDebugString() << ' '<<obj->isInitialized());
-	checkDeclaredTraits(objAtom);
-	ASObject* obj = objAtom->getObject();
+	ASObject* obj = objAtom->toObject(context->context->root->getSystemState());
+	checkDeclaredTraits(obj);
 
 
 	asAtomR prop=obj->getVariableByMultiname(*name);
@@ -1292,8 +1292,9 @@ void ABCVm::abc_initproperty(call_context* context,memorystream& code)
 	multiname* name=context->context->getMultiname(t,context);
 	LOG_CALL("initProperty "<<*name);
 	RUNTIME_STACK_POP_CREATE_REF(context,obj);
-	checkDeclaredTraits(obj);
-	obj->toObject(context->context->root->getSystemState())->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
+	ASObject* objAS = obj->toObject(context->context->root->getSystemState());
+	checkDeclaredTraits(objAS);
+	objAS->setVariableByMultiname(*name,value,ASObject::CONST_ALLOWED);
 	name->resetNameIfObject();
 }
 void ABCVm::abc_deleteproperty(call_context* context,memorystream& code)
