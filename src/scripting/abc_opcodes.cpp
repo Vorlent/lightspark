@@ -751,13 +751,13 @@ asAtomR ABCVm::constructFunction(call_context* th, asAtomR& f, std::vector<asAto
 	ASObject* constructor = new_functionObject(f->as<IFunction>()->prototype);
 	if (f->as<IFunction>()->prototype->subtype != SUBTYPE_FUNCTIONOBJECT)
 	{
-		f->as<IFunction>()->prototype->incRef();
-		constructor->setVariableByQName("prototype","",f->as<IFunction>()->prototype.getPtr(),DECLARED_TRAIT);
+		asAtomR func = asAtom::fromObject(f->as<IFunction>()->prototype.getPtr());
+		constructor->setVariableAtomByQName("prototype",nsNameAndKind(),func,DECLARED_TRAIT);
 	}
 	else
 	{
-		Class<ASObject>::getRef(f->as<IFunction>()->getSystemState())->prototype->getObj()->incRef();
-		constructor->setVariableByQName("prototype","",Class<ASObject>::getRef(f->as<IFunction>()->getSystemState())->prototype->getObj(),DECLARED_TRAIT);
+		asAtomR func = asAtom::fromObject(Class<ASObject>::getRef(f->as<IFunction>()->getSystemState())->prototype->getObj());
+		constructor->setVariableAtomByQName("prototype",nsNameAndKind(),func,DECLARED_TRAIT);
 	}
 	
 	ret->getObject()->setVariableByQName("constructor","",constructor,DECLARED_TRAIT);

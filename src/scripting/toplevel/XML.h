@@ -131,7 +131,7 @@ public:
 	ASFUNCTION(insertChildAfter);
 	ASFUNCTION(insertChildBefore);
 	ASFUNCTION(namespaceDeclarations);
-	ASFUNCTION(removeNamespace);
+	ASFUNCTION_ATOM(removeNamespace);
 	ASFUNCTION(comments);
 	ASFUNCTION(processingInstructions);
 	ASFUNCTION(_propertyIsEnumerable);

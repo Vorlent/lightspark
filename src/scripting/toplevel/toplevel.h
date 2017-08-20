@@ -516,7 +516,7 @@ class Class<IFunction>: public Class_base
 private:
 	Class<IFunction>(MemoryAccount* m):Class_base(QName(BUILTIN_STRINGS::STRING_FUNCTION,BUILTIN_STRINGS::EMPTY),m){}
 	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass);
-	IFunction* getNopFunction();
+	asAtomR getNopFunction();
 public:
 	static Class<IFunction>* getClass(SystemState* sys);
 	static _R<Class<IFunction>> getRef(SystemState* sys)

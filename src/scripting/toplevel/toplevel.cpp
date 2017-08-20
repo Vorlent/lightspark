@@ -247,7 +247,7 @@ asAtomR Class<IFunction>::generator(std::vector<asAtomR>& args, const unsigned i
 {
 	if (argslen > 0)
 		throwError<EvalError>(kFunctionConstructorError);
-	return asAtom::fromObject(getNopFunction());
+	return getNopFunction();
 }
 
 ASObject *IFunction::describeType() const
@@ -2115,24 +2115,23 @@ ASObject* ASNop(ASObject* obj, ASObject* const* args, const unsigned int argslen
 	return obj->getSystemState()->getUndefinedRef();
 }
 
-IFunction* Class<IFunction>::getNopFunction()
+asAtomR Class<IFunction>::getNopFunction()
 {
 	IFunction* ret=new (this->memoryAccount) Function(this, ASNop);
 	//Similarly to newFunction, we must create a prototype object
 	ret->prototype = _MR(new_asobject(ret->getSystemState()));
-	ret->incRef();
 	ret->prototype->setVariableByQName("constructor","",ret,DECLARED_TRAIT);
-	return ret;
+	return asAtom::fromObject(ret);
 }
 
 asAtomR Class<IFunction>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
 {
 	if (argslen > 0)
 		throwError<EvalError>(kFunctionConstructorError);
-	ASObject* ret = getNopFunction();
+	asAtomR ret = getNopFunction();
 	if (construct)
-		ret->setConstructIndicator();
-	return asAtom::fromObject(ret);
+		ret->getObject()->setConstructIndicator();
+	return ret;
 }
 
 Class<IFunction>* Class<IFunction>::getClass(SystemState* sys)

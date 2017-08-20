@@ -58,7 +58,7 @@ using namespace lightspark;
 			asAtomR objatom = asAtom::fromObject(th->nodes[0].getPtr()); \
 			std::vector<asAtomR> argsAtom; \
 			argsAtom.reserve(argslen); \
-			for(int i = 0; i < argslen; i++) { \
+			for(unsigned int i = 0; i < argslen; i++) { \
 				argsAtom.push_back(asAtom::fromObject(args[i])); \
 			} \
 			return XML::name(obj->getSystemState(), objatom, argsAtom, argslen)->toObject(obj->getSystemState()); \
@@ -186,7 +186,7 @@ ASFUNCTIONBODY_XML_DELEGATE(_namespace);
 ASFUNCTIONBODY_XML_DELEGATE(namespaceDeclarations);
 ASFUNCTIONBODY_XML_DELEGATE(nodeKind);
 ASFUNCTIONBODY_XML_DELEGATE(_prependChild);
-ASFUNCTIONBODY_XML_DELEGATE(removeNamespace);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(removeNamespace);
 ASFUNCTIONBODY_XML_DELEGATE(_setChildren);
 ASFUNCTIONBODY_XML_DELEGATE(_setLocalName);
 ASFUNCTIONBODY_XML_DELEGATE(_setName);

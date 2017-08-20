@@ -28,27 +28,27 @@ using namespace std;
 void Rectangle::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED);
-	IFunction* gleft=Class<IFunction>::getFunction(c->getSystemState(),_getLeft);
-	c->setDeclaredMethodByQName("left","",gleft,GETTER_METHOD,true);
-	gleft->incRef();
-	c->setDeclaredMethodByQName("x","",gleft,GETTER_METHOD,true);
-	IFunction* sleft=Class<IFunction>::getFunction(c->getSystemState(),_setLeft);
-	c->setDeclaredMethodByQName("left","",sleft,SETTER_METHOD,true);
-	sleft->incRef();
-	c->setDeclaredMethodByQName("x","",sleft,SETTER_METHOD,true);
+
+	asAtomR gleft=asAtom::fromObject(Class<IFunction>::getFunction(c->getSystemState(),_getLeft));
+	c->setDeclaredMethodAtomByQName("left",nsNameAndKind(),gleft,SETTER_METHOD,true);
+	c->setDeclaredMethodAtomByQName("x","",gleft,GETTER_METHOD,true);
+
+	asAtomR sleft=asAtom::fromObject(Class<IFunction>::getFunction(c->getSystemState(),_setLeft));
+	c->setDeclaredMethodAtomByQName("left",nsNameAndKind(),sleft,SETTER_METHOD,true);
+	c->setDeclaredMethodAtomByQName("x","",sleft,SETTER_METHOD,true);
+
 	c->setDeclaredMethodByQName("right","",Class<IFunction>::getFunction(c->getSystemState(),_getRight),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("right","",Class<IFunction>::getFunction(c->getSystemState(),_setRight),SETTER_METHOD,true);
 	c->setDeclaredMethodByQName("width","",Class<IFunction>::getFunction(c->getSystemState(),_getWidth),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("width","",Class<IFunction>::getFunction(c->getSystemState(),_setWidth),SETTER_METHOD,true);
 
-	IFunction* gtop=Class<IFunction>::getFunction(c->getSystemState(),_getTop);
-	c->setDeclaredMethodByQName("top","",gtop,GETTER_METHOD,true);
-	gtop->incRef();
-	c->setDeclaredMethodByQName("y","",gtop,GETTER_METHOD,true);
-	IFunction* stop=Class<IFunction>::getFunction(c->getSystemState(),_setTop);
-	c->setDeclaredMethodByQName("top","",stop,SETTER_METHOD,true);
-	stop->incRef();
-	c->setDeclaredMethodByQName("y","",stop,SETTER_METHOD,true);
+	asAtomR gtop=asAtom::fromObject(Class<IFunction>::getFunction(c->getSystemState(),_getTop));
+	c->setDeclaredMethodAtomByQName("top",nsNameAndKind(),gtop,GETTER_METHOD,true);
+	c->setDeclaredMethodAtomByQName("y",nsNameAndKind(),gtop,GETTER_METHOD,true);
+
+	asAtomR stop=asAtom::fromObject(Class<IFunction>::getFunction(c->getSystemState(),_setTop));
+	c->setDeclaredMethodAtomByQName("top",nsNameAndKind(),stop,SETTER_METHOD,true);
+	c->setDeclaredMethodAtomByQName("y",nsNameAndKind(),stop,SETTER_METHOD,true);
 
 	c->setDeclaredMethodByQName("bottom","",Class<IFunction>::getFunction(c->getSystemState(),_getBottom),GETTER_METHOD,true);
 	c->setDeclaredMethodByQName("bottom","",Class<IFunction>::getFunction(c->getSystemState(),_setBottom),SETTER_METHOD,true);

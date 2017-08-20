@@ -353,17 +353,14 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 	textLine->updateSizes();
 	if (textLine->width > textLine->textWidth)
 	{
-		textLine->decRef();
 		th->decRef();
 		return _MAR(asAtom::invalidAtom);
 	}
 	if (previousLine.isNull())
 	{
-		textLine->incRef();
 		th->firstLine = textLine;
 		if (th->lastLine.isNull())
 		{
-			textLine->incRef();
 			th->lastLine = textLine;
 		}
 	}
@@ -371,11 +368,8 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 	{
 		if (th->lastLine == previousLine)
 		{
-			th->lastLine->decRef();
-			textLine->incRef();
 			th->lastLine = textLine;
 		}
-		textLine->incRef();
 		previousLine->nextLine = textLine;
 	}
 	
@@ -424,7 +418,6 @@ ASFUNCTIONBODY_ATOM(TextBlock, recreateTextLine)
 	}
 	if (!previousLine.isNull())
 		previousLine->nextLine == textLine;
-	textLine->incRef();
 	return asAtom::fromObject(textLine.getPtr());
 }
 

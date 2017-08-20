@@ -1909,7 +1909,6 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChildAt)
 			++it;
 		child=(*it).getPtr();
 		//incRef before the refrence is destroyed
-		child->incRef();
 		th->dynamicDisplayList.erase(it);
 	}
 	child->setOnStage(false);
@@ -1950,7 +1949,6 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 
 	Locker l(th->mutexDisplayList);
 
-	child->incRef();
 	th->dynamicDisplayList.erase(th->dynamicDisplayList.begin()+curIndex); //remove from old position
 
 	std::vector<_R<DisplayObject>>::iterator it=th->dynamicDisplayList.begin();

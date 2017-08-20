@@ -1579,9 +1579,8 @@ void XML::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWE
 				{
 					if (o->getObject()->as<XML>()->getNodeKind() == pugi::node_pcdata)
 					{
-						_R<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
+						_R<XML> tmp = _IMR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
 						tmp->parentNode = tmpnode;
-						tmp->incRef();
 						tmp->nodetype = pugi::node_pcdata;
 						tmp->nodename = "text";
 						tmp->nodenamespace_uri = BUILTIN_STRINGS::EMPTY;
@@ -2217,20 +2216,19 @@ ASFUNCTIONBODY(XML,namespaceDeclarations)
 	return namespaces;
 }
 
-ASFUNCTIONBODY(XML,removeNamespace)
+ASFUNCTIONBODY_ATOM(XML,removeNamespace)
 {
 	XML *th = obj->as<XML>();
 	_NR<ASObject> arg1;
-	ARG_UNPACK(arg1);
+	ARG_UNPACK_ATOM(arg1);
 	Namespace* ns;
 	if (arg1->is<Namespace>())
 		ns = arg1->as<Namespace>();
 	else
-		ns = Class<Namespace>::getInstanceS(obj->getSystemState(),arg1->toStringId(), BUILTIN_STRINGS::EMPTY);
+		ns = Class<Namespace>::getInstanceS(sys,arg1->toStringId(), BUILTIN_STRINGS::EMPTY);
 
 	th->RemoveNamespace(ns);
-	th->incRef();
-	return th;
+	return asAtom::fromObject(th);
 }
 void XML::RemoveNamespace(Namespace *ns)
 {
