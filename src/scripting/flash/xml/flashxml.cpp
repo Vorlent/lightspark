@@ -252,7 +252,6 @@ ASFUNCTIONBODY(XMLNode,appendChild)
 	{
 		assert_and_throw(!th->root.isNull());
 		c->root = th->root;
-		th->root->incRef();
 	}
 	return NULL;
 }

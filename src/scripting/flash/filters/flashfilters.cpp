@@ -258,7 +258,6 @@ BitmapFilter* ColorMatrixFilter::cloneImpl() const
 	ColorMatrixFilter *cloned = Class<ColorMatrixFilter>::getInstanceS(getSystemState());
 	if (!matrix.isNull())
 	{
-		matrix->incRef();
 		cloned->matrix = matrix;
 	}
 	return cloned;

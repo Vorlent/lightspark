@@ -491,7 +491,6 @@ ASFUNCTIONBODY_ATOM(Vector, _reverse)
 		th->vec[index]=*it;
 		index--;
 	}
-	th->incRef();
 	return asAtom::fromObject(th);
 }
 

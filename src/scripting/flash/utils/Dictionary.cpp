@@ -110,8 +110,7 @@ void Dictionary::setVariableByMultiname(const multiname& name, asAtomR& o, CONST
 			default:
 				break;
 		}
-		name.name_o->incRef();
-		_R<ASObject> name_o(name.name_o);
+		_R<ASObject> name_o = _IMR(name.name_o);
 
 		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 		if(it!=data.end())
@@ -161,8 +160,7 @@ bool Dictionary::deleteVariableByMultiname(const multiname& name)
 			default:
 				break;
 		}
-		name.name_o->incRef();
-		_R<ASObject> name_o(name.name_o);
+		_R<ASObject> name_o = _IMR(name.name_o);
 
 		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 		if(it != data.end())
@@ -214,13 +212,11 @@ asAtomR Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_O
 				default:
 					break;
 			}
-			name.name_o->incRef();
-			_R<ASObject> name_o(name.name_o);
+			_R<ASObject> name_o = _IMR(name.name_o);
 
 			Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 			if(it != data.end())
 			{
-				it->second->incRef();
 				return asAtom::fromObject(it->second.getPtr());
 			}
 			else
@@ -279,9 +275,7 @@ bool Dictionary::hasPropertyByMultiname(const multiname& name, bool considerDyna
 				break;
 		}
 
-		name.name_o->incRef();
-		_R<ASObject> name_o(name.name_o);
-
+		_R<ASObject> name_o = _IMR(name.name_o);
 		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 		return it != data.end();
 	}

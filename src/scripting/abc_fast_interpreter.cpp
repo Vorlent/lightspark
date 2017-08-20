@@ -1730,7 +1730,6 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				rewriteableCode[instructionPointer-1]=0xff;
 				rewritableData->objs[0]=obj;
 				//Also push the object right away
-				obj->incRef();
 				asAtomR value = asAtom::fromObject(obj);
 				runtime_stack_push_ref(context, value);
 				//Move to the next instruction
@@ -1743,7 +1742,6 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				ASObject* o=data->objs[0];
 				instructionPointer+=8;
 				LOG_CALL( "pushEarly " << o);
-				o->incRef();
 				asAtomR value = asAtom::fromObject(o);
 				runtime_stack_push_ref(context, value);
 				break;

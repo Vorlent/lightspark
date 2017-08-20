@@ -144,9 +144,9 @@ ASFUNCTIONBODY(lightspark,getQualifiedSuperclassName)
 	return abstract_s(obj->getSystemState(),c->getQualifiedClassName());
 }
 
-ASFUNCTIONBODY(lightspark,getDefinitionByName)
+ASFUNCTIONBODY_ATOM(lightspark,getDefinitionByName)
 {
-	assert_and_throw(args && argslen==1);
+	assert_and_throw(argslen==1);
 	const tiny_string& tmp=args[0]->toString();
 	multiname name(NULL);
 	name.name_type=multiname::NAME_STRING;
@@ -154,13 +154,13 @@ ASFUNCTIONBODY(lightspark,getDefinitionByName)
 	tiny_string nsName;
 	tiny_string tmpName;
 	stringToQName(tmp,tmpName,nsName);
-	name.name_s_id=args[0]->getSystemState()->getUniqueStringId(tmpName);
+	name.name_s_id=sys->getUniqueStringId(tmpName);
 	if (nsName != "")
-		name.ns.push_back(nsNameAndKind(args[0]->getSystemState(),nsName,NAMESPACE));
+		name.ns.push_back(nsNameAndKind(sys,nsName,NAMESPACE));
 
 	LOG(LOG_CALLS,_("Looking for definition of ") << name);
 	ASObject* target;
-	ASObject* o=ABCVm::getCurrentApplicationDomain(getVm(args[0]->getSystemState())->currentCallContext)->getVariableAndTargetByMultiname(name,target);
+	ASObject* o=ABCVm::getCurrentApplicationDomain(getVm(sys)->currentCallContext)->getVariableAndTargetByMultiname(name,target);
 
 	if(o==NULL)
 	{
@@ -170,8 +170,7 @@ ASFUNCTIONBODY(lightspark,getDefinitionByName)
 	assert_and_throw(o->getObjectType()==T_CLASS);
 
 	LOG(LOG_CALLS,_("Getting definition for ") << name);
-	o->incRef();
-	return o;
+	return asAtom::fromObject(o);
 }
 
 ASFUNCTIONBODY(lightspark,describeType)

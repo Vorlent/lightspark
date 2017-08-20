@@ -254,7 +254,6 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_getMinDomainMemoryLength)
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getCurrentDomain)
 {
 	_NR<ApplicationDomain> ret=ABCVm::getCurrentApplicationDomain(getVm(sys)->currentCallContext);
-	ret->incRef();
 	return asAtom::fromObject(ret.getPtr());
 }
 
@@ -315,7 +314,6 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,getDefinition)
 	//assert_and_throw(o->getObjectType()==T_CLASS);
 
 	LOG(LOG_CALLS,_("Getting definition for ") << name);
-	o->incRef();
 	return asAtom::fromObject(o);
 }
 
@@ -485,11 +483,10 @@ ASFUNCTIONBODY(SecurityDomain,_constructor)
 	return NULL;
 }
 
-ASFUNCTIONBODY(SecurityDomain,_getCurrentDomain)
+ASFUNCTIONBODY_ATOM(SecurityDomain,_getCurrentDomain)
 {
 	_NR<SecurityDomain> ret=ABCVm::getCurrentSecurityDomain(getVm(getSys())->currentCallContext);
-	ret->incRef();
-	return ret.getPtr();
+	return asAtom::fromObject(ret.getPtr());
 }
 
 void Security::sinit(Class_base* c)

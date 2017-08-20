@@ -1209,7 +1209,6 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 	if(dispatcher->classdef->isSubClass(Class<DisplayObject>::getClass(dispatcher->getSystemState())))
 	{
 		event->eventPhase = EventPhase::CAPTURING_PHASE;
-		dispatcher->incRef();
 		//We fetch the relatedObject in the case of rollOver/Out
 		_NR<DisplayObject> rcur;
 		if(event->type == "rollOver" || event->type == "rollOut")
@@ -1217,7 +1216,6 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 			_R<MouseEvent> mevent = _IMR(event->as<MouseEvent>());
 			if(mevent->relatedObject)
 			{  
-				mevent->relatedObject->incRef();
 				rcur = mevent->relatedObject;
 			}
 		}
@@ -1233,7 +1231,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 				rcur = rcur->getParent();
 				rparents.push_back(rcur);
 			}
-			_R<DisplayObject> cur = _MR(dispatcher->as<DisplayObject>());
+			_R<DisplayObject> cur = _IMR(dispatcher->as<DisplayObject>());
 			//Check if cur is an ancestor of rcur
 			auto i = rparents.begin();
 			for(;i!=rparents.end();++i)
@@ -2342,7 +2340,6 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 				f->acquireScope(prot->class_scope);
 				if(isBorrowed)
 				{
-					obj->incRef();
 					asAtomR o = asAtom::fromObject(obj);
 					f->addToScope(scope_entry(o,false));
 				}
@@ -2350,7 +2347,6 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 			else
 			{
 				assert(scriptid != -1);
-				obj->incRef();
 				asAtomR o = asAtom::fromObject(obj);
 				f->addToScope(scope_entry(o,false));
 			}

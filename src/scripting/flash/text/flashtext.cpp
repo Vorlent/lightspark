@@ -719,7 +719,6 @@ ASFUNCTIONBODY_ATOM(TextField,_getRestrict)
 		return _MAR(asAtom::invalidAtom);
 	else
 	{
-		th->restrictChars->incRef();
 		return asAtom::fromObject(th->restrictChars.getPtr());
 	}
 }

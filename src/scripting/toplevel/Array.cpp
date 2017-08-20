@@ -432,7 +432,6 @@ ASFUNCTIONBODY_ATOM(Array, _reverse)
 			th->set(size-(it->first+1),it->second,false);
 		}
 	}
-	th->incRef();
 	return asAtom::fromObject(th);
 }
 

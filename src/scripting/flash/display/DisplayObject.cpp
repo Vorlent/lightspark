@@ -507,7 +507,6 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getMask)
 	if(th->mask.isNull())
 		return _MAR(asAtom::nullAtom);
 
-	th->mask->incRef();
 	return asAtom::fromObject(th->mask.getPtr());
 }
 
@@ -772,13 +771,11 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getLoaderInfo)
 	if (r.isNull())
 	{
 		// if this DisplayObject is not yet added to the stage we just use the mainclip
-		r = _MR(sys->mainClip);
-		r->incRef();
+		r = sys->mainClip;
 	}
 	if(r.isNull() || r->loaderInfo.isNull())
 		return _MAR(asAtom::undefinedAtom);
 	
-	r->loaderInfo->incRef();
 	return asAtom::fromObject(r->loaderInfo.getPtr());
 }
 
@@ -789,7 +786,6 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getStage)
 	if(ret.isNull())
 		return _MAR(asAtom::nullAtom);
 
-	ret->incRef();
 	return asAtom::fromObject(ret.getPtr());
 }
 
@@ -912,7 +908,6 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getParent)
 	if(th->parent.isNull())
 		return _MAR(asAtom::undefinedAtom);
 
-	th->parent->incRef();
 	return asAtom::fromObject(th->parent.getPtr());
 }
 
@@ -931,7 +926,6 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getRoot)
 	if(ret.isNull())
 		return _MAR(asAtom::undefinedAtom);
 
-	ret->incRef();
 	return asAtom::fromObject(ret.getPtr());
 }
 

@@ -131,7 +131,6 @@ const URLInfo& RootMovieClip::getBaseURL()
 void SystemState::registerFrameListener(_R<DisplayObject> obj)
 {
 	Locker l(mutexFrameListeners);
-	obj->incRef();
 	frameListeners.insert(obj);
 }
 

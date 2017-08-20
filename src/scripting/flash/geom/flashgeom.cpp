@@ -994,13 +994,12 @@ ASFUNCTIONBODY(Transform,_setMatrix)
 	return NULL;
 }
 
-ASFUNCTIONBODY(Transform,_getColorTransform)
+ASFUNCTIONBODY_ATOM(Transform,_getColorTransform)
 {
-	Transform* th=Class<Transform>::cast(obj);
+	Transform* th=obj->as<Transform>();
 	if (th->owner->colorTransform.isNull())
-		th->owner->colorTransform = _NR<ColorTransform>(Class<ColorTransform>::getInstanceS(obj->getSystemState()));
-	th->owner->colorTransform->incRef();
-	return th->owner->colorTransform.getPtr();
+		th->owner->colorTransform = _MNR(Class<ColorTransform>::getInstanceS(sys));
+	return asAtom::fromObject(th->owner->colorTransform.getPtr());
 }
 
 ASFUNCTIONBODY(Transform,_setColorTransform)
@@ -1011,7 +1010,6 @@ ASFUNCTIONBODY(Transform,_setColorTransform)
 	if (ct.isNull())
 		throwError<TypeError>(kNullPointerError, "colorTransform");
 
-	ct->incRef();
 	th->owner->colorTransform = ct;
 
 	return NULL;

@@ -265,14 +265,13 @@ ASFUNCTIONBODY(URLRequest,_getMethod)
 	return NULL;
 }
 
-ASFUNCTIONBODY(URLRequest,_getData)
+ASFUNCTIONBODY_ATOM(URLRequest,_getData)
 {
-	URLRequest* th=static_cast<URLRequest*>(obj);
+	URLRequest* th=obj->as<URLRequest>();
 	if(th->data.isNull())
-		return getSys()->getUndefinedRef();
+		return asAtom::fromObject(getSys()->getUndefinedRef());
 
-	th->data->incRef();
-	return th->data.getPtr();
+	return asAtom::fromObject(th->data.getPtr());
 }
 
 ASFUNCTIONBODY(URLRequest,_setData)
@@ -557,15 +556,14 @@ ASFUNCTIONBODY(URLLoader,_getDataFormat)
 	return abstract_s(obj->getSystemState(),th->getDataFormat());
 }
 
-ASFUNCTIONBODY(URLLoader,_getData)
+ASFUNCTIONBODY_ATOM(URLLoader,_getData)
 {
-	URLLoader* th=static_cast<URLLoader*>(obj);
+	URLLoader* th=obj->as<URLLoader>();
 	SpinlockLocker l(th->spinlock);
 	if(th->data.isNull())
-		return getSys()->getUndefinedRef();
+		return asAtom::fromObject(getSys()->getUndefinedRef());
 	
-	th->data->incRef();
-	return th->data.getPtr();
+	return asAtom::fromObject(th->data.getPtr());
 }
 
 ASFUNCTIONBODY(URLLoader,_setData)
@@ -656,12 +654,12 @@ ASFUNCTIONBODY(SharedObject,_setDefaultObjectEncoding)
 	return NULL;
 }
 
-ASFUNCTIONBODY(SharedObject,getLocal)
+ASFUNCTIONBODY_ATOM(SharedObject,getLocal)
 {
 	tiny_string name;
 	tiny_string localPath;
 	bool secure;
-	ARG_UNPACK(name) (localPath,"") (secure,false);
+	ARG_UNPACK_ATOM(name) (localPath,"") (secure,false);
 	
 	if (name=="")
 		throwError<ASError>(0,"invalid name");
@@ -671,16 +669,15 @@ ASFUNCTIONBODY(SharedObject,getLocal)
 
 	tiny_string fullname = localPath + "|";
 	fullname += name;
-	SharedObject* res = Class<SharedObject>::getInstanceS(obj->getSystemState());
+	SharedObject* res = Class<SharedObject>::getInstanceS(sys);
 	std::map<tiny_string, ASObject* >::iterator it = sharedobjectmap.find(fullname);
 	if (it == sharedobjectmap.end())
 	{
-		sharedobjectmap.insert(make_pair(fullname,Class<ASObject>::getInstanceS(obj->getSystemState())));
+		sharedobjectmap.insert(make_pair(fullname,Class<ASObject>::getInstanceS(sys)));
 		it = sharedobjectmap.find(fullname);
 	}
 	res->data = _IMNR<ASObject>(it->second);
-	res->incRef();
-	return res;
+	return asAtom::fromObject(res);
 }
 
 ASFUNCTIONBODY(SharedObject,getRemote)
@@ -820,7 +817,6 @@ ASFUNCTIONBODY(NetConnection,call)
 	_R<Array> rest=_MR(Class<Array>::getInstanceSNoArgs(obj->getSystemState()));
 	for(uint32_t i=2;i<argslen;i++)
 	{
-		args[i]->incRef();
 		asAtomR argi = asAtom::fromObject(args[i]);
 		rest->push(argi);
 	}
@@ -1249,14 +1245,12 @@ ASFUNCTIONBODY(NetStream,_getInfo)
 	return res;
 }
 
-ASFUNCTIONBODY(NetStream,_getClient)
+ASFUNCTIONBODY_ATOM(NetStream,_getClient)
 {
-	NetStream* th=Class<NetStream>::cast(obj);
+	NetStream* th=obj->as<NetStream>();
 	if(th->client.isNull())
-		return getSys()->getUndefinedRef();
-
-	th->client->incRef();
-	return th->client.getPtr();
+		return asAtom::fromObject(getSys()->getUndefinedRef());
+	return asAtom::fromObject(th->client.getPtr());
 }
 
 ASFUNCTIONBODY(NetStream,_setClient)
@@ -1305,7 +1299,6 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 	else
 		th->peerID = CONNECT_TO_FMS;
 
-	netConnection->incRef();
 	th->connection=netConnection;
 	th->client = _IMNR<ASObject>(th);
 
@@ -1483,7 +1476,6 @@ ASFUNCTIONBODY(NetStream,attach)
 	_NR<NetConnection> netConnection;
 	ARG_UNPACK(netConnection);
 
-	netConnection->incRef();
 	th->connection=netConnection;
 	return NULL;
 }
@@ -1991,7 +1983,6 @@ void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtom
 		std::vector<asAtomR> callbackArgs;
 		callbackArgs.reserve(arglist.size());
 
-		client->incRef();
 		for (auto it = arglist.cbegin();it != arglist.cend(); it++)
 		{
 			asAtomR arg = (*it);
@@ -2532,14 +2523,13 @@ ASFUNCTIONBODY(lightspark,registerClassAlias)
 	return NULL;
 }
 
-ASFUNCTIONBODY(lightspark,getClassByAlias)
+ASFUNCTIONBODY_ATOM(lightspark,getClassByAlias)
 {
-	assert_and_throw(argslen==1 && args[0]->getObjectType()==T_STRING);
+	assert_and_throw(argslen==1 && args[0]->getObject()->getObjectType()==T_STRING);
 	const tiny_string& arg0 = args[0]->toString();
 	auto it=getSys()->aliasMap.find(arg0);
 	if(it==getSys()->aliasMap.end())
 		throwError<ReferenceError>(kClassNotFoundError, arg0);
 
-	it->second->incRef();
-	return it->second.getPtr();
+	return asAtom::fromObject(it->second.getPtr());
 }

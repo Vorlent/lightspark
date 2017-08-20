@@ -176,10 +176,10 @@ ASFUNCTIONBODY(avmplusSystem,exit)
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.exit is unimplemented."));
 	return NULL;
 }
-ASFUNCTIONBODY(avmplusSystem,canonicalizeNumber)
+ASFUNCTIONBODY_ATOM(avmplusSystem,canonicalizeNumber)
 {
 	_NR<ASObject> o;
-	ARG_UNPACK(o);
+	ARG_UNPACK_ATOM(o);
 	switch(o->getObjectType())
 	{
 		case T_NUMBER:
@@ -188,13 +188,12 @@ ASFUNCTIONBODY(avmplusSystem,canonicalizeNumber)
 		case T_UINTEGER:
 		case T_NULL:
 		case T_UNDEFINED:
-			return abstract_d(o->getSystemState(),o->toNumber());
+			return asAtom::fromObject(abstract_d(o->getSystemState(),o->toNumber()));
 		case T_QNAME:
 		case T_NAMESPACE:
-			return abstract_d(o->getSystemState(),Number::NaN);
+			return asAtom::fromObject(abstract_d(o->getSystemState(),Number::NaN));
 		default:
-			o->incRef();
-			return o.getPtr();
+			return asAtom::fromObject(o.getPtr());
 	}
 }
 
@@ -267,17 +266,16 @@ ASFUNCTIONBODY(avmplusDomain,loadBytes)
 	delete sbuf;
 	return NULL;
 }
-ASFUNCTIONBODY(avmplusDomain,getClass)
+ASFUNCTIONBODY_ATOM(avmplusDomain,getClass)
 {
-	return getDefinitionByName(obj,args,argslen);
+	return getDefinitionByName(sys, obj,args,argslen);
 }
-ASFUNCTIONBODY(avmplusDomain,_getDomainMemory)
+ASFUNCTIONBODY_ATOM(avmplusDomain,_getDomainMemory)
 {
-	avmplusDomain* th = Class<avmplusDomain>::cast(obj);
+	avmplusDomain* th = obj->as<avmplusDomain>();
 	if (th->appdomain->domainMemory.isNull())
-		return NULL;
-	th->appdomain->domainMemory->incRef();
-	return th->appdomain->domainMemory.getPtr();
+		return asAtomR::nullAtomR;
+	return asAtom::fromObject(th->appdomain->domainMemory.getPtr());
 }
 ASFUNCTIONBODY(avmplusDomain,_setDomainMemory)
 {

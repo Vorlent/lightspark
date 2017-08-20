@@ -338,7 +338,6 @@ public:
 	{
 		if(val.isNull())
 			return _MAR(asAtom::nullAtom);
-		val->incRef();
 		return asAtom::fromObject(val.getPtr());
 	}
 };
@@ -356,7 +355,6 @@ public:
 	{
 		if(val.isNull())
 			return _MAR(asAtom::nullAtom);
-		val->incRef();
 		return asAtom::fromObject(val.getPtr());
 	}
 };

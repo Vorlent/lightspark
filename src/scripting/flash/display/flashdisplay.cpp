@@ -251,7 +251,6 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getLoader)
 		return _MAR(asAtom::invalidAtom);
 	else
 	{
-		th->loader->incRef();
 		return asAtom::fromObject(th->loader.getPtr());
 	}
 }
@@ -260,7 +259,6 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getSharedEvents)
 {
 	LoaderInfo* th=obj->as<LoaderInfo>();
 
-	th->sharedEvents->incRef();
 	return asAtom::fromObject(th->sharedEvents.getPtr());
 }
 
@@ -304,7 +302,6 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getApplicationDomain)
 	if(th->applicationDomain.isNull())
 		return _MAR(asAtom::nullAtom);
 
-	th->applicationDomain->incRef();
 	return asAtom::fromObject(th->applicationDomain.getPtr());
 }
 
@@ -436,14 +433,12 @@ ASFUNCTIONBODY_ATOM(Loader,_getContent)
 	if(ret.isNull())
 		return _MAR(asAtom::invalidAtom);
 
-	ret->incRef();
 	return asAtom::fromObject(ret.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(Loader,_getContentLoaderInfo)
 {
 	Loader* th=obj->as<Loader>();
-	th->contentLoaderInfo->incRef();
 	return asAtom::fromObject(th->contentLoaderInfo.getPtr());
 }
 
@@ -944,7 +939,6 @@ ASFUNCTIONBODY_ATOM(Sprite,_getGraphics)
 	if(th->graphics.isNull())
 		th->graphics=_MR(Class<Graphics>::getInstanceS(sys,th));
 
-	th->graphics->incRef();
 	return asAtom::fromObject(th->graphics.getPtr());
 }
 
@@ -1548,7 +1542,6 @@ void DisplayObjectContainer::insertLegacyChildAt(uint32_t depth, DisplayObject* 
 	_addChildAt(_MR(obj),depth-1); /* depth is 1 based in SWF */
 	if(!obj->name.empty())
 	{
-		obj->incRef();
 		multiname objName(NULL);
 		objName.name_type=multiname::NAME_STRING;
 		objName.name_s_id=getSystemState()->getUniqueStringId(obj->name);
@@ -1768,7 +1761,6 @@ void DisplayObjectContainer::_addChildAt(_R<DisplayObject> child, unsigned int i
 		else
 			child->getParent()->_removeChild(child);
 	}
-	child->incRef();
 	child->setParent(_IMR(this));
 	{
 		Locker l(mutexDisplayList);
@@ -1878,7 +1870,6 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChild)
 	//Notify the object
 	getVm(sys)->addEvent(d,_IMR(Class<Event>::getInstanceS(sys,"added")));
 
-	d->incRef();
 	return asAtom::fromObject(d.getPtr());
 }
 
@@ -1897,7 +1888,6 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChild)
 		throw Class<ArgumentError>::getInstanceS(sys,"removeChild: child not in list", 2025);
 
 	//As we return the child we have to incRef it
-	d->incRef();
 	return asAtom::fromObject(d);
 }
 
@@ -2048,9 +2038,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getChildByName)
 			break;
 		}
 	}
-	if(ret)
-		ret->incRef();
-	else
+	if(!ret)
 		return _MAR(asAtom::invalidAtom);
 	return asAtom::fromObject(ret);
 }
@@ -2067,7 +2055,6 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getChildAt)
 	for(unsigned int i=0;i<index;i++)
 		++it;
 
-	(*it)->incRef();
 	return asAtom::fromObject((*it).getPtr());
 }
 
@@ -2097,9 +2084,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_getChildIndex)
 	assert_and_throw(args[0]->is<DisplayObject>());
 
 	//Cast to object
-	_R<DisplayObject> d= _MR(args[0]->as<DisplayObject>());
-	d->incRef();
-
+	_R<DisplayObject> d= _IMR(args[0]->as<DisplayObject>());
 	return _MAR(asAtom(th->getChildIndex(d)));
 }
 
@@ -2123,7 +2108,6 @@ void DisplayObjectContainer::getObjectsFromPoint(Point* point, Array *ar)
 		auto it = dynamicDisplayList.begin();
 		while (it != dynamicDisplayList.end())
 		{
-			(*it)->incRef();
 			(*it)->getBounds(xmin,xmax,ymin,ymax,m);
 			if (xmin <= point->getX() && xmax >= point->getX()
 					&& ymin <= point->getY() && ymax >= point->getY()) {
@@ -2174,7 +2158,6 @@ ASFUNCTIONBODY_ATOM(Shape,_getGraphics)
 	Shape* th=obj->as<Shape>();
 	if(th->graphics.isNull())
 		th->graphics=_MR(Class<Graphics>::getInstanceS(sys,th));
-	th->graphics->incRef();
 	return asAtom::fromObject(th->graphics.getPtr());
 }
 
@@ -2436,7 +2419,6 @@ ASFUNCTIONBODY_ATOM(Stage,_getFocus)
 	}
 	else
 	{
-		focus->incRef();
 		return asAtom::fromObject(focus.getPtr());
 	}
 }
@@ -2904,7 +2886,6 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getUpState)
 	if(!th->upState)
 		return _MAR(asAtom::nullAtom);
 
-	th->upState->incRef();
 	return asAtom::fromObject(th->upState.getPtr());
 }
 
@@ -2912,8 +2893,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUpState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj->as<SimpleButton>();
-	th->upState = _MNR(args[0]->as<DisplayObject>());
-	th->upState->incRef();
+	th->upState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
 	return _MAR(asAtom::invalidAtom);
 }
@@ -2924,7 +2904,6 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getHitTestState)
 	if(!th->hitTestState)
 		return _MAR(asAtom::nullAtom);
 
-	th->hitTestState->incRef();
 	return asAtom::fromObject(th->hitTestState.getPtr());
 }
 
@@ -2932,8 +2911,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setHitTestState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj->as<SimpleButton>();
-	th->hitTestState = _MNR(args[0]->as<DisplayObject>());
-	th->hitTestState->incRef();
+	th->hitTestState = _IMNR(args[0]->as<DisplayObject>());
 	return _MAR(asAtom::invalidAtom);
 }
 
@@ -2943,7 +2921,6 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getOverState)
 	if(!th->overState)
 		return _MAR(asAtom::nullAtom);
 
-	th->overState->incRef();
 	return asAtom::fromObject(th->overState.getPtr());
 }
 
@@ -2951,8 +2928,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setOverState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj->as<SimpleButton>();
-	th->overState = _MNR(args[0]->as<DisplayObject>());
-	th->overState->incRef();
+	th->overState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
 	return _MAR(asAtom::invalidAtom);
 }
@@ -2963,7 +2939,6 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getDownState)
 	if(!th->downState)
 		return _MAR(asAtom::nullAtom);
 
-	th->downState->incRef();
 	return asAtom::fromObject(th->downState.getPtr());
 }
 
@@ -2971,8 +2946,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setDownState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj->as<SimpleButton>();
-	th->downState = _MNR(args[0]->as<DisplayObject>());
-	th->downState->incRef();
+	th->downState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
 	return _MAR(asAtom::invalidAtom);
 }
@@ -3167,7 +3141,6 @@ void MovieClip::initFrame()
 		{
 			if((int)state.FP < state.last_FP || (int)i > state.last_FP)
 			{
-				//this->incRef(); //TODO kill ref from execute's declaration
 				iter->execute(_IMR(this));
 			}
 			++iter;

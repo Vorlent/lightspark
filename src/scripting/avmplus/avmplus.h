@@ -58,7 +58,7 @@ public:
 	ASFUNCTION(exec);
 	ASFUNCTION(write);
 	ASFUNCTION(exit);
-	ASFUNCTION(canonicalizeNumber);
+	ASFUNCTION_ATOM(canonicalizeNumber);
 };
 
 class avmplusDomain : public ASObject
@@ -71,10 +71,10 @@ public:
 	ASFUNCTION(_constructor);
 	ASFUNCTION(load);
 	ASFUNCTION(loadBytes);
-	ASFUNCTION(getClass);
+	ASFUNCTION_ATOM(getClass);
 	ASFUNCTION(_getCurrentDomain);
 	ASFUNCTION(_getMinDomainMemoryLength);
-	ASFUNCTION(_getDomainMemory);
+	ASFUNCTION_ATOM(_getDomainMemory);
 	ASFUNCTION(_setDomainMemory);
 };
 

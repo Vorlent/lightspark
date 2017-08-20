@@ -658,7 +658,7 @@ public:
 	ASFUNCTION(_toString);
 	ASFUNCTION(_toLocaleString);
 	ASFUNCTION(hasOwnProperty);
-	ASFUNCTION(valueOf);
+	ASFUNCTION_ATOM(valueOf);
 	ASFUNCTION(isPrototypeOf);
 	ASFUNCTION(propertyIsEnumerable);
 	ASFUNCTION(setPropertyIsEnumerable);

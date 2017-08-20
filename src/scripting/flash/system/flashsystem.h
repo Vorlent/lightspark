@@ -133,7 +133,7 @@ public:
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o);
 	ASFUNCTION(_constructor);
-	ASFUNCTION(_getCurrentDomain);
+	ASFUNCTION_ATOM(_getCurrentDomain);
 };
 
 class Security: public ASObject

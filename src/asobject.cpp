@@ -1071,9 +1071,8 @@ ASFUNCTIONBODY(ASObject,hasOwnProperty)
 	return abstract_b(obj->getSystemState(),ret);
 }
 
-ASFUNCTIONBODY(ASObject,valueOf)
+ASFUNCTIONBODY_ATOM(ASObject,valueOf)
 {
-	obj->incRef();
 	return obj;
 }
 
@@ -2049,7 +2048,6 @@ ASObject* ASObject::getprop_prototype()
 void ASObject::setprop_prototype(_NR<ASObject>& o)
 {
 	ASObject* obj = o.getPtr();
-	obj->incRef();
 
 	multiname prototypeName(NULL);
 	prototypeName.name_type=multiname::NAME_STRING;

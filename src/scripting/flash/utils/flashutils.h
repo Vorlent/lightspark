@@ -60,7 +60,7 @@ public:
 
 ASObject* getQualifiedClassName(ASObject*, ASObject* const* args, const unsigned int len);
 ASObject* getQualifiedSuperclassName(ASObject*, ASObject* const* args, const unsigned int len);
-ASObject* getDefinitionByName(ASObject*, ASObject* const* args, const unsigned int len);
+asAtomR getDefinitionByName(SystemState* sys, asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen);
 ASObject* getTimer(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 asAtomR setInterval(SystemState* sys, asAtomR& obj,std::vector<asAtomR>& args, const unsigned int argslen);
 asAtomR setTimeout(SystemState* sys, asAtomR& obj,std::vector<asAtomR>& args, const unsigned int argslen);

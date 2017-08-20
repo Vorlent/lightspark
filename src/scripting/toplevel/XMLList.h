@@ -73,12 +73,12 @@ public:
 	ASFUNCTION(descendants);
 	ASFUNCTION(elements);
 	ASFUNCTION(parent);
-	ASFUNCTION(valueOf);
+	ASFUNCTION_ATOM(valueOf);
 	ASFUNCTION(text);
 	ASFUNCTION(_namespace);
 	ASFUNCTION(name);
 	ASFUNCTION(nodeKind);
-	ASFUNCTION(_normalize);
+	ASFUNCTION_ATOM(_normalize);
 	ASFUNCTION(localName);
 	ASFUNCTION(inScopeNamespaces);
 	ASFUNCTION(addNamespace);

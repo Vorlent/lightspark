@@ -365,8 +365,8 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 			argumentsArray->set(j,args[j]);
 		}
 		//Add ourself as the callee property
-		this->incRef();
-		argumentsArray->setVariableByQName("callee","",this,DECLARED_TRAIT);
+		asAtomR value = asAtom::fromObject(this);
+		argumentsArray->setVariableAtomByQName("callee",nsNameAndKind(),value,DECLARED_TRAIT);
 	}
 
 	/* setup call_context */
@@ -2211,8 +2211,8 @@ asAtomR Global::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 
 void Global::registerBuiltin(const char* name, const char* ns, _R<ASObject> o)
 {
-	o->incRef();
-	setVariableByQName(name,nsNameAndKind(getSystemState(),ns,NAMESPACE),o.getPtr(),CONSTANT_TRAIT);
+	asAtomR value = asAtom::fromObject(o.getPtr());
+	setVariableAtomByQName(name,nsNameAndKind(getSystemState(),ns,NAMESPACE),value,CONSTANT_TRAIT);
 	//setVariableByQName(name,nsNameAndKind(ns,PACKAGE_NAMESPACE),o.getPtr(),DECLARED_TRAIT);
 }
 
@@ -2616,7 +2616,6 @@ asAtomR ObjectConstructor::getVariableByMultiname(const multiname& name, GET_VAR
 {
 	if (name.normalizedName(getSystemState()) == "prototype")
 	{
-		prototype->getObj()->incRef();
 		return asAtom::fromObject(prototype->getObj());
 	}
 	if (name.normalizedName(getSystemState()) == "length")

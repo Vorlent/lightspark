@@ -59,7 +59,7 @@ public:
 	ASFUNCTION(_getMethod);
 	ASFUNCTION(_setMethod);
 	ASFUNCTION(_setData);
-	ASFUNCTION(_getData);
+	ASFUNCTION_ATOM(_getData);
 	ASFUNCTION(_getDigest);
 	ASFUNCTION(_setDigest);
 	URLInfo getRequestURL() const;
@@ -112,7 +112,7 @@ private:
 public:
 	SharedObject(Class_base* c);
 	static void sinit(Class_base*);
-	ASFUNCTION(getLocal);
+	ASFUNCTION_ATOM(getLocal);
 	ASFUNCTION(getRemote);
 	ASFUNCTION(flush);
 	ASFUNCTION(clear);
@@ -172,7 +172,7 @@ public:
 	ASFUNCTION_ATOM(load);
 	ASFUNCTION(close);
 	ASFUNCTION(_getDataFormat);
-	ASFUNCTION(_getData);
+	ASFUNCTION_ATOM(_getData);
 	ASFUNCTION(_setData);
 	ASFUNCTION(_setDataFormat);
 	ASPROPERTY_GETTER_SETTER(uint32_t, bytesLoaded);
@@ -320,7 +320,7 @@ public:
 	ASFUNCTION(_getBytesTotal);
 	ASFUNCTION(_getTime);
 	ASFUNCTION(_getCurrentFPS);
-	ASFUNCTION(_getClient);
+	ASFUNCTION_ATOM(_getClient);
 	ASFUNCTION(_setClient);
 	ASFUNCTION(_getCheckPolicyFile);
 	ASFUNCTION(_setCheckPolicyFile);
@@ -451,7 +451,7 @@ public:
 ASObject* navigateToURL(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* sendToURL(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* registerClassAlias(ASObject* obj,ASObject* const* args, const unsigned int argslen);
-ASObject* getClassByAlias(ASObject* obj,ASObject* const* args, const unsigned int argslen);
+asAtomR getClassByAlias(SystemState* sys, asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen);
 
 }
 

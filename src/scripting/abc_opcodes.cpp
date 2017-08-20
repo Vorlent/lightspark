@@ -2420,7 +2420,6 @@ void ABCVm::newClass(call_context* th, int n)
 		{
 			LOG_CALL(_("Class ") << className << _(" already defined. Pushing previous definition"));
 			baseClass->decRef();
-			oldDefinition->incRef();
 			asAtomR value = asAtom::fromObject(oldDefinition);
 			runtime_stack_push_ref(th, value);
 			// ensure that this interface is linked to all previously defined classes implementing this interface
@@ -2513,7 +2512,6 @@ void ABCVm::newClass(call_context* th, int n)
 #endif
 		SyntheticFunction* constructorFunc=Class<IFunction>::getSyntheticFunction(ret->getSystemState(),constructor);
 		constructorFunc->acquireScope(ret->class_scope);
-		ret->incRef();
 		asAtomR value = asAtom::fromObject(ret);
 		constructorFunc->addToScope(scope_entry(value,false));
 		constructorFunc->inClass = ret;

@@ -204,7 +204,7 @@ public:
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o);
 	void finalize();
-	ASFUNCTION(_getColorTransform);
+	ASFUNCTION_ATOM(_getColorTransform);
 	ASFUNCTION(_setColorTransform);
 	ASFUNCTION(_getMatrix);
 	ASFUNCTION(_setMatrix);

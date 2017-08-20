@@ -1174,7 +1174,6 @@ void ABCVm::abc_getlex(call_context* context,memorystream& code)
 		code.seekcachepos(cachepos->nextcachepos);
 		asAtomR value = asAtom::fromFunction(_IMR(cachepos->obj.getPtr()),cachepos->closure);
 		runtime_stack_push_ref(context, value);
-//		cachepos->obj->incRef();
 		return;
 	}
 	uint32_t t = code.readu30();

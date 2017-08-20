@@ -48,6 +48,26 @@ using namespace lightspark;
 		return NULL; \
 	}
 
+#define ASFUNCTIONBODY_XML_DELEGATE_ATOM(name) \
+	ASObject* XMLList::name(ASObject* obj, ASObject* const* args, const unsigned int argslen) \
+	{ \
+		XMLList* th=obj->as<XMLList>(); \
+		if(!th) \
+			throw Class<ArgumentError>::getInstanceS(obj->getSystemState(),"Function applied to wrong object"); \
+		if(th->nodes.size()==1) {\
+			asAtomR objatom = asAtom::fromObject(th->nodes[0].getPtr()); \
+			std::vector<asAtomR> argsAtom; \
+			argsAtom.reserve(argslen); \
+			for(int i = 0; i < argslen; i++) { \
+				argsAtom.push_back(asAtom::fromObject(args[i])); \
+			} \
+			return XML::name(obj->getSystemState(), objatom, argsAtom, argslen)->toObject(obj->getSystemState()); \
+		} \
+		else \
+			throwError<TypeError>(kXMLOnlyWorksWithOneItemLists, #name); \
+		return NULL; \
+	}
+
 XMLList::XMLList(Class_base* c):ASObject(c,T_OBJECT,SUBTYPE_XMLLIST),nodes(c->memoryAccount),constructed(false),targetobject(NULL),targetproperty(c->memoryAccount)
 {
 }
@@ -155,7 +175,7 @@ void XMLList::sinit(Class_base* c)
 }
 
 ASFUNCTIONBODY_XML_DELEGATE(addNamespace);
-ASFUNCTIONBODY_XML_DELEGATE(_appendChild);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(_appendChild);
 ASFUNCTIONBODY_XML_DELEGATE(childIndex);
 ASFUNCTIONBODY_XML_DELEGATE(inScopeNamespaces);
 ASFUNCTIONBODY_XML_DELEGATE(insertChildAfter);
@@ -407,9 +427,8 @@ ASFUNCTIONBODY(XMLList,parent)
 	return parent;
 }
 
-ASFUNCTIONBODY(XMLList,valueOf)
+ASFUNCTIONBODY_ATOM(XMLList,valueOf)
 {
-	obj->incRef();
 	return obj;
 }
 
@@ -573,12 +592,11 @@ ASFUNCTIONBODY(XMLList,_propertyIsEnumerable)
 	return abstract_b(obj->getSystemState(),false);
 }
 
-ASFUNCTIONBODY(XMLList,_normalize)
+ASFUNCTIONBODY_ATOM(XMLList,_normalize)
 {
 	XMLList *th = obj->as<XMLList>();
 	th->normalize();
-	th->incRef();
-	return th;
+	return asAtom::fromObject(th);
 }
 void XMLList::normalize()
 {
@@ -715,7 +733,6 @@ asAtomR XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTI
 	{
 		if(index<nodes.size())
 		{
-			nodes[index]->incRef();
 			return asAtom::fromObject(nodes[index].getPtr());
 		}
 		else
@@ -811,7 +828,6 @@ void XMLList::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_AL
 				tmp->attributelist = _MR(Class<XMLList>::getInstanceSNoArgs(getSystemState()));
 				tmp->constructed = true;
 				tmp->setVariableByMultiname(name,o,allowConst);
-				tmp->incRef();
 				tiny_string tmpname = tmpprop.normalizedName(getSystemState());
 				if (retnodes.empty() && tmpname != "" && tmpname != "*")
 				{
@@ -1227,8 +1243,11 @@ void XMLList::appendNodesTo(XML *dest) const
 	std::vector<_R<XML>, reporter_allocator<_R<XML>>>::const_iterator it;
 	for (it=nodes.begin(); it!=nodes.end(); ++it)
 	{
-		ASObject *arg0=it->getPtr();
-		_NR<ASObject> ret=_MNR(XML::_appendChild(dest, &arg0, 1));
+		std::vector<asAtomR> arg0;
+		arg0.reserve(1);
+		arg0.push_back(asAtom::fromObject(it->getPtr()));
+		asAtomR obj = asAtom::fromObject(dest);
+		XML::_appendChild(dest->getSystemState(), obj, arg0, 1);
 	}
 }
 

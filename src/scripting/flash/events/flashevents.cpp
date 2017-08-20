@@ -783,7 +783,7 @@ ASFUNCTIONBODY(NetStatusEvent,_constructor)
 	//Also call the base class constructor, using only the first arguments
 	uint32_t baseClassArgs=imin(argslen,3);
 	Event::_constructor(obj,args,baseClassArgs);
-	ASObject* info;
+	asAtomR info;
 	if(argslen==0)
 	{
 		//Called from C++ code, info was set in the C++
@@ -793,21 +793,19 @@ ASFUNCTIONBODY(NetStatusEvent,_constructor)
 	else if(argslen==4)
 	{
 		//Building from AS code, use the data
-		args[3]->incRef();
-		info=args[3];
+		info=asAtom::fromObject(args[3]);
 	}
 	else
 	{
 		//Uninitialized info
-		info=obj->getSystemState()->getNullRef();
+		info=asAtom::fromObject(obj->getSystemState()->getNullRef());
 	}
 	multiname infoName(NULL);
 	infoName.name_type=multiname::NAME_STRING;
 	infoName.name_s_id=obj->getSystemState()->getUniqueStringId("info");
 	infoName.ns.push_back(nsNameAndKind(obj->getSystemState(),"",NAMESPACE));
 	infoName.isAttribute = false;
-	asAtomR v = asAtom::fromObject(info);
-	obj->setVariableByMultiname(infoName, v, CONST_NOT_ALLOWED);
+	obj->setVariableByMultiname(infoName, info, CONST_NOT_ALLOWED);
 	return NULL;
 }
 
