@@ -1574,19 +1574,25 @@ void ABCVm::constructSuper(call_context* th, int m)
 
 ASObject* ABCVm::findProperty(call_context* th, multiname* name)
 {
+	asAtomR ret = findPropertyAtom(th, name);
+	ret->getObject()->incRef();
+	return ret->toObject(th->context->root->getSystemState());
+}
+
+asAtomR ABCVm::findPropertyAtom(call_context* th, multiname* name) {
 	LOG_CALL( _("findProperty ") << *name );
 
 	vector<scope_entry>::reverse_iterator it;
 	bool found=false;
-	ASObject* ret=NULL;
+	asAtomR ret=asAtomR::nullAtomR;
 	for(uint32_t i = th->curr_scope_stack; i > 0; i--)
 	{
-		found=th->scope_stack[i-1]->toObject(th->context->root->getSystemState())->hasPropertyByMultiname(*name, th->scope_stack_dynamic[i-1], true);
+		found=th->scope_stack[i-1]->getObject()->hasPropertyByMultiname(*name, th->scope_stack_dynamic[i-1], true);
 
 		if(found)
 		{
 			//We have to return the object, not the property
-			ret=th->scope_stack[i-1]->toObject(th->context->root->getSystemState());
+			ret=th->scope_stack[i-1];
 			break;
 		}
 	}
@@ -1594,12 +1600,12 @@ ASObject* ABCVm::findProperty(call_context* th, multiname* name)
 	{
 		for(it=th->parent_scope_stack->scope.rbegin();it!=th->parent_scope_stack->scope.rend();++it)
 		{
-			found=it->object->toObject(th->context->root->getSystemState())->hasPropertyByMultiname(*name, it->considerDynamic, true);
-	
+			found=it->object->getObject()->hasPropertyByMultiname(*name, it->considerDynamic, true);
+
 			if(found)
 			{
 				//We have to return the object, not the property
-				ret=it->object->toObject(th->context->root->getSystemState());
+				ret=it->object;
 				break;
 			}
 		}
@@ -1610,22 +1616,18 @@ ASObject* ABCVm::findProperty(call_context* th, multiname* name)
 		ASObject* target;
 		ASObject* o=getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target);
 		if(o)
-			ret=target;
+			ret=asAtom::fromObject(target);
 		else //else push the current global object
 		{
 			if (!th->parent_scope_stack.isNull() && th->parent_scope_stack->scope.size() > 0)
-				ret =th->parent_scope_stack->scope[0].object->toObject(th->context->root->getSystemState());
+				ret =th->parent_scope_stack->scope[0].object;
 			else
 			{
 				assert_and_throw(th->curr_scope_stack > 0);
-				ret =th->scope_stack[0]->toObject(th->context->root->getSystemState());
+				ret =th->scope_stack[0];
 			}
 		}
 	}
-
-	//TODO: make this a regular assert
-	assert_and_throw(ret);
-	ret->incRef();
 	return ret;
 }
 

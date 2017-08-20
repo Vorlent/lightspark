@@ -332,6 +332,7 @@ private:
 	static ASObject* findPropStrict(call_context* th, multiname* name);
 	static asAtomR findPropStrictCache(call_context* th, memorystream& code);
 	static ASObject* findProperty(call_context* th, multiname* name);
+	static asAtomR findPropertyAtom(call_context* th, multiname* name);
 	static int32_t pushByte(intptr_t n);
 	static int32_t pushShort(intptr_t n);
 	static void pushInt(call_context* th, int32_t val);

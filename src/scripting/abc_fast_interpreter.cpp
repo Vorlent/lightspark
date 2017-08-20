@@ -883,7 +883,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t t=data->uints[0];
 				instructionPointer+=4;
 				multiname* name=context->context->getMultiname(t,context);
-				asAtomR value = asAtom::fromObject(findProperty(context,name));
+				asAtomR value = findPropertyAtom(context,name);
 				runtime_stack_push_ref(context, value);
 				name->resetNameIfObject();
 				break;

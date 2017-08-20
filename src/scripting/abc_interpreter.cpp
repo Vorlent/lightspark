@@ -1152,7 +1152,7 @@ void ABCVm::abc_findproperty(call_context* context,memorystream& code)
 	//findproperty
 	uint32_t t = code.readu30();
 	multiname* name=context->context->getMultiname(t,context);
-	asAtomR value = asAtom::fromObject(findProperty(context,name));
+	asAtomR value = findPropertyAtom(context,name);
 	runtime_stack_push_ref(context, value);
 	name->resetNameIfObject();
 }
