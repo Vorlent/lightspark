@@ -96,7 +96,6 @@ else context->handleError(kStackOverflowError)
 
 inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 	if(context->stack_index<context->max_stack) {
-		if (val->getObject()) val->getObject()->incRef();
 		context->stack[context->stack_index++]=val;
 	} else {
 		context->handleError(kStackOverflowError);
