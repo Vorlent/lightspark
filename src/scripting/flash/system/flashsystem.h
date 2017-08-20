@@ -58,7 +58,7 @@ public:
 class ApplicationDomain: public ASObject
 {
 private:
-	std::vector<Global*> globalScopes;
+	std::vector<asAtomR> globalScopes;
 public:
 	ApplicationDomain(Class_base* c, _NR<ApplicationDomain> p=NullRef);
 	void finalize();
@@ -71,14 +71,14 @@ public:
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o);
 	void registerGlobalScope(Global* scope);
-	ASObject* getVariableByString(const std::string& name, ASObject*& target);
-	bool findTargetByMultiname(const multiname& name, ASObject*& target);
-	ASObject* getVariableAndTargetByMultiname(const multiname& name, ASObject*& target);
+	ASObject* getVariableByString(const std::string& name, asAtomR &target);
+	bool findTargetByMultiname(const multiname& name, asAtomR& target);
+	ASObject* getVariableAndTargetByMultiname(const multiname& name, asAtomR &target);
 	/*
 	 * This method is an opportunistic resolution operator used by the optimizer:
 	 * Only returns the value if the variable has been already defined.
 	 */
-	ASObject* getVariableByMultinameOpportunistic(const multiname& name);
+	asAtomR getVariableByMultinameOpportunistic(const multiname& name);
 	ASFUNCTION_ATOM(_constructor);
 	ASFUNCTION_ATOM(_getCurrentDomain);
 	ASFUNCTION_ATOM(_getMinDomainMemoryLength);

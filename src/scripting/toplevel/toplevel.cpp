@@ -730,7 +730,7 @@ const Type* Type::getBuiltinType(SystemState *sys, const multiname* mn)
 		return Type::voidType;
 
 	//Check if the class has already been defined
-	ASObject* target;
+	asAtomR target;
 	ASObject* tmp=sys->systemDomain->getVariableAndTargetByMultiname(*mn, target);
 	if(tmp && tmp->getObjectType()==T_CLASS)
 		return static_cast<const Class_base*>(tmp);
@@ -773,7 +773,7 @@ const Type* Type::getTypeFromMultiname(const multiname* mn, ABCContext* context)
 		typeObject = i->second;
 	else
 	{
-		ASObject* target;
+		asAtomR target;
 		typeObject=context->root->applicationDomain->getVariableAndTargetByMultiname(*mn,target);
 	}
 	if(!typeObject)
@@ -1061,7 +1061,7 @@ const std::vector<Class_base*>& Class_base::getInterfaces(bool *alldefined) cons
 		std::vector<multiname>::iterator it = interfaces.begin();
 		while (it !=interfaces.end())
 		{
-			ASObject* target;
+			asAtomR target;
 			ASObject* interface_obj=this->context->root->applicationDomain->
 					getVariableAndTargetByMultiname(*it, target);
 			if (interface_obj)
@@ -2607,7 +2607,7 @@ void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtomR& o, 
 
 ObjectConstructor::ObjectConstructor(Class_base* c,uint32_t length) : ASObject(c,T_OBJECT,SUBTYPE_OBJECTCONSTRUCTOR),_length(length)
 {
-	Class<ASObject>::getRef(c->getSystemState())->prototype->incRef();
+	Class<ASObject>::getRef(c->getSystemState())->prototype->getObj()->incRef();
 	this->prototype = Class<ASObject>::getRef(c->getSystemState())->prototype.getPtr();
 }
 

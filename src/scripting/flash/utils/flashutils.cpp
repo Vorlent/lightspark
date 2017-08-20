@@ -159,7 +159,7 @@ ASFUNCTIONBODY_ATOM(lightspark,getDefinitionByName)
 		name.ns.push_back(nsNameAndKind(sys,nsName,NAMESPACE));
 
 	LOG(LOG_CALLS,_("Looking for definition of ") << name);
-	ASObject* target;
+	asAtomR target;
 	ASObject* o=ABCVm::getCurrentApplicationDomain(getVm(sys)->currentCallContext)->getVariableAndTargetByMultiname(name,target);
 
 	if(o==NULL)

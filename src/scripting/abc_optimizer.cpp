@@ -33,11 +33,11 @@ enum SPECIAL_OPCODES { SET_SLOT_NO_COERCE = 0xfb, COERCE_EARLY = 0xfc, GET_SCOPE
 struct lightspark::InferenceData
 {
 	const Type* type;
-	const ASObject* obj;
-	InferenceData():type(NULL),obj(NULL){}
-	InferenceData(const Type* t):type(t),obj(NULL){}
-	InferenceData(const ASObject* o):type(NULL),obj(o){}
-	bool isValid() const { return type!=NULL || obj!=NULL; }
+	asAtomR obj;
+	InferenceData():type(NULL),obj(asAtomR::nullAtomR){}
+	InferenceData(const Type* t):type(t),obj(asAtomR::nullAtomR){}
+	InferenceData(const asAtomR& o):type(NULL),obj(o){}
+	bool isValid() const { return type!=NULL || obj.getPtrC()->type!=T_NULL; }
 	/* Method to understand if the passed InferenceData is of the type of this InferenceData
 	 * \param c Must be not NULL
 	 */
@@ -49,11 +49,10 @@ struct lightspark::InferenceData
 			if(classType && classType->isSubClass(c))
 				return true;
 		}
-		else if(this->obj)
+		else if(this->obj->type == T_NULL || this->obj->type == T_UNDEFINED)
 		{
 			//Both null and undefined can be of any class
-			if(this->obj->getObjectType()==T_NULL || this->obj->getObjectType()==T_UNDEFINED)
-				return true;
+			return true;
 		}
 		return false;
 	}
@@ -183,7 +182,7 @@ EARLY_BIND_STATUS ABCVm::earlyBindForScopeStack(ostream& out, const SyntheticFun
 			if(var)
 			{
 				found=true;
-				inferredData.obj=it->object->toObject(f->getSystemState());
+				inferredData.obj=it->object;
 				break;
 			}
 		}
@@ -205,14 +204,14 @@ InferenceData ABCVm::earlyBindFindPropStrict(ostream& out, const SyntheticFuncti
 	if(status==BINDED || status==CANNOT_BIND)
 		return ret;
 	//Look on the application domain
-	ASObject* target;
+	asAtomR target;
 	bool found = f->mi->context->root->applicationDomain->findTargetByMultiname(*name, target);
 	if(found)
 	{
 		//If we found the property on the application domain we can safely use the target verbatim
 		std::cerr << "OPT EARLY" << *name << std::endl;
 		out << (uint8_t)PUSH_EARLY;
-		writePtr(out, target);
+		writePtr(out, target->getObject());
 		ret.obj=target;
 		return ret;
 	}
@@ -236,7 +235,7 @@ InferenceData ABCVm::earlyBindGetLex(ostream& out, const SyntheticFunction* f, c
 	else if(status==CANNOT_BIND)
 		return ret;
 	//Now look in the application domain
-	ASObject* target;
+	asAtomR target;
 	//Now we should serach in the applicationDomain. The system domain is the first one searched. We can safely
 	//early bind for it, but not for custom domains, since we may change the expected order of evaluation
 	ASObject* o=f->getSystemState()->systemDomain->getVariableAndTargetByMultiname(*name, target);
@@ -245,7 +244,7 @@ InferenceData ABCVm::earlyBindGetLex(ostream& out, const SyntheticFunction* f, c
 		//Output a special opcode
 		out << (uint8_t)PUSH_EARLY;
 		writePtr(out, o);
-		ret.obj=o;
+		ret.obj=asAtom::fromObject(o);
 		return ret;
 	}
 	//About custom domains. We can't resolve the object now. But we can output a special getLex opcode that will
@@ -712,7 +711,7 @@ void ABCVm::optimizeFunction(SyntheticFunction* function)
 			{
 				//pushnull
 				_NR<ASObject> ret=_MNR(sys->getNullRef());
-				curBlock->pushStack(InferenceData(ret.getPtr()));
+				curBlock->pushStack(InferenceData(asAtom::fromObject(ret.getPtr())));
 				out << (uint8_t)opcode;
 				break;
 			}
@@ -1307,10 +1306,10 @@ void ABCVm::optimizeFunction(SyntheticFunction* function)
 					const multiname* slotType = objData.type->resolveSlotTypeName(t);
 					if(slotType)
 					{
-						ASObject* ret=mi->context->root->applicationDomain->getVariableByMultinameOpportunistic(*slotType);
-						if(ret && ret->getObjectType()==T_CLASS)
+						asAtomR ret=mi->context->root->applicationDomain->getVariableByMultinameOpportunistic(*slotType);
+						if(ret->type==T_CLASS)
 						{
-							Class_base* c=static_cast<Class_base*>(ret);
+							Class_base* c=ret->as<Class_base>();
 							if(valueData.isOfType(c))
 							{
 								//We know the value is already of the right type
@@ -1406,10 +1405,10 @@ void ABCVm::optimizeFunction(SyntheticFunction* function)
 				InferenceData inferredData;
 
 				//Try to resolve the type is it is already defined
-				ASObject* ret=mi->context->root->applicationDomain->getVariableByMultinameOpportunistic(*name);
-				if(ret && ret->getObjectType()==T_CLASS)
+				asAtomR ret=mi->context->root->applicationDomain->getVariableByMultinameOpportunistic(*name);
+				if(ret->type==T_CLASS)
 				{
-					coerceToClass=static_cast<Class_base*>(ret);
+					coerceToClass=ret->as<Class_base>();
 					//Also extract the type information for later use if the type has been
 					//already resolved
 					inferredData.type = coerceToClass;

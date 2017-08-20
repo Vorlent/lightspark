@@ -221,8 +221,6 @@ void ApplicationDomain::finalize()
 {
 	ASObject::finalize();
 	domainMemory.reset();
-	for(auto i = globalScopes.begin(); i != globalScopes.end(); ++i)
-		(*i)->decRef();
 	for(auto it = instantiatedTemplates.begin(); it != instantiatedTemplates.end(); ++it)
 		it->second->finalize();
 	//Free template instantations by decRef'ing them
@@ -274,7 +272,7 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,hasDefinition)
 		name.ns.push_back(nsNameAndKind(sys,nsName,NAMESPACE));
 
 	LOG(LOG_CALLS,_("Looking for definition of ") << name);
-	ASObject* target;
+	asAtomR target;
 	ASObject* o=th->getVariableAndTargetByMultiname(name,target);
 	if(o==NULL)
 		return _MAR(asAtom::falseAtom);
@@ -305,7 +303,7 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,getDefinition)
 		name.ns.push_back(nsNameAndKind(sys,nsName,NAMESPACE));
 
 	LOG(LOG_CALLS,_("Looking for definition of ") << name);
-	ASObject* target;
+	asAtomR target;
 	ASObject* o=th->getVariableAndTargetByMultiname(name,target);
 	if(o == NULL)
 		throwError<ReferenceError>(kClassNotFoundError,name.normalizedNameUnresolved(sys));
@@ -319,10 +317,10 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,getDefinition)
 
 void ApplicationDomain::registerGlobalScope(Global* scope)
 {
-	globalScopes.push_back(scope);
+	globalScopes.push_back(asAtom::fromObject(scope));
 }
 
-ASObject* ApplicationDomain::getVariableByString(const std::string& str, ASObject*& target)
+ASObject* ApplicationDomain::getVariableByString(const std::string& str, asAtomR& target)
 {
 	size_t index=str.rfind('.');
 	multiname name(NULL);
@@ -340,7 +338,7 @@ ASObject* ApplicationDomain::getVariableByString(const std::string& str, ASObjec
 	return getVariableAndTargetByMultiname(name, target);
 }
 
-bool ApplicationDomain::findTargetByMultiname(const multiname& name, ASObject*& target)
+bool ApplicationDomain::findTargetByMultiname(const multiname& name, asAtomR& target)
 {
 	//Check in the parent first
 	if(!parentDomain.isNull())
@@ -352,7 +350,7 @@ bool ApplicationDomain::findTargetByMultiname(const multiname& name, ASObject*& 
 
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
-		bool ret=globalScopes[i]->hasPropertyByMultiname(name,true,true);
+		bool ret=globalScopes[i]->getObject()->hasPropertyByMultiname(name,true,true);
 		if(ret)
 		{
 			target=globalScopes[i];
@@ -362,7 +360,7 @@ bool ApplicationDomain::findTargetByMultiname(const multiname& name, ASObject*& 
 	return false;
 }
 
-ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& name, ASObject*& target)
+ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& name, asAtomR& target)
 {
 	//Check in the parent first
 	if(!parentDomain.isNull())
@@ -374,7 +372,7 @@ ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& na
 
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
-		asAtomR o=globalScopes[i]->getVariableByMultiname(name);
+		asAtomR o=globalScopes[i]->getObject()->getVariableByMultiname(name);
 		if(o->type != T_INVALID)
 		{
 			target=globalScopes[i];
@@ -385,26 +383,26 @@ ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& na
 	return NULL;
 }
 
-ASObject* ApplicationDomain::getVariableByMultinameOpportunistic(const multiname& name)
+asAtomR ApplicationDomain::getVariableByMultinameOpportunistic(const multiname& name)
 {
 	//Check in the parent first
 	if(!parentDomain.isNull())
 	{
-		ASObject* ret=parentDomain->getVariableByMultinameOpportunistic(name);
-		if(ret)
+		asAtomR ret=parentDomain->getVariableByMultinameOpportunistic(name);
+		if(ret->type != T_NULL)
 			return ret;
 	}
 
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
-		asAtomR o=globalScopes[i]->getVariableByMultinameOpportunistic(name);
+		asAtomR o=globalScopes[i]->as<Global>()->getVariableByMultinameOpportunistic(name);
 		if(o->type != T_INVALID)
 		{
 			// No incRef, return a reference borrowed from globalScopes
-			return o->toObject(getSystemState());
+			return o;
 		}
 	}
-	return NULL;
+	return asAtomR::nullAtomR;
 }
 
 void ApplicationDomain::checkDomainMemory()

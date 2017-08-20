@@ -1497,7 +1497,7 @@ bool ABCVm::addEvent(_NR<EventDispatcher> obj ,_R<Event> ev)
 Class_inherit* ABCVm::findClassInherit(const string& s, RootMovieClip* root)
 {
 	LOG(LOG_CALLS,_("Setting class name to ") << s);
-	ASObject* target;
+	asAtomR target;
 	ASObject* derived_class=root->applicationDomain->getVariableByString(s,target);
 	if(derived_class==NULL)
 	{
@@ -1645,7 +1645,7 @@ bool ABCContext::isinstance(ASObject* obj, multiname* name)
 	if(name->qualifiedString(obj->getSystemState()) == "any")
 		return true;
 	
-	ASObject* target;
+	asAtomR target;
 	ASObject* ret=root->applicationDomain->getVariableAndTargetByMultiname(*name, target);
 	if(!ret) //Could not retrieve type
 	{
@@ -2216,7 +2216,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 				return;
 
 			//Check if this already defined in parent applicationdomains
-			ASObject* target;
+			asAtomR target;
 			ASObject* oldDefinition=root->applicationDomain->getVariableAndTargetByMultiname(*mname, target);
 			if(oldDefinition && oldDefinition->getObjectType()==T_CLASS)
 			{
@@ -2291,8 +2291,8 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 				{
 					// set superclass for classes that are not instantiated by newClass opcode (e.g. buttons)
 					multiname mnsuper = *getMultiname(instances[t->classi].supername,NULL);
-					ASObject* superclass=root->applicationDomain->getVariableByMultinameOpportunistic(mnsuper);
-					if(superclass && superclass->is<Class_base>() && !superclass->is<Class_inherit>())
+					asAtomR superclass=root->applicationDomain->getVariableByMultinameOpportunistic(mnsuper);
+					if(superclass->is<Class_base>() && !superclass->is<Class_inherit>())
 					{
 						c->setSuper(_IMR(superclass->as<Class_base>()));
 					}

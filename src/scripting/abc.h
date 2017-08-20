@@ -330,6 +330,7 @@ private:
 	static void newClass(call_context* th, int n);
 	static void newArray(call_context* th, int n); 
 	static ASObject* findPropStrict(call_context* th, multiname* name);
+	static asAtomR findPropStrictAtom(call_context* th, multiname* name);
 	static asAtomR findPropStrictCache(call_context* th, memorystream& code);
 	static ASObject* findProperty(call_context* th, multiname* name);
 	static asAtomR findPropertyAtom(call_context* th, multiname* name);

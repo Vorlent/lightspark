@@ -2102,7 +2102,7 @@ void RootMovieClip::checkBinding(DictionaryTag *tag)
 	}
 	if (typeObject == NULL)
 	{
-		ASObject* target;
+		asAtomR target;
 		typeObject=applicationDomain->getVariableAndTargetByMultiname(clsname,target);
 	}
 	if (typeObject != NULL)

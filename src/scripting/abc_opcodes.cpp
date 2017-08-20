@@ -1529,7 +1529,7 @@ bool ABCVm::getLex(call_context* th, int n)
 
 	if(o->type == T_INVALID)
 	{
-		ASObject* target;
+		asAtomR target;
 		o=asAtom::fromObject(getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target));
 		if(o->type == T_INVALID)
 		{
@@ -1613,10 +1613,10 @@ asAtomR ABCVm::findPropertyAtom(call_context* th, multiname* name) {
 	if(!found)
 	{
 		//try to find a global object where this is defined
-		ASObject* target;
+		asAtomR target;
 		ASObject* o=getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target);
 		if(o)
-			ret=asAtom::fromObject(target);
+			ret=target;
 		else //else push the current global object
 		{
 			if (!th->parent_scope_stack.isNull() && th->parent_scope_stack->scope.size() > 0)
@@ -1628,16 +1628,23 @@ asAtomR ABCVm::findPropertyAtom(call_context* th, multiname* name) {
 			}
 		}
 	}
+	assert_and_throw(ret->type != T_NULL);
 	return ret;
 }
 
-ASObject* ABCVm::findPropStrict(call_context* th, multiname* name)
+ASObject* ABCVm::findPropStrict(call_context* th, multiname* name) {
+	asAtomR ret = findPropStrictAtom(th, name);
+	ret->getObject()->incRef();
+	return ret->toObject(th->context->root->getSystemState());
+}
+
+asAtomR ABCVm::findPropStrictAtom(call_context* th, multiname* name)
 {
 	LOG_CALL( "findPropStrict " << *name );
 
 	vector<scope_entry>::reverse_iterator it;
 	bool found=false;
-	ASObject* ret=NULL;
+	asAtomR ret = asAtomR::nullAtomR;
 
 	for(uint32_t i = th->curr_scope_stack; i > 0; i--)
 	{
@@ -1645,7 +1652,7 @@ ASObject* ABCVm::findPropStrict(call_context* th, multiname* name)
 		if(found)
 		{
 			//We have to return the object, not the property
-			ret=th->scope_stack[i-1]->toObject(th->context->root->getSystemState());
+			ret=th->scope_stack[i-1];
 			break;
 		}
 	}
@@ -1657,14 +1664,14 @@ ASObject* ABCVm::findPropStrict(call_context* th, multiname* name)
 			if(found)
 			{
 				//We have to return the object, not the property
-				ret=it->object->toObject(th->context->root->getSystemState());
+				ret=it->object;
 				break;
 			}
 		}
 	}
 	if(!found)
 	{
-		ASObject* target;
+		asAtomR target;
 		ASObject* o=getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target);
 		if(o)
 			ret=target;
@@ -1684,12 +1691,11 @@ ASObject* ABCVm::findPropStrict(call_context* th, multiname* name)
 				}
 			}
 			throwError<ReferenceError>(kUndefinedVarError,name->normalizedNameUnresolved(th->context->root->getSystemState()));
-			return th->context->root->getSystemState()->getUndefinedRef();
+			return asAtom::fromObject(th->context->root->getSystemState()->getUndefinedRef());
 		}
 	}
 
-	assert_and_throw(ret);
-	ret->incRef();
+	assert_and_throw(ret->type != T_NULL);
 	return ret;
 }
 
@@ -1743,11 +1749,11 @@ asAtomR ABCVm::findPropStrictCache(call_context* th, memorystream& code)
 	}
 	if(!found)
 	{
-		ASObject* target;
+		asAtomR target;
 		ASObject* o=getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target);
 		if(o)
 		{
-			ret=asAtom::fromObject(target);
+			ret=target;
 		}
 		else
 		{
@@ -2404,7 +2410,7 @@ void ABCVm::newClass(call_context* th, int n)
 	{
 		//Check if this class has been already defined
 		_NR<ApplicationDomain> domain = getCurrentApplicationDomain(th);
-		ASObject* target;
+		asAtomR target;
 		ASObject* oldDefinition=domain->getVariableAndTargetByMultiname(*mname, target);
 		if(oldDefinition && oldDefinition->getObjectType()==T_CLASS)
 		{
@@ -2532,7 +2538,7 @@ void ABCVm::newClass(call_context* th, int n)
 		ret->addImplementedInterface(*name);
 
 		//Make the class valid if needed
-		ASObject* target;
+		asAtomR target;
 		ASObject* obj=getCurrentApplicationDomain(th)->getVariableAndTargetByMultiname(*name, target);
 
 		//Named only interfaces seems to be allowed 
