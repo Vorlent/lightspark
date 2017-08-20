@@ -353,7 +353,6 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 	textLine->updateSizes();
 	if (textLine->width > textLine->textWidth)
 	{
-		th->decRef();
 		return _MAR(asAtom::invalidAtom);
 	}
 	if (previousLine.isNull())
@@ -455,7 +454,6 @@ ASFUNCTIONBODY_ATOM(TextBlock, releaseLines)
 			{
 				tmpLine = firstLine->previousLine;
 				firstLine->previousLine = NullRef;
-				tmpLine->decRef();
 			}
 			firstLine->textBlock = NullRef;
 			firstLine->nextLine = NullRef;

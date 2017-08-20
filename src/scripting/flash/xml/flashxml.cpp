@@ -243,7 +243,7 @@ ASFUNCTIONBODY(XMLNode,appendChild)
 	ARG_UNPACK(c);
 	th->node.append_move(c->node);
 	if (!c->root.isNull())
-		c->root->decRef();
+		c->root = NullRef;
 	if (th->is<XMLDocument>())
 	{
 		c->root = _IMR(th->as<XMLDocument>());

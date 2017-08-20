@@ -344,7 +344,7 @@ public:
 	}
 
 	_NR<RootMovieClip> mainClip;
-	Stage* stage;
+	_NR<Stage> stage;
 	ABCVm* currentVm;
 
 	AudioManager* audioManager;

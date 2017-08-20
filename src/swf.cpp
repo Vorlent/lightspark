@@ -261,7 +261,7 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	loaderInfo->setBytesLoaded(0);
 	loaderInfo->setBytesTotal(0);
 	mainClip=_MNR(RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain));
-	stage=Class<Stage>::getInstanceS(this);
+	stage=_MR(Class<Stage>::getInstanceS(this));
 	stage->_addChildAt(_IMR(mainClip.getPtr()),0);
 	//Get starting time
 	startTime=compat_msectiming();
@@ -523,7 +523,6 @@ void SystemState::systemFinalize()
 
 	mainClip = NullRef;
 	//Free the stage. This should free all objects on the displaylist
-	stage->decRef();
 }
 
 SystemState::~SystemState()
@@ -1064,7 +1063,7 @@ void SystemState::flushInvalidationQueue()
 	{
 		if(cur->isOnStage() && cur->hasChanged)
 		{
-			IDrawable* d=cur->invalidate(stage, MATRIX());
+			IDrawable* d=cur->invalidate(stage.getPtr(), MATRIX());
 			//Check if the drawable is valid and forge a new job to
 			//render it and upload it to GPU
 			if(d)
@@ -1805,9 +1804,9 @@ void SystemState::resizeCompleted()
 {
 	if(currentVm && scaleMode==NO_SCALE)
 	{
-		currentVm->addEvent(_IMR(stage),_MR(Class<Event>::getInstanceS(this,"resize",false)));
+		currentVm->addEvent(stage,_MR(Class<Event>::getInstanceS(this,"resize",false)));
 		
-		currentVm->addEvent(_IMR(stage),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
+		currentVm->addEvent(stage,_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
 	}
 }
 

@@ -832,21 +832,19 @@ void ABCVm::constructGenericType(call_context* th, int m)
 		RUNTIME_STACK_POP_ASOBJECT(th,args[m-i-1], th->context->root->getSystemState());
 	}
 
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,obj, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 
-	if(obj->getObjectType() != T_TEMPLATE)
+	if(obj->type != T_TEMPLATE)
 	{
-		LOG(LOG_NOT_IMPLEMENTED, "constructGenericType of " << obj->getObjectType());
-		obj->decRef();
-		obj = th->context->root->getSystemState()->getUndefinedRef();
-		asAtomR value = asAtom::fromObject(obj);
-		runtime_stack_push_ref(th, value);
+		LOG(LOG_NOT_IMPLEMENTED, "constructGenericType of " << obj->type);
+		obj = asAtom::fromObject(th->context->root->getSystemState()->getUndefinedRef());
+		runtime_stack_push_ref(th, obj);
 		for(int i=0;i<m;i++)
 			args[i]->decRef();
 		return;
 	}
 
-	Template_base* o_template=static_cast<Template_base*>(obj);
+	Template_base* o_template=obj->as<Template_base>();
 
 	/* Instantiate the template to obtain a class */
 
@@ -858,7 +856,7 @@ void ABCVm::constructGenericType(call_context* th, int m)
 		else if(args[i]->is<Null>())
 			t[i] = Type::anyType;
 		else
-			throw Class<TypeError>::getInstanceS(obj->getSystemState(),"Wrong type in applytype");
+			throw Class<TypeError>::getInstanceS(th->context->root->getSystemState(),"Wrong type in applytype");
 	}
 
 	Class_base* o_class = o_template->applyType(t,th->context->root->applicationDomain);
@@ -1422,16 +1420,15 @@ void ABCVm::setSuper(call_context* th, int n)
 	multiname* name=th->context->getMultiname(n,th);
 	LOG_CALL(_("setSuper ") << *name);
 
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,obj, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 
 	assert_and_throw(th->inClass)
 	assert_and_throw(th->inClass->super);
-	assert_and_throw(obj->getClass());
-	assert_and_throw(obj->getClass()->isSubClass(th->inClass));
+	assert_and_throw(obj->getObject()->getClass());
+	assert_and_throw(obj->getObject()->getClass()->isSubClass(th->inClass));
 
-	obj->setVariableByMultiname(*name,value,ASObject::CONST_NOT_ALLOWED,th->inClass->super.getPtr());
+	obj->getObject()->setVariableByMultiname(*name,value,ASObject::CONST_NOT_ALLOWED,th->inClass->super.getPtr());
 	name->resetNameIfObject();
-	obj->decRef();
 }
 
 void ABCVm::getSuper(call_context* th, int n)
@@ -1439,7 +1436,7 @@ void ABCVm::getSuper(call_context* th, int n)
 	multiname* name=th->context->getMultiname(n,th);
 	LOG_CALL(_("getSuper ") << *name);
 
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,obj, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 
 	if(obj->is<Null>())
 	{
@@ -1455,17 +1452,16 @@ void ABCVm::getSuper(call_context* th, int n)
 	Class_base* cls = NULL;
 	if (th->inClass && !th->inClass->super.isNull())
 		cls = th->inClass->super.getPtr();
-	else if (obj->getClass() && !obj->getClass()->super.isNull())
-		cls = obj->getClass()->super.getPtr();
+	else if (obj->getObject()->getClass() && !obj->getObject()->getClass()->super.isNull())
+		cls = obj->getObject()->getClass()->super.getPtr();
 	assert_and_throw(cls);
 
-	asAtomR ret = obj->getVariableByMultiname(*name,ASObject::NONE,cls);
+	asAtomR ret = obj->getObject()->getVariableByMultiname(*name,ASObject::NONE,cls);
 	if (ret->type == T_INVALID)
-		throwError<ReferenceError>(kCallOfNonFunctionError,name->normalizedNameUnresolved(obj->getSystemState()));
+		throwError<ReferenceError>(kCallOfNonFunctionError,name->normalizedNameUnresolved(th->context->root->getSystemState()));
 
 	name->resetNameIfObject();
 
-	obj->decRef();
 	runtime_stack_push_ref(th,ret);
 }
 
@@ -1875,7 +1871,7 @@ void ABCVm::callSuper(call_context* th, int n, int m, method_info** called_mi, b
 	multiname* name=th->context->getMultiname(n,th);
 	LOG_CALL((keepReturn ? "callSuper " : "callSuperVoid ") << *name << ' ' << m);
 
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,obj, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 	if(obj->is<Null>())
 	{
 		LOG(LOG_ERROR,"trying to call super on null:"<<*name);
@@ -1889,19 +1885,17 @@ void ABCVm::callSuper(call_context* th, int n, int m, method_info** called_mi, b
 
 	assert_and_throw(th->inClass);
 	assert_and_throw(th->inClass->super);
-	assert_and_throw(obj->getClass());
-	assert_and_throw(obj->getClass()->isSubClass(th->inClass));
-	asAtomR f = obj->getVariableByMultiname(*name, ASObject::SKIP_IMPL,th->inClass->super.getPtr());
+	assert_and_throw(obj->getObject()->getClass());
+	assert_and_throw(obj->getObject()->getClass()->isSubClass(th->inClass));
+	asAtomR f = obj->getObject()->getVariableByMultiname(*name, ASObject::SKIP_IMPL,th->inClass->super.getPtr());
 	name->resetNameIfObject();
 	if(f->type != T_INVALID)
 	{
-		asAtomR v = asAtom::fromObject(obj);
-		callImpl(th, f, v, args, m, keepReturn);
+		callImpl(th, f, obj, args, m, keepReturn);
 	}
 	else
 	{
-		tiny_string clsname = obj->getClassName();
-		obj->decRef();
+		tiny_string clsname = obj->getObject()->getClassName();
 		//LOG(LOG_ERROR,_("Calling an undefined function ") << th->context->root->getSystemState()->getStringFromUniqueId(name->name_s_id));
 		throwError<ReferenceError>(kCallNotFoundError, name->qualifiedString(th->context->root->getSystemState()), clsname);
 	}
@@ -2214,13 +2208,13 @@ void ABCVm::newObject(call_context* th, int n)
 void ABCVm::getDescendants(call_context* th, int n)
 {
 	multiname* name=th->context->getMultiname(n,th);
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,obj, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 	LOG_CALL("getDescendants " << *name << " " <<name->isAttribute<< " "<<obj->getClassName());
 	XML::XMLVector ret;
 	XMLList* targetobject = NULL;
-	if(obj->getClass()==Class<XML>::getClass(obj->getSystemState()))
+	if(obj->getObject()->getClass()==Class<XML>::getClass(th->context->root->getSystemState()))
 	{
-		XML* xmlObj=Class<XML>::cast(obj);
+		XML* xmlObj=obj->as<XML>();
 		targetobject = xmlObj->getChildrenlist();
 		uint32_t ns_uri = BUILTIN_STRINGS::EMPTY;
 		if (name->ns.size() > 0)
@@ -2231,9 +2225,9 @@ void ABCVm::getDescendants(call_context* th, int n)
 		}
 		xmlObj->getDescendantsByQName(name->normalizedName(th->context->root->getSystemState()), ns_uri,name->isAttribute, ret);
 	}
-	else if(obj->getClass()==Class<XMLList>::getClass(th->context->root->getSystemState()))
+	else if(obj->getObject()->getClass()==Class<XMLList>::getClass(th->context->root->getSystemState()))
 	{
-		XMLList* xmlObj=Class<XMLList>::cast(obj);
+		XMLList* xmlObj = obj->as<XMLList>();
 		uint32_t ns_uri = BUILTIN_STRINGS::EMPTY;
 		if (name->ns.size() > 0)
 		{
@@ -2248,9 +2242,9 @@ void ABCVm::getDescendants(call_context* th, int n)
 	{
 		multiname callPropertyName(NULL);
 		callPropertyName.name_type=multiname::NAME_STRING;
-		callPropertyName.name_s_id=obj->getSystemState()->getUniqueStringId("getDescendants");
+		callPropertyName.name_s_id=th->context->root->getSystemState()->getUniqueStringId("getDescendants");
 		callPropertyName.ns.emplace_back(th->context->root->getSystemState(),flash_proxy,NAMESPACE);
-		asAtomR o=obj->getVariableByMultiname(callPropertyName,ASObject::SKIP_IMPL);
+		asAtomR o=obj->getObject()->getVariableByMultiname(callPropertyName,ASObject::SKIP_IMPL);
 		
 		if(o->type != T_INVALID)
 		{
@@ -2259,37 +2253,31 @@ void ABCVm::getDescendants(call_context* th, int n)
 			//Create a new array
 			std::vector<asAtomR> proxyArgs;
 			proxyArgs.reserve(1);
-			ASObject* namearg = abstract_s(obj->getSystemState(), name->normalizedName(th->context->root->getSystemState()));
+			ASObject* namearg = abstract_s(th->context->root->getSystemState(), name->normalizedName(th->context->root->getSystemState()));
 			namearg->setProxyProperty(*name);
 			proxyArgs.push_back(asAtom::fromObject(namearg));
 
 			//We now suppress special handling
 			LOG_CALL(_("Proxy::getDescendants"));
-			asAtomR v = asAtom::fromObject(obj);
-			asAtomR ret=o->callFunction(v,proxyArgs,1,true);
+			asAtomR ret=o->callFunction(obj,proxyArgs,1,true);
 			runtime_stack_push_ref(th,ret);
-			
-			obj->decRef();
 			LOG_CALL(_("End of calling ") << *name);
 			return;
 		}
 		else
 		{
-			tiny_string objName = obj->getClassName();
-			obj->decRef();
+			tiny_string objName = obj->getObject()->getClassName();
 			throwError<TypeError>(kDescendentsError, objName);
 		}
 	}
 	else
 	{
-		tiny_string objName = obj->getClassName();
-		obj->decRef();
+		tiny_string objName = obj->getObject()->getClassName();
 		throwError<TypeError>(kDescendentsError, objName);
 	}
 	XMLList* retObj=XMLList::create(th->context->root->getSystemState(),ret,targetobject,*name);
 	asAtomR value = asAtom::fromObject(retObj);
 	runtime_stack_push_ref(th, value);
-	obj->decRef();
 }
 
 number_t ABCVm::increment(ASObject* oPtr)

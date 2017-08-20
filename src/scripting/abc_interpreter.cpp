@@ -1324,11 +1324,10 @@ void ABCVm::abc_setslot(call_context* context,memorystream& code)
 	//setslot
 	uint32_t t = code.readu30();
 	RUNTIME_STACK_POP_CREATE_REF(context,v1);
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2, context->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 
 	LOG_CALL("setSlot " << t << " "<< v2->toDebugString() << " "<< v1.toDebugString());
-	v2->setSlot(t,v1);
-	v2->decRef();
+	v2->getObject()->setSlot(t,v1);
 }
 void ABCVm::abc_getglobalSlot(call_context* context,memorystream& code)
 {
