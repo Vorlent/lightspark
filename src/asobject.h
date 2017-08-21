@@ -895,15 +895,9 @@ inline asAtomR::asAtomR(const asAtomR& r):m(r.m)
 
 inline asAtomR& asAtomR::operator=(const asAtomR& r)
 {
-	//incRef before decRef to make sure this works even if the pointer is the same
-	if (r.m.getObject()) r.m.getObject()->RefCountable::incRef();
+	if (r.m.getObject()) r.m.getObject()->incRef();
 
-	asAtom& old=m;
 	m=r.m;
-
-	//decRef as the very last function call, because it
-	//may cause this Ref to be deleted (if old owns this Ref)
-	if (old.getObject()) old.getObject()->RefCountable::decRef();
 
 	return *this;
 }
