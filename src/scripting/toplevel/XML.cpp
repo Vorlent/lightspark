@@ -1095,11 +1095,11 @@ XML *XML::copy()
 	return createFromString(this->getSystemState(),this->toXMLString_internal(false));
 }
 
-ASFUNCTIONBODY(XML,_setChildren)
+ASFUNCTIONBODY_ATOM(XML,_setChildren)
 {
 	XML* th=obj->as<XML>();
 	_NR<ASObject> newChildren;
-	ARG_UNPACK(newChildren);
+	ARG_UNPACK_ATOM(newChildren);
 
 	th->childrenlist->clear();
 
@@ -1119,8 +1119,7 @@ ASFUNCTIONBODY(XML,_setChildren)
 		LOG(LOG_NOT_IMPLEMENTED, "XML::setChildren supports only XMLs and XMLLists");
 	}
 
-	th->incRef();
-	return th;
+	return asAtom::fromObject(th);
 }
 
 ASFUNCTIONBODY_ATOM(XML,_normalize)
@@ -2056,14 +2055,14 @@ XML *XML::createFromNode(const pugi::xml_node &_n, XML *parent, bool fromXMLList
 
 _NR<XMLList> XML::getChildrenlist() { return childrenlist ? childrenlist : NullRef; }
 
-ASFUNCTIONBODY(XML,insertChildAfter)
+ASFUNCTIONBODY_ATOM(XML,insertChildAfter)
 {
-	XML* th=Class<XML>::cast(obj);
+	XML* th=obj->as<XML>();
 	_NR<ASObject> child1;
 	_NR<ASObject> child2;
-	ARG_UNPACK(child1)(child2);
+	ARG_UNPACK_ATOM(child1)(child2);
 	if (th->nodetype != pugi::node_element)
-		return obj->getSystemState()->getUndefinedRef();
+		return asAtom::fromObject(sys->getUndefinedRef());
 	
 	if (child2->is<XML>())
 		th->CheckCyclicReference(child2->as<XML>());
@@ -2075,12 +2074,11 @@ ASFUNCTIONBODY(XML,insertChildAfter)
 		}
 	}
 	else
-		child2 = _NR<XML>(createFromString(obj->getSystemState(),child2->toString()));
+		child2 = _NR<XML>(createFromString(sys,child2->toString()));
 	if (th->childrenlist.isNull())
-		th->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(obj->getSystemState()));
+		th->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(sys));
 	if (child1->is<Null>())
 	{
-		th->incRef();
 		if (child2->is<XML>())
 		{
 			child2->as<XML>()->parentNode = _IMNR<XML>(th);
@@ -2095,20 +2093,18 @@ ASFUNCTIONBODY(XML,insertChildAfter)
 			}
 			th->childrenlist->nodes.insert(th->childrenlist->nodes.begin(),child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 		}
-		th->incRef();
-		return th;
+		return asAtom::fromObject(th);
 	}
 	if (child1->is<XMLList>())
 	{
 		if (child1->as<XMLList>()->nodes.size()==0)
-			return obj->getSystemState()->getUndefinedRef();
+			return asAtom::fromObject(sys->getUndefinedRef());
 		child1 = child1->as<XMLList>()->nodes[0];
 	}
 	for (auto it = th->childrenlist->nodes.begin(); it != th->childrenlist->nodes.end(); it++)
 	{
 		if ((*it).getPtr() == child1.getPtr())
 		{
-			th->incRef();
 			if (child2->is<XML>())
 			{
 				child2->as<XML>()->parentNode = _IMNR<XML>(th);
@@ -2123,19 +2119,19 @@ ASFUNCTIONBODY(XML,insertChildAfter)
 				}
 				th->childrenlist->nodes.insert(it+1,child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 			}
-			return th;
+			return asAtom::fromObject(th);
 		}
 	}
-	return obj->getSystemState()->getUndefinedRef();
+	return asAtom::fromObject(sys->getUndefinedRef());
 }
-ASFUNCTIONBODY(XML,insertChildBefore)
+ASFUNCTIONBODY_ATOM(XML,insertChildBefore)
 {
-	XML* th=Class<XML>::cast(obj);
+	XML* th=obj->as<XML>();
 	_NR<ASObject> child1;
 	_NR<ASObject> child2;
-	ARG_UNPACK(child1)(child2);
+	ARG_UNPACK_ATOM(child1)(child2);
 	if (th->nodetype != pugi::node_element)
-		return obj->getSystemState()->getUndefinedRef();
+		return asAtom::fromObject(sys->getUndefinedRef());
 	
 	if (child2->is<XML>())
 		th->CheckCyclicReference(child2->as<XML>());
@@ -2147,10 +2143,10 @@ ASFUNCTIONBODY(XML,insertChildBefore)
 		}
 	}
 	else
-		child2 = _NR<XML>(createFromString(obj->getSystemState(),child2->toString()));
+		child2 = _NR<XML>(createFromString(sys,child2->toString()));
 
 	if (th->childrenlist.isNull())
-		th->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(obj->getSystemState()));
+		th->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(sys));
 	if (child1->is<Null>())
 	{
 		if (child2->is<XML>())
@@ -2166,20 +2162,18 @@ ASFUNCTIONBODY(XML,insertChildBefore)
 				th->childrenlist->nodes.push_back(_NR<XML>(*it));
 			}
 		}
-		th->incRef();
-		return th;
+		return asAtom::fromObject(th);
 	}
 	if (child1->is<XMLList>())
 	{
 		if (child1->as<XMLList>()->nodes.size()==0)
-			return obj->getSystemState()->getUndefinedRef();
+			return asAtom::fromObject(sys->getUndefinedRef());
 		child1 = child1->as<XMLList>()->nodes[0];
 	}
 	for (auto it = th->childrenlist->nodes.begin(); it != th->childrenlist->nodes.end(); it++)
 	{
 		if ((*it).getPtr() == child1.getPtr())
 		{
-			th->incRef();
 			if (child2->is<XML>())
 			{
 				child2->as<XML>()->parentNode = _IMNR<XML>(th);
@@ -2194,10 +2188,10 @@ ASFUNCTIONBODY(XML,insertChildBefore)
 				}
 				th->childrenlist->nodes.insert(it,child2->as<XMLList>()->nodes.begin(), child2->as<XMLList>()->nodes.end());
 			}
-			return th;
+			return asAtom::fromObject(th);
 		}
 	}
-	return obj->getSystemState()->getUndefinedRef();
+	return asAtom::fromObject(sys->getUndefinedRef());
 }
 
 ASFUNCTIONBODY(XML,namespaceDeclarations)
@@ -2752,35 +2746,33 @@ void XML::fillNode(XML* node, const pugi::xml_node &srcnode)
 	node->constructed=true;
 }
 
-ASFUNCTIONBODY(XML,_prependChild)
+ASFUNCTIONBODY_ATOM(XML,_prependChild)
 {
-	XML* th=Class<XML>::cast(obj);
+	XML* th=obj->as<XML>();
 	assert_and_throw(argslen==1);
 	_NR<XML> arg;
-	if(args[0]->getClass()==Class<XML>::getClass(obj->getSystemState()))
+	if(args[0]->getObject()->getClass()==Class<XML>::getClass(sys))
 	{
-		arg=_IMR(Class<XML>::cast(args[0]));
+		arg=_IMR(args[0]->as<XML>());
 	}
-	else if(args[0]->getClass()==Class<XMLList>::getClass(obj->getSystemState()))
+	else if(args[0]->getObject()->getClass()==Class<XMLList>::getClass(sys))
 	{
-		XMLList* list=Class<XMLList>::cast(args[0]);
+		_NR<XMLList> list=_IMNR(args[0]->as<XMLList>());
 		list->prependNodesTo(th);
-		th->incRef();
-		return th;
+		return asAtom::fromObject(th);
 	}
 	else
 	{
 		//The appendChild specs says that any other type is converted to string
 		//NOTE: this is explicitly different from XML constructor, that will only convert to
 		//string Numbers and Booleans
-		arg=_MR(createFromString(obj->getSystemState(),"dummy"));
+		arg=_MR(createFromString(sys,"dummy"));
 		//avoid interpretation of the argument, just set it as text node
 		arg->setTextContent(args[0]->toString());
 	}
 
 	th->prependChild(arg);
-	th->incRef();
-	return th;
+	return asAtom::fromObject(th);
 }
 void XML::prependChild(_R<XML> newChild)
 {
@@ -2802,19 +2794,19 @@ void XML::prependChild(_R<XML> newChild)
 		newChild->decRef();
 }
 
-ASFUNCTIONBODY(XML,_replace)
+ASFUNCTIONBODY_ATOM(XML,_replace)
 {
-	XML* th=Class<XML>::cast(obj);
+	XML* th=obj->as<XML>();
 	_NR<ASObject> propertyName;
 	_NR<ASObject> value;
-	ARG_UNPACK(propertyName) (value);
+	ARG_UNPACK_ATOM(propertyName) (value);
 
 	multiname name(NULL);
 	name.name_type=multiname::NAME_STRING;
 	if (propertyName->is<ASQName>())
 	{
 		name.name_s_id=propertyName->as<ASQName>()->getLocalName();
-		name.ns.emplace_back(obj->getSystemState(),propertyName->as<ASQName>()->getURI(),NAMESPACE);
+		name.ns.emplace_back(sys,propertyName->as<ASQName>()->getURI(),NAMESPACE);
 	}
 	else if (propertyName->toString() == "*")
 	{
@@ -2830,21 +2822,20 @@ ASFUNCTIONBODY(XML,_replace)
 		}
 		else
 		{
-			XML* x = createFromString(obj->getSystemState(),value->toString());
+			XML* x = createFromString(sys,value->toString());
 			th->childrenlist->clear();
 			th->childrenlist->append(_IMR<XML>(x));
 		}
-		th->incRef();
-		return th;
+		return asAtom::fromObject(th);
 	}
 	else
 	{
-		name.name_s_id=obj->getSystemState()->getUniqueStringId(propertyName->toString());
-		name.ns.emplace_back(obj->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
+		name.name_s_id=sys->getUniqueStringId(propertyName->toString());
+		name.ns.emplace_back(sys,BUILTIN_STRINGS::EMPTY,NAMESPACE);
 	}
 	uint32_t index=0;
 	asAtomR v = asAtom::fromObject(value.getPtr());
-	if(XML::isValidMultiname(obj->getSystemState(),name,index))
+	if(XML::isValidMultiname(sys,name,index))
 	{
 		th->childrenlist->setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 	}	
@@ -2862,14 +2853,13 @@ ASFUNCTIONBODY(XML,_replace)
 		}
 		else
 		{
-			XML* x = createFromString(obj->getSystemState(),value->toString());
+			XML* x = createFromString(sys,value->toString());
 			th->deleteVariableByMultiname(name);
 			v = asAtom::fromObject(x);
 			th->setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 		}
 	}
-	th->incRef();
-	return th;
+	return asAtom::fromObject(th);
 }
 ASFUNCTIONBODY(XML,setNotification)
 {

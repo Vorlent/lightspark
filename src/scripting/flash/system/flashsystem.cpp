@@ -611,7 +611,7 @@ ASFUNCTIONBODY(System,disposeXML)
 	if (!xmlobj.isNull() && xmlobj->getParentNode()->is<XML>())
 	{
 		XML* parent = xmlobj->getParentNode()->as<XML>();
-		XMLList* l = parent->getChildrenlist();
+		_NR<XMLList> l = parent->getChildrenlist();
 		if (l)
 			l->removeNode(xmlobj.getPtr());
 		parent->decRef();

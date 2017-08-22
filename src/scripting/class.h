@@ -525,7 +525,6 @@ public:
 		else
 			ret=static_cast<TemplatedClass<T>*>(it->second);
 
-		ret->incRef();
 		return ret;
 	}
 
@@ -540,7 +539,7 @@ public:
 	static Ref<Class_base> getTemplateInstance(SystemState* sys,const QName& qname, ABCContext* context,_NR<ApplicationDomain> appdomain)
 	{
 		_NR<Template<T>> templ=_MNR(getTemplate(sys));
-		Ref<Class_base> ret=_MR(templ->applyTypeByQName(qname,appdomain));
+		Ref<Class_base> ret=_IMR(templ->applyTypeByQName(qname,appdomain));
 		ret->context = context;
 		return ret;
 	}

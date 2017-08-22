@@ -338,7 +338,6 @@ ASFUNCTIONBODY(Sound,play)
 	if(startTime!=0)
 		LOG(LOG_NOT_IMPLEMENTED,"startTime not supported in Sound::play");
 
-	th->incRef();
 	if (th->container)
 		return Class<SoundChannel>::getInstanceS(obj->getSystemState(),th->soundData);
 	else

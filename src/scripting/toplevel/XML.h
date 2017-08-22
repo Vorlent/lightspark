@@ -112,7 +112,7 @@ public:
 	ASFUNCTION(_setLocalName);
 	ASFUNCTION(_setName);
 	ASFUNCTION(_setNamespace);
-	ASFUNCTION(_setChildren);
+	ASFUNCTION_ATOM(_setChildren);
 
 	ASFUNCTION(_getIgnoreComments);
 	ASFUNCTION(_setIgnoreComments);
@@ -128,16 +128,16 @@ public:
 	ASFUNCTION(_setSettings);
 	ASFUNCTION(_getDefaultSettings);
 	ASFUNCTION(_toJSON);
-	ASFUNCTION(insertChildAfter);
-	ASFUNCTION(insertChildBefore);
+	ASFUNCTION_ATOM(insertChildAfter);
+	ASFUNCTION_ATOM(insertChildBefore);
 	ASFUNCTION(namespaceDeclarations);
 	ASFUNCTION_ATOM(removeNamespace);
 	ASFUNCTION(comments);
 	ASFUNCTION(processingInstructions);
 	ASFUNCTION(_propertyIsEnumerable);
 	ASFUNCTION(_hasOwnProperty);
-	ASFUNCTION(_prependChild);
-	ASFUNCTION(_replace);
+	ASFUNCTION_ATOM(_prependChild);
+	ASFUNCTION_ATOM(_replace);
 	ASFUNCTION(setNotification);
 
 	static void buildTraits(ASObject* o){}

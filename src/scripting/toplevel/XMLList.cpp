@@ -174,16 +174,16 @@ ASFUNCTIONBODY_XML_DELEGATE(addNamespace);
 ASFUNCTIONBODY_XML_DELEGATE_ATOM(_appendChild);
 ASFUNCTIONBODY_XML_DELEGATE(childIndex);
 ASFUNCTIONBODY_XML_DELEGATE(inScopeNamespaces);
-ASFUNCTIONBODY_XML_DELEGATE(insertChildAfter);
-ASFUNCTIONBODY_XML_DELEGATE(insertChildBefore);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(insertChildAfter);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(insertChildBefore);
 ASFUNCTIONBODY_XML_DELEGATE(localName);
 ASFUNCTIONBODY_XML_DELEGATE(name);
 ASFUNCTIONBODY_XML_DELEGATE(_namespace);
 ASFUNCTIONBODY_XML_DELEGATE(namespaceDeclarations);
 ASFUNCTIONBODY_XML_DELEGATE(nodeKind);
-ASFUNCTIONBODY_XML_DELEGATE(_prependChild);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(_prependChild);
 ASFUNCTIONBODY_XML_DELEGATE_ATOM(removeNamespace);
-ASFUNCTIONBODY_XML_DELEGATE(_setChildren);
+ASFUNCTIONBODY_XML_DELEGATE_ATOM(_setChildren);
 ASFUNCTIONBODY_XML_DELEGATE(_setLocalName);
 ASFUNCTIONBODY_XML_DELEGATE(_setName);
 ASFUNCTIONBODY_XML_DELEGATE(_setNamespace);
@@ -1252,7 +1252,10 @@ void XMLList::prependNodesTo(XML *dest) const
 	std::vector<_R<XML>, reporter_allocator<_R<XML>>>::const_reverse_iterator it;
 	for (it=nodes.rbegin(); it!=nodes.rend(); ++it)
 	{
-		ASObject *arg0=it->getPtr();
-		_NR<ASObject> ret=_MNR(XML::_prependChild(dest, &arg0, 1));
+		std::vector<asAtomR> arg0;
+		arg0.reserve(1);
+		arg0.push_back(asAtom::fromObject(it->getPtr()));
+		asAtomR obj = asAtom::fromObject(dest);
+		asAtomR ret=XML::_prependChild(dest->getSystemState(), obj, arg0, 1);
 	}
 }
