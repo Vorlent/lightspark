@@ -55,7 +55,7 @@ private:
 	XMLVector getAttributes();
 	XMLVector getAttributesByMultiname(const multiname& name, const tiny_string &normalizedName) const;
 	XMLVector getValuesByMultiname(_NR<XMLList> nodelist, const multiname& name);
-	XMLList* getAllAttributes();
+	_NR<XMLList> getAllAttributes();
 	void getText(XMLVector& ret);
 	/*
 	 * @param name The name of the wanted children, "*" for all children
@@ -91,7 +91,7 @@ public:
 	ASFUNCTION(childIndex);
 	ASFUNCTION(contains);
 	ASFUNCTION(_copy);
-	ASFUNCTION(attributes);
+	ASFUNCTION_ATOM(attributes);
 	ASFUNCTION(attribute);
 	ASFUNCTION_ATOM(_appendChild);
 	ASFUNCTION(length);
@@ -150,7 +150,7 @@ public:
 
 	const tiny_string getName() const { return nodename;}
 	uint32_t getNamespaceURI() const { return nodenamespace_uri;}
-	XMLList* getChildrenlist() { return childrenlist ? childrenlist.getPtr() : NULL; }
+	_NR<XMLList> getChildrenlist();
 	
 	
 	void getDescendantsByQName(const tiny_string& name, uint32_t ns, bool bIsAttribute, XMLVector& ret) const;

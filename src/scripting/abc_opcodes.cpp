@@ -2213,7 +2213,7 @@ void ABCVm::getDescendants(call_context* th, int n)
 	RUNTIME_STACK_POP_CREATE_REF(th,obj);
 	LOG_CALL("getDescendants " << *name << " " <<name->isAttribute<< " "<<obj->getClassName());
 	XML::XMLVector ret;
-	XMLList* targetobject = NULL;
+	_NR<XMLList> targetobject = NullRef;
 	if(obj->getObject()->getClass()==Class<XML>::getClass(th->context->root->getSystemState()))
 	{
 		XML* xmlObj=obj->as<XML>();
@@ -2229,7 +2229,7 @@ void ABCVm::getDescendants(call_context* th, int n)
 	}
 	else if(obj->getObject()->getClass()==Class<XMLList>::getClass(th->context->root->getSystemState()))
 	{
-		XMLList* xmlObj = obj->as<XMLList>();
+		_NR<XMLList> xmlObj = _IMR(obj->as<XMLList>());
 		uint32_t ns_uri = BUILTIN_STRINGS::EMPTY;
 		if (name->ns.size() > 0)
 		{

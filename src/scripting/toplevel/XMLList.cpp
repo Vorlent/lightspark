@@ -86,11 +86,9 @@ XMLList::XMLList(Class_base* c, const XML::XMLVector& r):
 	ASObject(c,T_OBJECT,SUBTYPE_XMLLIST),nodes(r.begin(),r.end(),c->memoryAccount),constructed(true),targetobject(NULL),targetproperty(c->memoryAccount)
 {
 }
-XMLList::XMLList(Class_base* c, const XML::XMLVector& r, XMLList *targetobject, const multiname &targetproperty):
+XMLList::XMLList(Class_base* c, const XML::XMLVector& r, _NR<XMLList> targetobject, const multiname &targetproperty):
 	ASObject(c,T_OBJECT,SUBTYPE_XMLLIST),nodes(r.begin(),r.end(),c->memoryAccount),constructed(true),targetobject(targetobject),targetproperty(c->memoryAccount)
 {
-	if (targetobject)
-		targetobject->incRef();
 	this->targetproperty.name_type = targetproperty.name_type;
 	this->targetproperty.isAttribute = targetproperty.isAttribute;
 	this->targetproperty.name_s_id = targetproperty.name_s_id;
@@ -100,14 +98,12 @@ XMLList::XMLList(Class_base* c, const XML::XMLVector& r, XMLList *targetobject, 
 	}
 }
 
-XMLList* XMLList::create(SystemState* sys,const XML::XMLVector& r, XMLList *targetobject, const multiname &targetproperty)
+XMLList* XMLList::create(SystemState* sys,const XML::XMLVector& r, _NR<XMLList> targetobject, const multiname &targetproperty)
 {
 	XMLList* res = Class<XMLList>::getInstanceSNoArgs(sys);
 	res->constructed = true;
 	res->nodes.assign(r.begin(),r.end());
 	res->targetobject = targetobject;
-	if (res->targetobject)
-		res->targetobject->incRef();
 	res->targetproperty.name_type = targetproperty.name_type;
 	res->targetproperty.isAttribute = targetproperty.isAttribute;
 	res->targetproperty.name_s_id = targetproperty.name_s_id;
@@ -124,7 +120,7 @@ bool XMLList::destruct()
 		targetobject->decRef();
 	nodes.clear();
 	constructed = false;
-	targetobject = NULL;
+	targetobject = NullRef;
 	targetproperty = multiname(this->getClass()->memoryAccount);
 	return ASObject::destruct();
 }
@@ -537,17 +533,17 @@ ASFUNCTIONBODY(XMLList,attribute)
 	return attr->toObject(th->getSystemState());
 }
 
-ASFUNCTIONBODY(XMLList,attributes)
+ASFUNCTIONBODY_ATOM(XMLList,attributes)
 {
 	XMLList *th = obj->as<XMLList>();
-	XMLList *res = Class<XMLList>::getInstanceSNoArgs(obj->getSystemState());
+	XMLList *res = Class<XMLList>::getInstanceSNoArgs(sys);
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
 	{
 		XML::XMLVector nodeAttributes = (*it)->getAttributes();
 		res->nodes.insert(res->nodes.end(), nodeAttributes.begin(), nodeAttributes.end());
 	}
-	return res;
+	return asAtom::fromObject(res);
 }
 
 ASFUNCTIONBODY(XMLList,comments)
@@ -726,7 +722,7 @@ asAtomR XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTI
 		if(retnodes.size()==0 && (opt & XML_STRICT)!=0)
 			return _MAR(asAtom::invalidAtom);
 
-		return asAtom::fromObject(create(getSystemState(),retnodes,this,name));
+		return asAtom::fromObject(create(getSystemState(),retnodes,_IMR(this),name));
 	}
 	unsigned int index=0;
 	if(XML::isValidMultiname(getSystemState(),name,index))
@@ -754,7 +750,7 @@ asAtomR XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTI
 		if(retnodes.size()==0 && (opt & XML_STRICT)!=0)
 			return _MAR(asAtom::invalidAtom);
 
-		return asAtom::fromObject(create(getSystemState(),retnodes,this,name));
+		return asAtom::fromObject(create(getSystemState(),retnodes,_IMR(this),name));
 	}
 }
 
@@ -787,7 +783,7 @@ void XMLList::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_AL
 	assert_and_throw(implEnable);
 	unsigned int index=0;
 	XML::XMLVector retnodes;
-	XMLList* tmplist = targetobject;
+	_NR<XMLList> tmplist = targetobject;
 	multiname tmpprop = targetproperty;
 	if (targetobject)
 	{

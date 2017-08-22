@@ -32,7 +32,7 @@ public:
 private:
 	XMLListVector nodes;
 	bool constructed;
-	XMLList* targetobject;
+	_NR<XMLList> targetobject;
 	multiname targetproperty;
 
 	tiny_string toString_priv();
@@ -48,17 +48,17 @@ public:
 	*/
 	XMLList(Class_base* cb,bool c);
 	XMLList(Class_base* c,const XML::XMLVector& r);
-	XMLList(Class_base* c,const XML::XMLVector& r,XMLList* targetobject,const multiname& targetproperty);
+	XMLList(Class_base* c, const XML::XMLVector& r, _NR<XMLList> targetobject, const multiname& targetproperty);
 	XMLList(Class_base* c,const std::string& str);
 	bool destruct();
 	
 	static void buildTraits(ASObject* o){}
 	static void sinit(Class_base* c);
-	static XMLList* create(SystemState *sys, const XML::XMLVector& r, XMLList *targetobject, const multiname &targetproperty);
+	static XMLList* create(SystemState *sys, const XML::XMLVector& r, _NR<XMLList> targetobject, const multiname &targetproperty);
 	ASFUNCTION(_constructor);
 	ASFUNCTION(_getLength);
 	ASFUNCTION(attribute);
-	ASFUNCTION(attributes);
+	ASFUNCTION_ATOM(attributes);
 	ASFUNCTION(_appendChild);
 	ASFUNCTION(child);
 	ASFUNCTION(children);
@@ -121,7 +121,7 @@ public:
 	void normalize();
 	void clear();
 	void removeNode(XML* node);
-	XMLList* getTargetObject() { return targetobject; }
+	_NR<XMLList> getTargetObject() { return targetobject; }
 };
 }
 #endif /* SCRIPTING_TOPLEVEL_XMLLIST_H */

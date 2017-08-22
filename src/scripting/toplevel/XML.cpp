@@ -397,16 +397,15 @@ ASFUNCTIONBODY(XML,attribute)
 	return res;
 }
 
-ASFUNCTIONBODY(XML,attributes)
+ASFUNCTIONBODY_ATOM(XML,attributes)
 {
 	assert_and_throw(argslen==0);
-	return obj->as<XML>()->getAllAttributes();
+	return asAtom::fromObject(obj->as<XML>()->getAllAttributes().getPtr());
 }
 
-XMLList* XML::getAllAttributes()
+_NR<XMLList> XML::getAllAttributes()
 {
-	attributelist->incRef();
-	return attributelist.getPtr();
+	return attributelist;
 }
 
 const tiny_string XML::toXMLString_internal(bool pretty, uint32_t defaultnsprefix, const char *indent,bool bfirst)
@@ -1436,7 +1435,7 @@ asAtomR XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION o
 	{
 		//Lookup attribute
 		const XMLVector& attributes=getAttributesByMultiname(name,normalizedName);
-		return asAtom::fromObject(XMLList::create(getSystemState(),attributes,attributelist.getPtr(),name));
+		return asAtom::fromObject(XMLList::create(getSystemState(),attributes,attributelist,name));
 	}
 	else if(XML::isValidMultiname(getSystemState(),name,index))
 	{
@@ -2054,6 +2053,8 @@ XML *XML::createFromNode(const pugi::xml_node &_n, XML *parent, bool fromXMLList
 	res->createTree(_n,fromXMLList);
 	return res;
 }
+
+_NR<XMLList> XML::getChildrenlist() { return childrenlist ? childrenlist : NullRef; }
 
 ASFUNCTIONBODY(XML,insertChildAfter)
 {
