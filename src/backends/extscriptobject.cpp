@@ -481,7 +481,7 @@ void ExtBuiltinCallback::call(const ExtScriptObject& so, const ExtIdentifier& id
 		LOG(LOG_INFO,"ExtBuiltinCallback::call: exception:"<<_exception->toString()<<" "<<id.getString()<<" "<<argc);
 		exceptionThrown = true;
 		exception = _exception->toString();
-		_exception->decRef();
+		_R<ASObject> _exc = _MR(_exception);
 	}
 	// Catch LS exceptions and report them
 	catch(LightsparkException& e)

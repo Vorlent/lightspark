@@ -362,8 +362,6 @@ void XML::appendChild(_R<XML> newChild)
 		newChild->parentNode = _IMNR<XML>(this);
 		childrenlist->append(newChild);
 	}
-	else
-		newChild->decRef();
 }
 
 /* returns the named attribute in an XMLList */
@@ -2790,8 +2788,6 @@ void XML::prependChild(_R<XML> newChild)
 		newChild->parentNode = _IMNR<XML>(this);
 		childrenlist->prepend(newChild);
 	}
-	else
-		newChild->decRef();
 }
 
 ASFUNCTIONBODY_ATOM(XML,_replace)
@@ -2812,7 +2808,6 @@ ASFUNCTIONBODY_ATOM(XML,_replace)
 	{
 		if (value->is<XMLList>())
 		{
-			//TODO: remove? th->childrenlist->decRef();
 			th->childrenlist = _IMNR<XMLList>(value->as<XMLList>());
 		}
 		else if (value->is<XML>())

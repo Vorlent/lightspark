@@ -116,8 +116,6 @@ XMLList* XMLList::create(SystemState* sys,const XML::XMLVector& r, _NR<XMLList> 
 
 bool XMLList::destruct()
 {
-	if (targetobject)
-		targetobject->decRef();
 	nodes.clear();
 	constructed = false;
 	targetobject = NullRef;
@@ -834,7 +832,6 @@ void XMLList::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_AL
 					tmp2->constructed = true;
 					asAtomR v = asAtom::fromObject(tmp);
 					tmp2->setVariableByMultiname(targetproperty,v,allowConst);
-					tmp2->incRef();
 					tmplist->appendSingleNode(tmp2);
 					appendSingleNode(tmp2);
 				}

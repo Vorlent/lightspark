@@ -514,7 +514,6 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 					cc.exec_pos = exc.target;
 					cc.runtime_stack_clear();
 					cc.stack[cc.stack_index++]=asAtom::fromObject(excobj);
-					excobj->incRef();
 					while (cc.curr_scope_stack)
 					{
 						--cc.curr_scope_stack;

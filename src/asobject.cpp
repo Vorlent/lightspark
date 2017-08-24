@@ -2542,8 +2542,8 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 	}
 	else
 	{
-		ASObject* val1 = toObject(sys);
-		ASObject* val2 = v2->toObject(sys);
+		_NR<ASObject> val1 = _MNR(toObject(sys));
+		_NR<ASObject> val2 = _MNR(v2->toObject(sys));
 		if( (val1->is<XML>() || val1->is<XMLList>()) && (val2->is<XML>() || val2->is<XMLList>()) )
 		{
 			//Check if the objects are both XML or XMLLists
@@ -2551,14 +2551,14 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 
 			XMLList* newList=Class<XMLList>::getInstanceS(val1->getSystemState(),true);
 			if(val1->getClass()==xmlClass)
-				newList->append(_MR(static_cast<XML*>(val1)));
+				newList->append(_IMR(static_cast<XML*>(val1.getPtr())));
 			else //if(val1->getClass()==xmlListClass)
-				newList->append(_MR(static_cast<XMLList*>(val1)));
+				newList->append(_IMR(static_cast<XMLList*>(val1.getPtr())));
 
 			if(val2->getClass()==xmlClass)
-				newList->append(_MR(static_cast<XML*>(val2)));
+				newList->append(_IMR(static_cast<XML*>(val2.getPtr())));
 			else //if(val2->getClass()==xmlListClass)
-				newList->append(_MR(static_cast<XMLList*>(val2)));
+				newList->append(_IMR(static_cast<XMLList*>(val2.getPtr())));
 
 			//The references of val1 and val2 have been passed to the smart references
 			//no decRef is needed
@@ -2588,8 +2588,6 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 				number_t result = num1 + num2;
 				setNumber(result);
 			}
-			val1->decRef();
-			val2->decRef();
 		}
 	}
 }

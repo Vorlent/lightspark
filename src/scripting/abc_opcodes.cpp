@@ -1814,14 +1814,14 @@ bool ABCVm::lessEquals(ASObject* obj1Ptr, ASObject* obj2Ptr)
 	return (obj2->isLess(obj1.getPtr())==TFALSE);
 }
 
-void ABCVm::initProperty(ASObject* obj, ASObject* value, multiname* name)
+void ABCVm::initProperty(ASObject* objPtr, ASObject* value, multiname* name)
 {
-	checkDeclaredTraits(obj);
+	_NR<ASObject> obj = _MNR(objPtr);
+	checkDeclaredTraits(obj.getPtr());
 
 	//Allow to set contant traits
 	asAtomR v = asAtom::fromObject(value);
 	obj->setVariableByMultiname(*name,v,ASObject::CONST_ALLOWED);
-	obj->decRef();
 }
 
 void ABCVm::callStatic(call_context* th, int n, int m, method_info** called_mi, bool keepReturn)
@@ -1991,8 +1991,9 @@ ASObject* ABCVm::asType(ABCContext* context, ASObject* obj, multiname* name)
 	}
 }
 
-ASObject* ABCVm::asTypelate(ASObject* type, ASObject* obj)
+ASObject* ABCVm::asTypelate(ASObject* typePtr, ASObject* obj)
 {
+	_NR<ASObject> type = _MNR(typePtr);
 	LOG_CALL(_("asTypelate"));
 
 	if(!type->is<Class_base>())
@@ -2000,7 +2001,7 @@ ASObject* ABCVm::asTypelate(ASObject* type, ASObject* obj)
 		LOG(LOG_ERROR,"trying to call asTypelate on non class object:"<<obj->toDebugString());
 		throwError<TypeError>(kConvertNullToObjectError);
 	}
-	Class_base* c=static_cast<Class_base*>(type);
+	Class_base* c=static_cast<Class_base*>(type.getPtr());
 	//Special case numeric types
 	if(obj->getObjectType()==T_INTEGER || obj->getObjectType()==T_UINTEGER || obj->getObjectType()==T_NUMBER)
 	{
@@ -2014,7 +2015,6 @@ ASObject* ABCVm::asTypelate(ASObject* type, ASObject* obj)
 		else
 			real_ret=false;
 		LOG_CALL(_("Numeric type is ") << ((real_ret)?"":_("not ")) << _("subclass of ") << c->class_name);
-		type->decRef();
 		if(real_ret)
 			return obj;
 		else
@@ -2032,14 +2032,12 @@ ASObject* ABCVm::asTypelate(ASObject* type, ASObject* obj)
 	{
 		ASObject* res = obj->getSystemState()->getNullRef();
 		obj->decRef();
-		type->decRef();
 		return res;
 	}
 
 	bool real_ret=objc->isSubClass(c);
 	LOG_CALL(_("Type ") << objc->class_name << _(" is ") << ((real_ret)?_(" "):_("not ")) 
 			<< _("subclass of ") << c->class_name);
-	type->decRef();
 	if(real_ret)
 		return obj;
 	else
@@ -2678,9 +2676,8 @@ void ABCVm::callImpl(call_context* th, asAtomR& f, asAtomR& obj, std::vector<asA
 	}
 	else if(f->is<Class_base>())
 	{
-		Class_base* c=f->as<Class_base>();
+		_NR<Class_base> c=_MNR(f->as<Class_base>());
 		asAtomR ret=c->generator(args,m);
-		c->decRef();
 		if(keepReturn)
 			runtime_stack_push_ref(th,ret);
 	}
