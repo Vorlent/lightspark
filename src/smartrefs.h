@@ -45,6 +45,13 @@ public:
 		RELEASE_WRITE(isConstant,true);
 	}
 	inline bool getConstant() const { return isConstant; }
+
+	//This object is not supposed to deleted via decRef()
+	inline void incRefStatic()
+	{
+		if (!isConstant)
+			++ref_count;
+	}
 	
 	inline void incRef()
 	{

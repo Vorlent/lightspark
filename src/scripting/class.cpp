@@ -58,7 +58,7 @@ ObjectConstructor* lightspark::new_objectConstructor(Class_base* cls,uint32_t le
 
 Class_inherit::Class_inherit(const QName& name, MemoryAccount* m, const traits_info *_classtrait):Class_base(name, m),tag(NULL),bindedToRoot(false),classtrait(_classtrait)
 {
-	this->incRef(); //create on reference for the classes map
+	this->incRefStatic(); //create on reference for the classes map
 #ifndef NDEBUG
 	bool ret=
 #endif
@@ -216,7 +216,7 @@ Class<ASObject>* Class<ASObject>::getClass(SystemState* sys)
 		QName name(s->getUniqueStringId(ClassName<ASObject>::name),s->getUniqueStringId(ClassName<ASObject>::ns));
 		ret=new (s->unaccountedMemory) Class<ASObject>(name, s->unaccountedMemory);
 		ret->setSystemState(s);
-		ret->incRef();
+		ret->incRefStatic();
 		*retAddr=ret;
 		ret->prototype = _MNR(new_objectPrototype(sys));
 		ASObject::sinit(ret);

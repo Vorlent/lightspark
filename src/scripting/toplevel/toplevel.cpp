@@ -1042,7 +1042,7 @@ Class_object* Class_object::getClass(SystemState *sys)
 		//Create the class
 		ret=new (sys->unaccountedMemory) Class_object();
 		ret->setSystemState(sys);
-		ret->incRef();
+		ret->incRefStatic();
 		*retAddr=ret;
 	}
 	else
@@ -2152,10 +2152,9 @@ Class<IFunction>* Class<IFunction>::getClass(SystemState* sys)
 		ret->setSuper(Class<ASObject>::getRef(s));
 		//The prototype for Function seems to be a function object. Use the special FunctionPrototype
 		ret->prototype = _MNR(new_functionPrototype(ret, ret->super->prototype));
-		ret->incRef();
 		ret->prototype->getObj()->setVariableByQName("constructor","",ret,DECLARED_TRAIT);
 		ret->prototype->getObj()->setConstructIndicator();
-		ret->incRef();
+		ret->incRefStatic();
 		*retAddr = ret;
 
 		//we cannot use sinit, as we need to setup 'this_class' before calling

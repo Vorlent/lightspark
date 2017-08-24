@@ -188,7 +188,7 @@ public:
 			QName name(sys->getUniqueStringId(ClassName<T>::name),sys->getUniqueStringId(ClassName<T>::ns));
 			ret=new (sys->unaccountedMemory) Class<T>(name, sys->unaccountedMemory);
 			ret->setSystemState(sys);
-			ret->incRef();
+			ret->incRefStatic();
 			*retAddr=ret;
 			ret->prototype = _MNR(new_objectPrototype(sys));
 			T::sinit(ret);
@@ -360,7 +360,7 @@ public:
 			QName name(sys->getUniqueStringId(ClassName<T>::name),sys->getUniqueStringId(ClassName<T>::ns));
 			ret=new (sys->unaccountedMemory) InterfaceClass<T>(name, sys->unaccountedMemory);
 			ret->isInterface = true;
-			ret->incRef();
+			ret->incRefStatic();
 			*retAddr=ret;
 		}
 		else
