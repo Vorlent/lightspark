@@ -1539,7 +1539,7 @@ void DisplayObjectContainer::insertLegacyChildAt(uint32_t depth, DisplayObject* 
 		LOG(LOG_ERROR,"insertLegacyChildAt: there is already one child at that depth");
 		return;
 	}
-	_addChildAt(_MR(obj),depth-1); /* depth is 1 based in SWF */
+	_addChildAt(_IMR(obj),depth-1); /* depth is 1 based in SWF */
 	if(!obj->name.empty())
 	{
 		multiname objName(NULL);
