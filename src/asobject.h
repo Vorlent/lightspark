@@ -884,7 +884,7 @@ public:
 };
 
 inline asAtomR::~asAtomR() {
-	if (m.getObject()) m.getObject()->incRef();
+	if (m.getObject()) m.getObject()->decRef();
 }
 
 
@@ -897,6 +897,7 @@ inline asAtomR& asAtomR::operator=(const asAtomR& r)
 {
 	if (r.m.getObject()) r.m.getObject()->incRef();
 
+	if (m.getObject()) m.getObject()->decRef();
 	m=r.m;
 
 	return *this;
