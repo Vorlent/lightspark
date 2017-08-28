@@ -1265,7 +1265,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 		//The standard behavior
 		else
 		{
-			_R<DisplayObject> cur = _MR(dispatcher->as<DisplayObject>());
+			_R<DisplayObject> cur = _IMR(dispatcher->as<DisplayObject>());
 			while(true)
 			{
 				if(!cur->getParent())
