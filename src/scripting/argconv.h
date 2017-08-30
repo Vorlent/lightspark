@@ -332,7 +332,7 @@ public:
 												  obj->toObject(getSys())->getClassName(),
                                                   Class<T>::getClass(getSys())->getQualifiedClassName());
 		T* o = obj->as<T>();
-		return _MNR(o);
+		return _IMNR(o);
 	}
 	static asAtomR toAbstract(SystemState* sys,const NullableRef<T>& val)
 	{

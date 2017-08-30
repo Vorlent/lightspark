@@ -2079,8 +2079,8 @@ bool ABCVm::ifStrictNE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 
 bool ABCVm::in(ASObject* val2Ptr, ASObject* val1Ptr)
 {
-	_NR<ASObject> val1 = _MNR(val1Ptr);
-	_NR<ASObject> val2 = _MNR(val2Ptr);
+	_NR<ASObject> val1 = _IMNR(val1Ptr);
+	_NR<ASObject> val2 = _IMNR(val2Ptr);
 	LOG_CALL( _("in") );
 	if(val2->is<Null>())
 		throwError<TypeError>(kConvertNullToObjectError);

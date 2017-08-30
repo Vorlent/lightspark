@@ -711,8 +711,7 @@ void ABCVm::optimizeFunction(SyntheticFunction* function)
 			case 0x20:
 			{
 				//pushnull
-				_NR<ASObject> ret=_MNR(sys->getNullRef());
-				curBlock->pushStack(InferenceData(ret.getPtr()));
+				curBlock->pushStack(InferenceData(sys->getNullRef()));
 				out << (uint8_t)opcode;
 				break;
 			}
