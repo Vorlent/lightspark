@@ -239,15 +239,15 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 		classObject->setSuper(asobjectClass);
 		objClassRef = asobjectClass.getPtr();
 
-		trueRef=_MR(Class<Boolean>::getInstanceS(this,true));
+		trueRef=Class<Boolean>::getInstanceS(this,true);
 		trueRef->setConstant();
-		falseRef=_MR(Class<Boolean>::getInstanceS(this,false));
+		falseRef=Class<Boolean>::getInstanceS(this,false);
 		falseRef->setConstant();
 	}
 
-	systemDomain = _MR(Class<ApplicationDomain>::getInstanceS(this));
-	_NR<ApplicationDomain> applicationDomain=_MR(Class<ApplicationDomain>::getInstanceS(this,systemDomain));
-	_NR<SecurityDomain> securityDomain = _MR(Class<SecurityDomain>::getInstanceS(this));
+	systemDomain = Class<ApplicationDomain>::getInstanceS(this);
+	_NR<ApplicationDomain> applicationDomain=Class<ApplicationDomain>::getInstanceS(this,systemDomain);
+	_NR<SecurityDomain> securityDomain = Class<SecurityDomain>::getInstanceS(this);
 
 	threadPool=new ThreadPool(this);
 	timerThread=new TimerThread(this);
@@ -256,12 +256,12 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	intervalManager=new IntervalManager();
 	securityManager=new SecurityManager();
 
-	_NR<LoaderInfo> loaderInfo=_MR(Class<LoaderInfo>::getInstanceS(this));
+	_NR<LoaderInfo> loaderInfo=Class<LoaderInfo>::getInstanceS(this);
 	loaderInfo->applicationDomain = applicationDomain;
 	loaderInfo->setBytesLoaded(0);
 	loaderInfo->setBytesTotal(0);
 	mainClip=_MNR(RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain));
-	stage=_MR(Class<Stage>::getInstanceS(this));
+	stage=Class<Stage>::getInstanceS(this);
 	stage->_addChildAt(_IMR(mainClip.getPtr()),0);
 	//Get starting time
 	startTime=compat_msectiming();
@@ -376,7 +376,7 @@ void SystemState::parseParametersFromFlashvars(const char* v)
 				LOG(LOG_ERROR,"Flash parameters has duplicate key '" << varName << "' - ignoring");
 			else
 				params->setVariableByQName(varName,"",
-					lightspark::Class<lightspark::ASString>::getInstanceS(this,varValue),DYNAMIC_TRAIT);
+					lightspark::Class<lightspark::ASString>::getInstanceSRaw(this,varValue),DYNAMIC_TRAIT);
 		}
 		cur=n2+1;
 	}
@@ -425,7 +425,7 @@ void SystemState::parseParametersFromURLIntoObject(const URLInfo& url, _R<ASObje
 			LOG(LOG_ERROR,"URL query parameters has duplicate key '" << it->first << "' - ignoring");
 		else
 			outParams->setVariableByQName(it->first,"",
-			   lightspark::Class<lightspark::ASString>::getInstanceS(outParams->getSystemState(),it->second),DYNAMIC_TRAIT);
+			   lightspark::Class<lightspark::ASString>::getInstanceSRaw(outParams->getSystemState(),it->second),DYNAMIC_TRAIT);
 	}
 }
 
@@ -1350,8 +1350,8 @@ void ParseThread::parseSWF(UI8 ver)
 	if (loader && !loader->allowLoadingSWF())
 	{
 		_NR<LoaderInfo> li=loader->getContentLoaderInfo();
-		getVm(loader->getSystemState())->addEvent(_IMR(li.getPtr()),_MR(Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
-			"Cannot import a SWF file when LoaderContext.allowCodeImport is false."))); // 3226
+		getVm(loader->getSystemState())->addEvent(_IMR(li.getPtr()),Class<SecurityErrorEvent>::getInstanceS(loader->getSystemState(),
+			"Cannot import a SWF file when LoaderContext.allowCodeImport is false.")); // 3226
 		return;
 	}
 
@@ -1538,7 +1538,7 @@ void ParseThread::parseBitmap()
 	_NR<LoaderInfo> li;
 	li=loader->getContentLoaderInfo();
 
-	_NR<Bitmap> tmp=_MNR(Class<Bitmap>::getInstanceS(loader->getSystemState(),li, &f, fileType));
+	Ref<Bitmap> tmp=Class<Bitmap>::getInstanceS(loader->getSystemState(),li, &f, fileType);
 	{
 		SpinlockLocker l(objectSpinlock);
 		parsedObject=tmp;
@@ -1804,9 +1804,9 @@ void SystemState::resizeCompleted()
 {
 	if(currentVm && scaleMode==NO_SCALE)
 	{
-		currentVm->addEvent(stage,_MR(Class<Event>::getInstanceS(this,"resize",false)));
+		currentVm->addEvent(stage,Class<Event>::getInstanceS(this,"resize",false));
 		
-		currentVm->addEvent(stage,_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(this)));
+		currentVm->addEvent(stage,Class<StageVideoAvailabilityEvent>::getInstanceS(this));
 	}
 }
 

@@ -46,7 +46,7 @@ ASFUNCTIONBODY_ATOM(NativeApplication,_constructor)
 //  Should actually be a Singleton
 ASFUNCTIONBODY_ATOM(NativeApplication, _getNativeApplication)
 {
-	return asAtom::fromObject(Class<NativeApplication>::getInstanceS(sys));
+	return asAtom::fromObject(Class<NativeApplication>::getInstanceSRaw(sys));
 }
 
 ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
@@ -55,7 +55,7 @@ ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
 	EventDispatcher::addEventListener(sys,obj, args, argslen);
 	if (args[0]->toString() == "invoke")
 	{
-		getVm(th->getSystemState())->addEvent(_IMR(th), _MR(Class<InvokeEvent>::getInstanceS(sys)));
+		getVm(th->getSystemState())->addEvent(_IMR(th), Class<InvokeEvent>::getInstanceS(sys));
 	}
 
 	return _MAR(asAtom::invalidAtom);

@@ -84,7 +84,7 @@ asAtomR Amf3Deserializer::parseDate() const
 			throw ParseException("Not enough data to parse date");
 	}
 	tmp.dummy=GINT64_FROM_BE(tmp.dummy);
-	Date* dt = Class<Date>::getInstanceS(input->getSystemState());
+	Date* dt = Class<Date>::getInstanceSRaw(input->getSystemState());
 	dt->MakeDateFromMilliseconds((int64_t)tmp.val);
 	return asAtom::fromObject(dt);
 }
@@ -135,7 +135,7 @@ asAtomR Amf3Deserializer::parseArray(std::vector<tiny_string>& stringMap,
 		return ret;
 	}
 
-	Array* ret=Class<lightspark::Array>::getInstanceS(input->getSystemState());
+	Array* ret=Class<lightspark::Array>::getInstanceSRaw(input->getSystemState());
 	//Add object to the map
 	objMap.push_back(asAtom::fromObject(ret));
 
@@ -285,7 +285,7 @@ asAtomR Amf3Deserializer::parseDictionary(std::vector<tiny_string>& stringMap,
 		throw ParseException("Not enough data to parse AMF3 vector");
 	if (weakkeys)
 		LOG(LOG_NOT_IMPLEMENTED,"handling of weak keys in Dictionary");
-	Dictionary* ret=Class<Dictionary>::getInstanceS(input->getSystemState());
+	Dictionary* ret=Class<Dictionary>::getInstanceSRaw(input->getSystemState());
 	//Add object to the map
 	objMap.push_back(asAtom::fromObject(ret));
 
@@ -322,7 +322,7 @@ asAtomR Amf3Deserializer::parseByteArray(std::vector<tiny_string>& stringMap,
 		return ret;
 	}
 
-	ByteArray* ret=Class<ByteArray>::getInstanceS(input->getSystemState());
+	ByteArray* ret=Class<ByteArray>::getInstanceSRaw(input->getSystemState());
 	//Add object to the map
 	objMap.push_back(asAtom::fromObject(ret));
 
@@ -465,7 +465,7 @@ asAtomR Amf3Deserializer::parseXML(std::vector<asAtomR>& objMap, bool legacyXML)
 
 	ASObject *xmlObj;
 	if(legacyXML)
-		xmlObj=Class<XMLDocument>::getInstanceS(input->getSystemState(),xmlStr);
+		xmlObj=Class<XMLDocument>::getInstanceSRaw(input->getSystemState(),xmlStr);
 	else
 		xmlObj=XML::createFromString(input->getSystemState(),xmlStr);
 	objMap.push_back(asAtom::fromObject(xmlObj));
@@ -618,7 +618,7 @@ asAtomR Amf3Deserializer::parseStrictArrayAMF0(std::vector<tiny_string>& stringM
 	if(!input->readUnsignedInt(count))
 		throw ParseException("Not enough data to parse AMF3 strict array");
 
-	lightspark::Array* ret=Class<lightspark::Array>::getInstanceS(input->getSystemState());
+	lightspark::Array* ret=Class<lightspark::Array>::getInstanceSRaw(input->getSystemState());
 	//Add object to the map
 	objMap.push_back(asAtom::fromObject(ret));
 

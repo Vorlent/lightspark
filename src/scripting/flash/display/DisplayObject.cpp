@@ -196,7 +196,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getTransform)
 {
 	DisplayObject* th=obj->as<DisplayObject>();
 	
-	return asAtom::fromObject(Class<Transform>::getInstanceS(sys,_IMR(th)));
+	return asAtom::fromObject(Class<Transform>::getInstanceSRaw(sys,_IMR(th)));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setTransform)
@@ -229,7 +229,7 @@ void DisplayObject::setMatrix(_NR<Matrix> m)
 	{
 		SpinlockLocker locker(spinlock);
 		if (matrix.isNull())
-			matrix= _MR(Class<Matrix>::getInstanceS(this->getSystemState()));
+			matrix= Class<Matrix>::getInstanceS(this->getSystemState());
 		if(matrix->matrix!=m->matrix)
 		{
 			matrix->matrix=m->matrix;
@@ -252,7 +252,7 @@ void DisplayObject::setLegacyMatrix(const lightspark::MATRIX& m)
 	{
 		SpinlockLocker locker(spinlock);
 		if (matrix.isNull())
-			matrix= _MR(Class<Matrix>::getInstanceS(this->getSystemState()));
+			matrix= Class<Matrix>::getInstanceS(this->getSystemState());
 		if(matrix->matrix!=m)
 		{
 			matrix->matrix=m;
@@ -460,7 +460,7 @@ void DisplayObject::setOnStage(bool staged)
 		*/
 		if(onStage==true)
 		{
-			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"addedToStage"));
+			_R<Event> e=Class<Event>::getInstanceS(getSystemState(),"addedToStage");
 			if(isVmThread())
 				ABCVm::publicHandleEvent(_IMR(this),e);
 			else
@@ -468,7 +468,7 @@ void DisplayObject::setOnStage(bool staged)
 		}
 		else if(onStage==false)
 		{
-			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"removedFromStage"));
+			_R<Event> e=Class<Event>::getInstanceS(getSystemState(),"removedFromStage");
 			if(isVmThread())
 				ABCVm::publicHandleEvent(_IMR(this),e);
 			else
@@ -715,7 +715,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getBounds)
 	assert_and_throw(argslen==1);
 
 	if(args[0]->is<Undefined>() || args[0]->is<Null>())
-		return asAtom::fromObject(Class<Rectangle>::getInstanceS(sys));
+		return asAtom::fromObject(Class<Rectangle>::getInstanceSRaw(sys));
 	if (!args[0]->is<DisplayObject>())
 		LOG(LOG_ERROR,"DisplayObject.getBounds invalid type:"<<args[0]->toDebugString());
 	assert_and_throw(args[0]->is<DisplayObject>());
@@ -738,7 +738,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getBounds)
 			m = targetMatrix.getInverted().multiplyMatrix(m);
 	}
 
-	Rectangle* ret=Class<Rectangle>::getInstanceS(sys);
+	Rectangle* ret=Class<Rectangle>::getInstanceSRaw(sys);
 	number_t x1,x2,y1,y2;
 	bool r=th->getBounds(x1,x2,y1,y2, m);
 	if(r)
@@ -841,7 +841,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,localToGlobal)
 
 	th->localToGlobal(pt->getX(), pt->getY(), tempx, tempy);
 
-	return asAtom::fromObject(Class<Point>::getInstanceS(sys,tempx, tempy));
+	return asAtom::fromObject(Class<Point>::getInstanceSRaw(sys,tempx, tempy));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,globalToLocal)
@@ -855,7 +855,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,globalToLocal)
 
 	th->globalToLocal(pt->getX(), pt->getY(), tempx, tempy);
 
-	return asAtom::fromObject(Class<Point>::getInstanceS(sys,tempx, tempy));
+	return asAtom::fromObject(Class<Point>::getInstanceSRaw(sys,tempx, tempy));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setRotation)
@@ -1102,12 +1102,12 @@ void DisplayObject::initFrame()
 		 */
 		if(!parent.isNull())
 		{
-			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"added"));
+			_R<Event> e=Class<Event>::getInstanceS(getSystemState(),"added");
 			ABCVm::publicHandleEvent(_IMR(this),e);
 		}
 		if(onStage)
 		{
-			_R<Event> e=_MR(Class<Event>::getInstanceS(getSystemState(),"addedToStage"));
+			_R<Event> e=Class<Event>::getInstanceS(getSystemState(),"addedToStage");
 			ABCVm::publicHandleEvent(_IMR(this),e);
 		}
 	}

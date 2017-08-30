@@ -236,7 +236,7 @@ void ScriptLimitsTag::execute(RootMovieClip* root) const
 
 void ABCVm::registerClasses()
 {
-	Global* builtin=Class<Global>::getInstanceS(m_sys,(ABCContext*)NULL, 0);
+	Global* builtin=Class<Global>::getInstanceSRaw(m_sys,(ABCContext*)NULL, 0);
 	//Register predefined types, ASObject are enough for not implemented classes
 	builtin->registerBuiltin("Object","",Class<ASObject>::getRef(m_sys));
 	builtin->registerBuiltin("Class","",Class_object::getRef(m_sys));
@@ -250,7 +250,7 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("undefined","",_MR(m_sys->getUndefinedRef()));
 	builtin->registerBuiltin("Math","",Class<Math>::getRef(m_sys));
 	builtin->registerBuiltin("Namespace","",Class<Namespace>::getRef(m_sys));
-	builtin->registerBuiltin("AS3","",_MR(Class<Namespace>::getInstanceS(m_sys,BUILTIN_STRINGS::STRING_AS3NS)));
+	builtin->registerBuiltin("AS3","",Class<Namespace>::getInstanceS(m_sys,BUILTIN_STRINGS::STRING_AS3NS));
 	builtin->registerBuiltin("Date","",Class<Date>::getRef(m_sys));
 	builtin->registerBuiltin("JSON","",Class<JSON>::getRef(m_sys));
 	builtin->registerBuiltin("RegExp","",Class<RegExp>::getRef(m_sys));
@@ -273,18 +273,18 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("XMLList","",Class<XMLList>::getRef(m_sys));
 	builtin->registerBuiltin("int","",Class<Integer>::getRef(m_sys));
 
-	builtin->registerBuiltin("eval","",_MR(Class<IFunction>::getFunction(m_sys,eval)));
-	builtin->registerBuiltin("print","",_MR(Class<IFunction>::getFunction(m_sys,print)));
-	builtin->registerBuiltin("trace","",_MR(Class<IFunction>::getFunction(m_sys,trace)));
-	builtin->registerBuiltin("parseInt","",_MR(Class<IFunction>::getFunction(m_sys,parseInt,2)));
-	builtin->registerBuiltin("parseFloat","",_MR(Class<IFunction>::getFunction(m_sys,parseFloat,1)));
-	builtin->registerBuiltin("encodeURI","",_MR(Class<IFunction>::getFunction(m_sys,encodeURI)));
-	builtin->registerBuiltin("decodeURI","",_MR(Class<IFunction>::getFunction(m_sys,decodeURI)));
-	builtin->registerBuiltin("encodeURIComponent","",_MR(Class<IFunction>::getFunction(m_sys,encodeURIComponent)));
-	builtin->registerBuiltin("decodeURIComponent","",_MR(Class<IFunction>::getFunction(m_sys,decodeURIComponent)));
-	builtin->registerBuiltin("escape","",_MR(Class<IFunction>::getFunction(m_sys,escape,1)));
-	builtin->registerBuiltin("unescape","",_MR(Class<IFunction>::getFunction(m_sys,unescape,1)));
-	builtin->registerBuiltin("toString","",_MR(Class<IFunction>::getFunction(m_sys,ASObject::_toString)));
+	builtin->registerBuiltin("eval","",Class<IFunction>::getFunctionRef(m_sys,eval));
+	builtin->registerBuiltin("print","",Class<IFunction>::getFunctionRef(m_sys,print));
+	builtin->registerBuiltin("trace","",Class<IFunction>::getFunctionRef(m_sys,trace));
+	builtin->registerBuiltin("parseInt","",Class<IFunction>::getFunctionRef(m_sys,parseInt,2));
+	builtin->registerBuiltin("parseFloat","",Class<IFunction>::getFunctionRef(m_sys,parseFloat,1));
+	builtin->registerBuiltin("encodeURI","",Class<IFunction>::getFunctionRef(m_sys,encodeURI));
+	builtin->registerBuiltin("decodeURI","",Class<IFunction>::getFunctionRef(m_sys,decodeURI));
+	builtin->registerBuiltin("encodeURIComponent","",Class<IFunction>::getFunctionRef(m_sys,encodeURIComponent));
+	builtin->registerBuiltin("decodeURIComponent","",Class<IFunction>::getFunctionRef(m_sys,decodeURIComponent));
+	builtin->registerBuiltin("escape","",Class<IFunction>::getFunctionRef(m_sys,escape,1));
+	builtin->registerBuiltin("unescape","",Class<IFunction>::getFunctionRef(m_sys,unescape,1));
+	builtin->registerBuiltin("toString","",Class<IFunction>::getFunctionRef(m_sys,ASObject::_toString));
 
 	builtin->registerBuiltin("AccessibilityProperties","flash.accessibility",Class<AccessibilityProperties>::getRef(m_sys));
 	builtin->registerBuiltin("AccessibilityImplementation","flash.accessibility",Class<AccessibilityImplementation>::getRef(m_sys));
@@ -293,7 +293,7 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("Mutex","flash.concurrent",Class<ASMutex>::getRef(m_sys));
 	builtin->registerBuiltin("Condition","flash.concurrent",Class<ASCondition>::getRef(m_sys));
 
-	builtin->registerBuiltin("generateRandomBytes","flash.crypto",_MR(Class<IFunction>::getFunction(m_sys,generateRandomBytes)));
+	builtin->registerBuiltin("generateRandomBytes","flash.crypto",Class<IFunction>::getFunctionRef(m_sys,generateRandomBytes));
 
 	builtin->registerBuiltin("MovieClip","flash.display",Class<MovieClip>::getRef(m_sys));
 	builtin->registerBuiltin("DisplayObject","flash.display",Class<DisplayObject>::getRef(m_sys));
@@ -410,17 +410,17 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("Dictionary","flash.utils",Class<Dictionary>::getRef(m_sys));
 	builtin->registerBuiltin("Proxy","flash.utils",Class<Proxy>::getRef(m_sys));
 	builtin->registerBuiltin("Timer","flash.utils",Class<Timer>::getRef(m_sys));
-	builtin->registerBuiltin("getQualifiedClassName","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,getQualifiedClassName)));
-	builtin->registerBuiltin("getQualifiedSuperclassName","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,getQualifiedSuperclassName)));
-	builtin->registerBuiltin("getDefinitionByName","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,getDefinitionByName)));
-	builtin->registerBuiltin("getTimer","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,getTimer)));
-	builtin->registerBuiltin("setInterval","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,setInterval)));
-	builtin->registerBuiltin("setTimeout","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,setTimeout)));
-	builtin->registerBuiltin("clearInterval","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,clearInterval)));
-	builtin->registerBuiltin("clearTimeout","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,clearTimeout)));
-	builtin->registerBuiltin("describeType","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,describeType)));
-	builtin->registerBuiltin("escapeMultiByte","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,escapeMultiByte)));
-	builtin->registerBuiltin("unescapeMultiByte","flash.utils",_MR(Class<IFunction>::getFunction(m_sys,unescapeMultiByte)));
+	builtin->registerBuiltin("getQualifiedClassName","flash.utils",Class<IFunction>::getFunctionRef(m_sys,getQualifiedClassName));
+	builtin->registerBuiltin("getQualifiedSuperclassName","flash.utils",Class<IFunction>::getFunctionRef(m_sys,getQualifiedSuperclassName));
+	builtin->registerBuiltin("getDefinitionByName","flash.utils",Class<IFunction>::getFunctionRef(m_sys,getDefinitionByName));
+	builtin->registerBuiltin("getTimer","flash.utils",Class<IFunction>::getFunctionRef(m_sys,getTimer));
+	builtin->registerBuiltin("setInterval","flash.utils",Class<IFunction>::getFunctionRef(m_sys,setInterval));
+	builtin->registerBuiltin("setTimeout","flash.utils",Class<IFunction>::getFunctionRef(m_sys,setTimeout));
+	builtin->registerBuiltin("clearInterval","flash.utils",Class<IFunction>::getFunctionRef(m_sys,clearInterval));
+	builtin->registerBuiltin("clearTimeout","flash.utils",Class<IFunction>::getFunctionRef(m_sys,clearTimeout));
+	builtin->registerBuiltin("describeType","flash.utils",Class<IFunction>::getFunctionRef(m_sys,describeType));
+	builtin->registerBuiltin("escapeMultiByte","flash.utils",Class<IFunction>::getFunctionRef(m_sys,escapeMultiByte));
+	builtin->registerBuiltin("unescapeMultiByte","flash.utils",Class<IFunction>::getFunctionRef(m_sys,unescapeMultiByte));
 	builtin->registerBuiltin("IExternalizable","flash.utils",InterfaceClass<IExternalizable>::getRef(m_sys));
 	builtin->registerBuiltin("IDataInput","flash.utils",InterfaceClass<IDataInput>::getRef(m_sys));
 	builtin->registerBuiltin("IDataOutput","flash.utils",InterfaceClass<IDataOutput>::getRef(m_sys));
@@ -466,8 +466,8 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("UncaughtErrorEvents","flash.events",Class<UncaughtErrorEvents>::getRef(m_sys));
 	builtin->registerBuiltin("VideoEvent","flash.events",Class<VideoEvent>::getRef(m_sys));
 
-	builtin->registerBuiltin("navigateToURL","flash.net",_MR(Class<IFunction>::getFunction(m_sys,navigateToURL)));
-	builtin->registerBuiltin("sendToURL","flash.net",_MR(Class<IFunction>::getFunction(m_sys,sendToURL)));
+	builtin->registerBuiltin("navigateToURL","flash.net",Class<IFunction>::getFunctionRef(m_sys,navigateToURL));
+	builtin->registerBuiltin("sendToURL","flash.net",Class<IFunction>::getFunctionRef(m_sys,sendToURL));
 	builtin->registerBuiltin("FileReference","flash.net",Class<FileReference>::getRef(m_sys));
 	builtin->registerBuiltin("LocalConnection","flash.net",Class<LocalConnection>::getRef(m_sys));
 	builtin->registerBuiltin("NetConnection","flash.net",Class<NetConnection>::getRef(m_sys));
@@ -490,13 +490,13 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("Socket","flash.net",Class<ASSocket>::getRef(m_sys));
 	builtin->registerBuiltin("Responder","flash.net",Class<Responder>::getRef(m_sys));
 	builtin->registerBuiltin("XMLSocket","flash.net",Class<XMLSocket>::getRef(m_sys));
-	builtin->registerBuiltin("registerClassAlias","flash.net",_MR(Class<IFunction>::getFunction(m_sys,registerClassAlias)));
-	builtin->registerBuiltin("getClassByAlias","flash.net",_MR(Class<IFunction>::getFunction(m_sys,getClassByAlias)));
+	builtin->registerBuiltin("registerClassAlias","flash.net",Class<IFunction>::getFunctionRef(m_sys,registerClassAlias));
+	builtin->registerBuiltin("getClassByAlias","flash.net",Class<IFunction>::getFunctionRef(m_sys,getClassByAlias));
 
 	builtin->registerBuiltin("DRMManager","flash.net.drm",Class<DRMManager>::getRef(m_sys));
 
 
-	builtin->registerBuiltin("fscommand","flash.system",_MR(Class<IFunction>::getFunction(m_sys,fscommand)));
+	builtin->registerBuiltin("fscommand","flash.system",Class<IFunction>::getFunctionRef(m_sys,fscommand));
 	builtin->registerBuiltin("Capabilities","flash.system",Class<Capabilities>::getRef(m_sys));
 	builtin->registerBuiltin("Security","flash.system",Class<Security>::getRef(m_sys));
 	builtin->registerBuiltin("ApplicationDomain","flash.system",Class<ApplicationDomain>::getRef(m_sys));
@@ -544,9 +544,9 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("PrintJobOptions","flash.printing",Class<PrintJobOptions>::getRef(m_sys));
 	builtin->registerBuiltin("PrintJobOrientation","flash.printing",Class<PrintJobOrientation>::getRef(m_sys));
 
-	builtin->registerBuiltin("isNaN","",_MR(Class<IFunction>::getFunction(m_sys,isNaN,1)));
-	builtin->registerBuiltin("isFinite","",_MR(Class<IFunction>::getFunction(m_sys,isFinite,1)));
-	builtin->registerBuiltin("isXMLName","",_MR(Class<IFunction>::getFunction(m_sys,_isXMLName)));
+	builtin->registerBuiltin("isNaN","",Class<IFunction>::getFunctionRef(m_sys,isNaN,1));
+	builtin->registerBuiltin("isFinite","",Class<IFunction>::getFunctionRef(m_sys,isFinite,1));
+	builtin->registerBuiltin("isXMLName","",Class<IFunction>::getFunctionRef(m_sys,_isXMLName));
 
 	//If needed add AIR definitions
 	if(m_sys->flashMode==SystemState::AIR)
@@ -565,11 +565,11 @@ void ABCVm::registerClasses()
 	// if needed add AVMPLUS definitions
 	if(m_sys->flashMode==SystemState::AVMPLUS)
 	{
-		builtin->registerBuiltin("getQualifiedClassName","avmplus",_MR(Class<IFunction>::getFunction(m_sys,getQualifiedClassName)));
-		builtin->registerBuiltin("getQualifiedSuperclassName","avmplus",_MR(Class<IFunction>::getFunction(m_sys,getQualifiedSuperclassName)));
-		builtin->registerBuiltin("getTimer","",_MR(Class<IFunction>::getFunction(m_sys,getTimer)));
+		builtin->registerBuiltin("getQualifiedClassName","avmplus",Class<IFunction>::getFunctionRef(m_sys,getQualifiedClassName));
+		builtin->registerBuiltin("getQualifiedSuperclassName","avmplus",Class<IFunction>::getFunctionRef(m_sys,getQualifiedSuperclassName));
+		builtin->registerBuiltin("getTimer","",Class<IFunction>::getFunctionRef(m_sys,getTimer));
 		builtin->registerBuiltin("FLASH10_FLAGS","avmplus",_MR(abstract_ui(m_sys,0x7FF)));
-		builtin->registerBuiltin("describeType","avmplus",_MR(Class<IFunction>::getFunction(m_sys,describeType)));
+		builtin->registerBuiltin("describeType","avmplus",Class<IFunction>::getFunctionRef(m_sys,describeType));
 
 		builtin->registerBuiltin("System","avmplus",Class<avmplusSystem>::getRef(m_sys));
 		builtin->registerBuiltin("Domain","avmplus",Class<avmplusDomain>::getRef(m_sys));
@@ -1694,7 +1694,7 @@ void ABCContext::exec(bool lazy)
 		LOG(LOG_CALLS, _("Script N: ") << i );
 
 		//Creating a new global for this script
-		Global* global=Class<Global>::getInstanceS(root->getSystemState(),this, i);
+		Global* global=Class<Global>::getInstanceSRaw(root->getSystemState(),this, i);
 #ifndef NDEBUG
 		global->initialized=false;
 #endif
@@ -1715,7 +1715,7 @@ void ABCContext::exec(bool lazy)
 	//The last script entry has to be run
 	LOG(LOG_CALLS, _("Last script (Entry Point)"));
 	//Creating a new global for the last script
-	Global* global=Class<Global>::getInstanceS(root->getSystemState(),this, i);
+	Global* global=Class<Global>::getInstanceSRaw(root->getSystemState(),this, i);
 #ifndef NDEBUG
 		global->initialized=false;
 #endif
@@ -2158,7 +2158,7 @@ asAtomR ABCContext::getConstant(int kind, int index)
 		case 0x08: //Namespace
 		{
 			assert_and_throw(constant_pool.namespaces[index].name);
-			Namespace* ret = Class<Namespace>::getInstanceS(root->getSystemState(),getString(constant_pool.namespaces[index].name),BUILTIN_STRINGS::EMPTY,(NS_KIND)(int)constant_pool.namespaces[index].kind);
+			Namespace* ret = Class<Namespace>::getInstanceSRaw(root->getSystemState(),getString(constant_pool.namespaces[index].name),BUILTIN_STRINGS::EMPTY,(NS_KIND)(int)constant_pool.namespaces[index].kind);
 			if (constant_pool.namespaces[index].kind != 0)
 				ret->nskind =(NS_KIND)(int)(constant_pool.namespaces[index].kind);
 			return asAtom::fromObject(ret);

@@ -1075,7 +1075,7 @@ ASObject* ABCVm::add(ASObject* val2Ptr, ASObject* val1Ptr)
 		//Check if the objects are both XML or XMLLists
 		Class_base* xmlClass=Class<XML>::getClass(val1->getSystemState());
 
-		XMLList* newList=Class<XMLList>::getInstanceS(val1->getSystemState(),true);
+		XMLList* newList=Class<XMLList>::getInstanceSRaw(val1->getSystemState(),true);
 		if(val1->getClass()==xmlClass)
 			newList->append(_IMR(static_cast<XML*>(val1.getPtr())));
 		else //if(val1->getClass()==xmlListClass)
@@ -2437,11 +2437,11 @@ void ABCVm::newClass(call_context* th, int n)
 		Class_base* base = baseClass->as<Class_base>();
 		assert(!base->isFinal);
 		if (ret->super.isNull())
-			ret->setSuper(_MR(base));
+			ret->setSuper(_IMR(base));
 		else if (base != ret->super.getPtr())
 		{
 			LOG(LOG_ERROR,"resetting super class from "<<ret->super->toDebugString() <<" to "<< base->toDebugString());
-			ret->setSuper(_MR(base));
+			ret->setSuper(_IMR(base));
 		}
 		i = th->context->root->applicationDomain->classesBeingDefined.cbegin();
 		while (i != th->context->root->applicationDomain->classesBeingDefined.cend())
@@ -2834,7 +2834,7 @@ Namespace* ABCVm::pushNamespace(call_context* th, int n)
 {
 	const namespace_info& ns_info=th->context->constant_pool.namespaces[n];
 	LOG_CALL( _("pushNamespace ") << th->context->root->getSystemState()->getStringFromUniqueId(th->context->getString(ns_info.name)) );
-	return Class<Namespace>::getInstanceS(th->context->root->getSystemState(),th->context->getString(ns_info.name),BUILTIN_STRINGS::EMPTY,(NS_KIND)(int)ns_info.kind);
+	return Class<Namespace>::getInstanceSRaw(th->context->root->getSystemState(),th->context->getString(ns_info.name),BUILTIN_STRINGS::EMPTY,(NS_KIND)(int)ns_info.kind);
 }
 
 /* @spec-checked avm2overview */

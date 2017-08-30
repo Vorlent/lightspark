@@ -91,7 +91,7 @@ struct call_context
 };
 #define RUNTIME_STACK_PUSH(context,val) \
 if(context->stack_index<context->max_stack) \
-	context->stack[context->stack_index++]=_MAR(val); \
+	context->stack[context->stack_index++]=_IMAR(val); \
 else context->handleError(kStackOverflowError)
 
 inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
@@ -127,7 +127,7 @@ inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 	RUNTIME_STACK_POP_ASOBJECT(context,ret, sys)
 
 #define RUNTIME_STACK_POP_ASOBJECT_REF(context,ret, sys) \
-	if(context->stack_index) ret=_MNR(context->stack[--context->stack_index]->toObject(sys)); \
+	if(context->stack_index) ret=_IMNR(context->stack[--context->stack_index]->toObject(sys)); \
 	else context->handleError(kStackUnderflowError);
 
 

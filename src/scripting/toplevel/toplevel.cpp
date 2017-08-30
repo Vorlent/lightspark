@@ -1624,7 +1624,7 @@ ASFUNCTIONBODY(ASQName,_constructor)
 }
 ASFUNCTIONBODY_ATOM(ASQName,generator)
 {
-	ASQName* th=Class<ASQName>::getInstanceS(getSys());
+	ASQName* th=Class<ASQName>::getInstanceSRaw(getSys());
 	assert_and_throw(argslen<3);
 
 	asAtomR nameval;
@@ -1905,7 +1905,7 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 }
 ASFUNCTIONBODY_ATOM(Namespace,generator)
 {
-	Namespace* th=Class<Namespace>::getInstanceS(getSys());
+	Namespace* th=Class<Namespace>::getInstanceSRaw(getSys());
 	asAtomR urival;
 	asAtomR prefixval;
 	assert_and_throw(argslen<3);

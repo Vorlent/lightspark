@@ -149,7 +149,7 @@ public:
 	}
 	*/
 	template<typename... Args>
-	static T* getInstanceS(SystemState* sys, Args&&... args)
+	static T* getInstanceSRaw(SystemState* sys, Args&&... args)
 	{
 		Class<T>* c=static_cast<Class<T>*>(sys->builtinClasses[ClassName<T>::id]);
 		if (!c)
@@ -159,6 +159,18 @@ public:
 		ret->constructionComplete();
 		ret->setConstructIndicator();
 		return ret;
+	}
+	template<typename... Args>
+	static Ref<T> getInstanceS(SystemState* sys, Args&&... args)
+	{
+		Class<T>* c=static_cast<Class<T>*>(sys->builtinClasses[ClassName<T>::id]);
+		if (!c)
+			c = getClass(sys);
+		T* ret=newWithOptionalClass<T, sizeof...(Args)>::doNew(c, std::forward<Args>(args)...);
+		c->setupDeclaredTraits(ret);
+		ret->constructionComplete();
+		ret->setConstructIndicator();
+		return _MR(ret);
 	}
 	// constructor without arguments
 	inline static T* getInstanceSNoArgs(SystemState* sys)

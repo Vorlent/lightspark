@@ -63,7 +63,7 @@ ASFUNCTIONBODY(XMLNode,_constructor)
 	tiny_string value;
 	ARG_UNPACK(type)(value);
 	assert_and_throw(type==1);
-	th->root=_MR(Class<XMLDocument>::getInstanceS(obj->getSystemState()));
+	th->root=_NR<XMLDocument>(Class<XMLDocument>::getInstanceS(obj->getSystemState()));
 	if(type==1)
 	{
 		th->root->parseXMLImpl(value);
@@ -82,7 +82,7 @@ ASFUNCTIONBODY(XMLNode,firstChild)
 	if(newNode.type() == pugi::node_null)
 		return getSys()->getNullRef();
 	assert_and_throw(!th->root.isNull());
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root,newNode);
+	return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root,newNode);
 }
 
 ASFUNCTIONBODY(XMLNode,lastChild)
@@ -95,7 +95,7 @@ ASFUNCTIONBODY(XMLNode,lastChild)
 	if(newNode.type() == pugi::node_null)
 		return getSys()->getNullRef();
 	assert_and_throw(!th->root.isNull());
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root,newNode);
+	return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root,newNode);
 }
 
 ASFUNCTIONBODY(XMLNode,childNodes)
@@ -110,7 +110,7 @@ ASFUNCTIONBODY(XMLNode,childNodes)
 	for(;it!=th->node.end();++it)
 	{
 		if(it->type()!=pugi::node_pcdata) {
-			asAtomR element = asAtom::fromObject(Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, *it));
+			asAtomR element = asAtom::fromObject(Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root, *it));
 			ret->push(element);
 		}
 	}
@@ -145,7 +145,7 @@ ASFUNCTIONBODY(XMLNode,parentNode)
 	XMLNode* th=Class<XMLNode>::cast(obj);
 	pugi::xml_node parent = th->getParentNode();
 	if (parent.type()!=pugi::node_null)
-		return Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, parent);
+		return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root, parent);
 	else
 		return getSys()->getNullRef();
 }
@@ -158,7 +158,7 @@ ASFUNCTIONBODY(XMLNode,nextSibling)
 
 	pugi::xml_node sibling = th->node.next_sibling();
 	if (sibling.type()!=pugi::node_null)
-		return Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, sibling);
+		return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root, sibling);
 	else
 		return getSys()->getNullRef();
 }
@@ -171,7 +171,7 @@ ASFUNCTIONBODY(XMLNode,previousSibling)
 
 	pugi::xml_node sibling = th->node.previous_sibling();
 	if (sibling.type()!=pugi::node_null)
-		return Class<XMLNode>::getInstanceS(obj->getSystemState(),th->root, sibling);
+		return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),th->root, sibling);
 	else
 		return getSys()->getNullRef();
 }
@@ -357,7 +357,7 @@ ASFUNCTIONBODY(XMLDocument,firstChild)
 	assert_and_throw(argslen==0);
 	assert(th->node==NULL);
 	pugi::xml_node newNode=th->rootNode;
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IMR(th),newNode);
+	return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),_IMR(th),newNode);
 }
 ASFUNCTIONBODY(XMLDocument,createElement)
 {
@@ -367,5 +367,5 @@ ASFUNCTIONBODY(XMLDocument,createElement)
 	ARG_UNPACK(name);
 	pugi::xml_node newNode;
 	newNode.set_name(name.raw_buf());
-	return Class<XMLNode>::getInstanceS(obj->getSystemState(),_IMR(th),newNode);
+	return Class<XMLNode>::getInstanceSRaw(obj->getSystemState(),_IMR(th),newNode);
 }

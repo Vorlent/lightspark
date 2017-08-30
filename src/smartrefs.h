@@ -159,8 +159,7 @@ public:
 	template<class D> inline Ref<D> cast() const
 	{
 		D* p = static_cast<D*>(m);
-		p->incRef();
-		return _MR(p);
+		return _IMR(p);
 	}
 	~Ref()
 	{

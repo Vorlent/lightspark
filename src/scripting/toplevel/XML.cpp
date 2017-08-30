@@ -930,7 +930,7 @@ ASFUNCTIONBODY(XML,_namespace)
 		return obj->getSystemState()->getNullRef();
 	}
 	if (prefix.empty())
-		return Class<Namespace>::getInstanceS(obj->getSystemState(),th->nodenamespace_uri, th->nodenamespace_prefix);
+		return Class<Namespace>::getInstanceSRaw(obj->getSystemState(),th->nodenamespace_uri, th->nodenamespace_prefix);
 		
 	for (uint32_t i = 0; i < th->namespacedefs.size(); i++)
 	{
@@ -938,7 +938,7 @@ ASFUNCTIONBODY(XML,_namespace)
 		_R<Namespace> tmpns = th->namespacedefs[i];
 		if (tmpns->getPrefix(b) == obj->getSystemState()->getUniqueStringId(prefix))
 		{
-			return Class<Namespace>::getInstanceS(obj->getSystemState(),tmpns->getURI(), obj->getSystemState()->getUniqueStringId(prefix));
+			return Class<Namespace>::getInstanceSRaw(obj->getSystemState(),tmpns->getURI(), obj->getSystemState()->getUniqueStringId(prefix));
 		}
 	}
 	return obj->getSystemState()->getUndefinedRef();
@@ -1066,7 +1066,7 @@ ASFUNCTIONBODY(XML,_setNamespace)
 			_R<Namespace> tmpns = tmp->namespacedefs[i];
 			if (tmpns->getPrefix(b) == ns_prefix)
 			{
-				tmp->namespacedefs[i] = _R<Namespace>(Class<Namespace>::getInstanceS(obj->getSystemState(),ns_uri,ns_prefix));
+				tmp->namespacedefs[i] = Class<Namespace>::getInstanceS(obj->getSystemState(),ns_uri,ns_prefix);
 				return NULL;
 			}
 		}
@@ -2218,7 +2218,7 @@ ASFUNCTIONBODY_ATOM(XML,removeNamespace)
 	if (arg1->is<Namespace>())
 		ns = arg1->as<Namespace>();
 	else
-		ns = Class<Namespace>::getInstanceS(sys,arg1->toStringId(), BUILTIN_STRINGS::EMPTY);
+		ns = Class<Namespace>::getInstanceSRaw(sys,arg1->toStringId(), BUILTIN_STRINGS::EMPTY);
 
 	th->RemoveNamespace(ns);
 	return asAtom::fromObject(th);
@@ -2651,16 +2651,16 @@ void XML::fillNode(XML* node, const pugi::xml_node &srcnode)
 		if(aname == "xmlns")
 		{
 			uint32_t uri = node->getSystemState()->getUniqueStringId(itattr->value());
-			Namespace* ns = Class<Namespace>::getInstanceS(node->getSystemState(),uri,BUILTIN_STRINGS::EMPTY);
-			node->namespacedefs.push_back(_MR(ns));
+			Ref<Namespace> ns = Class<Namespace>::getInstanceS(node->getSystemState(),uri,BUILTIN_STRINGS::EMPTY);
+			node->namespacedefs.push_back(ns);
 			node->nodenamespace_uri = uri;
 		}
 		else if (aname.numBytes() >= 6 && aname.substr_bytes(0,6) == "xmlns:")
 		{
 			uint32_t uri = node->getSystemState()->getUniqueStringId(itattr->value());
 			tiny_string prefix = aname.substr(6,aname.end());
-			Namespace* ns = Class<Namespace>::getInstanceS(node->getSystemState(),uri,node->getSystemState()->getUniqueStringId(prefix));
-			node->namespacedefs.push_back(_MR(ns));
+			Ref<Namespace> ns = Class<Namespace>::getInstanceS(node->getSystemState(),uri,node->getSystemState()->getUniqueStringId(prefix));
+			node->namespacedefs.push_back(ns);
 		}
 	}
 	uint32_t pos = node->nodename.find(":");

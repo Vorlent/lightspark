@@ -116,7 +116,7 @@ ASFUNCTIONBODY_ATOM(ElementFormat, _clone)
 {
 	ElementFormat* th=obj->as<ElementFormat>();
 
-	ElementFormat* newformat = Class<ElementFormat>::getInstanceS(sys);
+	ElementFormat* newformat = Class<ElementFormat>::getInstanceSRaw(sys);
 	newformat->fontDescription = th->fontDescription;
 	newformat->fontSize = th->fontSize;
 	newformat->color = th->color;
@@ -175,7 +175,7 @@ ASFUNCTIONBODY_ATOM(FontDescription, _clone)
 {
 	FontDescription* th=obj->as<FontDescription>();
 
-	FontDescription* newfontdescription = Class<FontDescription>::getInstanceS(sys);
+	FontDescription* newfontdescription = Class<FontDescription>::getInstanceSRaw(sys);
 	newfontdescription->cffHinting = th->cffHinting;
 	newfontdescription->fontLookup = th->fontLookup;
 	newfontdescription->fontName = th->fontName;

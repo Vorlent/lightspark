@@ -2549,7 +2549,7 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 			//Check if the objects are both XML or XMLLists
 			Class_base* xmlClass=Class<XML>::getClass(val1->getSystemState());
 
-			XMLList* newList=Class<XMLList>::getInstanceS(val1->getSystemState(),true);
+			XMLList* newList=Class<XMLList>::getInstanceSRaw(val1->getSystemState(),true);
 			if(val1->getClass()==xmlClass)
 				newList->append(_IMR(static_cast<XML*>(val1.getPtr())));
 			else //if(val1->getClass()==xmlListClass)

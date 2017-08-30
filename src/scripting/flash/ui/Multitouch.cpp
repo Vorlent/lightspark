@@ -49,7 +49,7 @@ ASFUNCTIONBODY(Multitouch, getMaxTouchPoints)
 ASFUNCTIONBODY(Multitouch, getSupportedGestures)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"Multitouch not supported");
-	return Class<Vector>::getInstanceS(getSys()); 
+	return Class<Vector>::getInstanceSRaw(getSys());
 }
 ASFUNCTIONBODY(Multitouch, getSupportsGestureEvents)
 {

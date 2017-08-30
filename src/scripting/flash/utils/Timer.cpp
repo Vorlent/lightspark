@@ -33,14 +33,14 @@ void Timer::tick()
 {
 	//This will be executed once if repeatCount was originally 1
 	//Otherwise it's executed until stopMe is set to true
-	getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timer")));
+	getVm(getSystemState())->addEvent(_IMR(this),Class<TimerEvent>::getInstanceS(getSystemState(),"timer"));
 
 	currentCount++;
 	if(repeatCount!=0)
 	{
 		if(currentCount==repeatCount)
 		{
-			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<TimerEvent>::getInstanceS(getSystemState(),"timerComplete")));
+			getVm(getSystemState())->addEvent(_IMR(this),Class<TimerEvent>::getInstanceS(getSystemState(),"timerComplete"));
 			stopMe=true;
 			running=false;
 		}

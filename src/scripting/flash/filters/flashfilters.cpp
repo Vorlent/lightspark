@@ -32,7 +32,7 @@ void BitmapFilter::sinit(Class_base* c)
 
 BitmapFilter* BitmapFilter::cloneImpl() const
 {
-	return Class<BitmapFilter>::getInstanceS(getSystemState());
+	return Class<BitmapFilter>::getInstanceSRaw(getSystemState());
 }
 
 ASFUNCTIONBODY(BitmapFilter,clone)
@@ -85,7 +85,7 @@ ASFUNCTIONBODY(GlowFilter, _constructor)
 
 BitmapFilter* GlowFilter::cloneImpl() const
 {
-	GlowFilter *cloned = Class<GlowFilter>::getInstanceS(getSystemState());
+	GlowFilter *cloned = Class<GlowFilter>::getInstanceSRaw(getSystemState());
 	cloned->alpha = alpha;
 	cloned->blurX = blurX;
 	cloned->blurY = blurY;
@@ -151,7 +151,7 @@ ASFUNCTIONBODY(DropShadowFilter, _constructor)
 
 BitmapFilter* DropShadowFilter::cloneImpl() const
 {
-	DropShadowFilter *cloned = Class<DropShadowFilter>::getInstanceS(getSystemState());
+	DropShadowFilter *cloned = Class<DropShadowFilter>::getInstanceSRaw(getSystemState());
 	cloned->alpha = alpha;
 	cloned->angle = angle;
 	cloned->blurX = blurX;
@@ -185,7 +185,7 @@ ASFUNCTIONBODY(GradientGlowFilter, _constructor)
 
 BitmapFilter* GradientGlowFilter::cloneImpl() const
 {
-	return Class<GradientGlowFilter>::getInstanceS(getSystemState());
+	return Class<GradientGlowFilter>::getInstanceSRaw(getSystemState());
 }
 
 BevelFilter::BevelFilter(Class_base* c):
@@ -231,7 +231,7 @@ ASFUNCTIONBODY(BevelFilter, _constructor)
 
 BitmapFilter* BevelFilter::cloneImpl() const
 {
-	return Class<BevelFilter>::getInstanceS(getSystemState());
+	return Class<BevelFilter>::getInstanceSRaw(getSystemState());
 }
 ColorMatrixFilter::ColorMatrixFilter(Class_base* c):
 	BitmapFilter(c),matrix(NULL)
@@ -255,7 +255,7 @@ ASFUNCTIONBODY(ColorMatrixFilter, _constructor)
 
 BitmapFilter* ColorMatrixFilter::cloneImpl() const
 {
-	ColorMatrixFilter *cloned = Class<ColorMatrixFilter>::getInstanceS(getSystemState());
+	ColorMatrixFilter *cloned = Class<ColorMatrixFilter>::getInstanceSRaw(getSystemState());
 	if (!matrix.isNull())
 	{
 		cloned->matrix = matrix;
@@ -288,7 +288,7 @@ ASFUNCTIONBODY(BlurFilter, _constructor)
 
 BitmapFilter* BlurFilter::cloneImpl() const
 {
-	BlurFilter* cloned = Class<BlurFilter>::getInstanceS(getSystemState());
+	BlurFilter* cloned = Class<BlurFilter>::getInstanceSRaw(getSystemState());
 	cloned->blurX = blurX;
 	cloned->blurY = blurY;
 	cloned->quality = quality;
@@ -314,7 +314,7 @@ ASFUNCTIONBODY(ConvolutionFilter, _constructor)
 
 BitmapFilter* ConvolutionFilter::cloneImpl() const
 {
-	return Class<ConvolutionFilter>::getInstanceS(getSystemState());
+	return Class<ConvolutionFilter>::getInstanceSRaw(getSystemState());
 }
 
 DisplacementMapFilter::DisplacementMapFilter(Class_base* c):
@@ -336,7 +336,7 @@ ASFUNCTIONBODY(DisplacementMapFilter, _constructor)
 
 BitmapFilter* DisplacementMapFilter::cloneImpl() const
 {
-	return Class<DisplacementMapFilter>::getInstanceS(getSystemState());
+	return Class<DisplacementMapFilter>::getInstanceSRaw(getSystemState());
 }
 
 GradientBevelFilter::GradientBevelFilter(Class_base* c):
@@ -358,7 +358,7 @@ ASFUNCTIONBODY(GradientBevelFilter, _constructor)
 
 BitmapFilter* GradientBevelFilter::cloneImpl() const
 {
-	return Class<GradientBevelFilter>::getInstanceS(getSystemState());
+	return Class<GradientBevelFilter>::getInstanceSRaw(getSystemState());
 }
 
 ShaderFilter::ShaderFilter(Class_base* c):
@@ -380,7 +380,7 @@ ASFUNCTIONBODY(ShaderFilter, _constructor)
 
 BitmapFilter* ShaderFilter::cloneImpl() const
 {
-	return Class<ShaderFilter>::getInstanceS(getSystemState());
+	return Class<ShaderFilter>::getInstanceSRaw(getSystemState());
 }
 
 void BitmapFilterQuality::sinit(Class_base* c)

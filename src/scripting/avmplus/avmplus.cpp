@@ -62,7 +62,7 @@ ASFUNCTIONBODY(avmplusFile,readByteArray)
 	ARG_UNPACK(filename);
 	
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.File.readByteArray is unimplemented."));
-	return Class<ByteArray>::getInstanceS(obj->getSystemState());
+	return Class<ByteArray>::getInstanceSRaw(obj->getSystemState());
 }
 ASFUNCTIONBODY(avmplusFile,writeByteArray)
 {
@@ -159,7 +159,7 @@ ASFUNCTIONBODY(avmplusSystem,_privateMemory)
 ASFUNCTIONBODY(avmplusSystem,argv)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.argv is unimplemented."));
-	return Class<Array>::getInstanceS(getSys());
+	return Class<Array>::getInstanceSRaw(getSys());
 }
 ASFUNCTIONBODY(avmplusSystem,exec)
 {

@@ -301,7 +301,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,getRect)
 	BitmapData* th = obj->as<BitmapData>();
 	if(th->pixels.isNull())
 		throw Class<ArgumentError>::getInstanceS(sys,"Disposed BitmapData", 2015);
-	Rectangle *rect=Class<Rectangle>::getInstanceS(sys);
+	Rectangle *rect=Class<Rectangle>::getInstanceSRaw(sys);
 	rect->width=th->pixels->getWidth();
 	rect->height=th->pixels->getHeight();
 	return asAtom::fromObject(rect);
@@ -377,7 +377,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,generateFilterRect)
 	BitmapData* th = obj->as<BitmapData>();
 	if(th->pixels.isNull())
 		throw Class<ArgumentError>::getInstanceS(sys,"Disposed BitmapData", 2015);
-	Rectangle *rect=Class<Rectangle>::getInstanceS(sys);
+	Rectangle *rect=Class<Rectangle>::getInstanceSRaw(sys);
 	rect->width=th->pixels->getWidth();
 	rect->height=th->pixels->getHeight();
 	return asAtom::fromObject(rect);
@@ -436,7 +436,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,clone)
 	if(th->pixels.isNull())
 		throw Class<ArgumentError>::getInstanceS(sys,"Disposed BitmapData", 2015);
 
-	return asAtom::fromObject(Class<BitmapData>::getInstanceS(sys,*th));
+	return asAtom::fromObject(Class<BitmapData>::getInstanceSRaw(sys,*th));
 }
 
 ASFUNCTIONBODY_ATOM(BitmapData,copyChannel)
@@ -624,7 +624,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,getColorBoundsRect)
 		}
 	}
 
-	Rectangle *bounds = Class<Rectangle>::getInstanceS(sys);
+	Rectangle *bounds = Class<Rectangle>::getInstanceSRaw(sys);
 	if ((xmin <= xmax) && (ymin <= ymax))
 	{
 		bounds->x = xmin;
@@ -647,7 +647,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,getPixels)
 	if (rect.isNull())
 		throwError<TypeError>(kNullPointerError, "rect");
 
-	ByteArray *ba = Class<ByteArray>::getInstanceS(sys);
+	ByteArray *ba = Class<ByteArray>::getInstanceSRaw(sys);
 	vector<uint32_t> pixelvec = th->pixels->getPixelVector(rect->getRect());
 	vector<uint32_t>::const_iterator it;
 	for (it=pixelvec.begin(); it!=pixelvec.end(); ++it)
@@ -817,7 +817,7 @@ ASFUNCTIONBODY_ATOM(BitmapData,compare)
 	vector<uint32_t> pixelvec = th->pixels->getPixelVector(rect);
 	vector<uint32_t> otherpixelvec = otherBitmapData->pixels->getPixelVector(rect);
 	
-	BitmapData* res = Class<BitmapData>::getInstanceS(sys,rect.Xmax,rect.Ymax);
+	BitmapData* res = Class<BitmapData>::getInstanceSRaw(sys,rect.Xmax,rect.Ymax);
 	unsigned int i = 0;
 	bool different = false;
 	for (int32_t y=rect.Ymin; y<rect.Ymax; y++)

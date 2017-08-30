@@ -177,7 +177,7 @@ ASFUNCTIONBODY(Event,formatToString)
 
 Event* Event::cloneImpl() const
 {
-	return Class<Event>::getInstanceS(getSystemState(),type, bubbles, cancelable);
+	return Class<Event>::getInstanceSRaw(getSystemState(),type, bubbles, cancelable);
 }
 
 ASFUNCTIONBODY(Event,clone)
@@ -258,7 +258,7 @@ MouseEvent::MouseEvent(Class_base* c, const tiny_string& t, number_t lx, number_
 
 Event* MouseEvent::cloneImpl() const
 {
-	return Class<MouseEvent>::getInstanceS(getSystemState(),type,localX,localY,bubbles,(SDL_Keymod)modifiers,buttonDown,relatedObject,delta);
+	return Class<MouseEvent>::getInstanceSRaw(getSystemState(),type,localX,localY,bubbles,(SDL_Keymod)modifiers,buttonDown,relatedObject,delta);
 }
 
 ProgressEvent::ProgressEvent(Class_base* c):Event(c, "progress",false,false,SUBTYPE_PROGRESSEVENT),bytesLoaded(0),bytesTotal(0)
@@ -271,7 +271,7 @@ ProgressEvent::ProgressEvent(Class_base* c, uint32_t loaded, uint32_t total):Eve
 
 Event* ProgressEvent::cloneImpl() const
 {
-	return Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded, bytesTotal);
+	return Class<ProgressEvent>::getInstanceSRaw(getSystemState(),bytesLoaded, bytesTotal);
 }
 
 void ProgressEvent::sinit(Class_base* c)
@@ -393,7 +393,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localX)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	if(argslen != 1) 
-		throw Class<ArgumentError>::getInstanceS(sys,"Wrong number of arguments in setter"); 
+		throw Class<ArgumentError>::getInstanceSRaw(sys,"Wrong number of arguments in setter");
 	number_t val=args[0]->toNumber();
 	th->localX = val;
 	//Change StageXY if target!=NULL else don't do anything
@@ -410,7 +410,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localY)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	if(argslen != 1) 
-		throw Class<ArgumentError>::getInstanceS(sys,"Wrong number of arguments in setter"); 
+		throw Class<ArgumentError>::getInstanceSRaw(sys,"Wrong number of arguments in setter");
 	number_t val=args[0]->toNumber();
 	th->localY = val;
 	//Change StageXY if target!=NULL else don't do anything	
@@ -532,7 +532,7 @@ IOErrorEvent::IOErrorEvent(Class_base* c,const tiny_string& t, const std::string
 
 Event *IOErrorEvent::cloneImpl() const
 {
-	return Class<IOErrorEvent>::getInstanceS(getSystemState(),text, errorMsg,errorID);
+	return Class<IOErrorEvent>::getInstanceSRaw(getSystemState(),text, errorMsg,errorID);
 }
 
 
@@ -712,7 +712,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,_constructor)
 		if(forcedTarget->type==T_NULL || forcedTarget->type==T_UNDEFINED)
 			forcedTarget=_MAR(asAtom::invalidAtom);
 		else if(!forcedTarget->toObject(th->getSystemState())->getClass()->isSubClass(InterfaceClass<IEventDispatcher>::getClass(th->getSystemState())))
-			throw Class<ArgumentError>::getInstanceS(th->getSystemState(),"Wrong argument for EventDispatcher");
+			throw Class<ArgumentError>::getInstanceSRaw(th->getSystemState(),"Wrong argument for EventDispatcher");
 	}
 	th->forcedTarget=forcedTarget;
 	return _MAR(asAtom::invalidAtom);
@@ -811,7 +811,7 @@ ASFUNCTIONBODY(NetStatusEvent,_constructor)
 
 Event* NetStatusEvent::cloneImpl() const
 {
-	NetStatusEvent *clone=Class<NetStatusEvent>::getInstanceS(getSystemState());
+	NetStatusEvent *clone=Class<NetStatusEvent>::getInstanceSRaw(getSystemState());
 	clone->type = type;
 	clone->bubbles = bubbles;
 	clone->cancelable = cancelable;
@@ -977,7 +977,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_shiftKey)
 
 Event* KeyboardEvent::cloneImpl() const
 {
-	KeyboardEvent *cloned = Class<KeyboardEvent>::getInstanceS(getSystemState());
+	KeyboardEvent *cloned = Class<KeyboardEvent>::getInstanceSRaw(getSystemState());
 	cloned->type = type;
 	cloned->bubbles = bubbles;
 	cloned->cancelable = cancelable;
@@ -1025,7 +1025,7 @@ ASFUNCTIONBODY_GETTER(ErrorEvent,errorID);
 
 Event* ErrorEvent::cloneImpl() const
 {
-	return Class<ErrorEvent>::getInstanceS(getSystemState(),text, errorMsg,errorID);
+	return Class<ErrorEvent>::getInstanceSRaw(getSystemState(),text, errorMsg,errorID);
 }
 
 ASFUNCTIONBODY(ErrorEvent,_constructor)
@@ -1191,7 +1191,7 @@ ASFUNCTIONBODY(DataEvent,_constructor)
 
 Event* DataEvent::cloneImpl() const
 {
-	DataEvent *clone = Class<DataEvent>::getInstanceS(getSystemState());
+	DataEvent *clone = Class<DataEvent>::getInstanceSRaw(getSystemState());
 	clone->data = data;
 	// TextEvent
 	clone->text = text;
@@ -1286,7 +1286,7 @@ ASFUNCTIONBODY(VideoEvent,_constructor)
 Event* VideoEvent::cloneImpl() const
 {
 	VideoEvent *clone;
-	clone = Class<VideoEvent>::getInstanceS(getSystemState());
+	clone = Class<VideoEvent>::getInstanceSRaw(getSystemState());
 	clone->status = status;
 	// Event
 	clone->type = type;
@@ -1332,7 +1332,7 @@ ASFUNCTIONBODY(StageVideoEvent,_constructor)
 Event* StageVideoEvent::cloneImpl() const
 {
 	StageVideoEvent *clone;
-	clone = Class<StageVideoEvent>::getInstanceS(getSystemState());
+	clone = Class<StageVideoEvent>::getInstanceSRaw(getSystemState());
 	clone->status = status;
 	clone->colorSpace = colorSpace;
 	// Event
@@ -1374,7 +1374,7 @@ ASFUNCTIONBODY(StageVideoAvailabilityEvent, _constructor)
 Event* StageVideoAvailabilityEvent::cloneImpl() const
 {
 	StageVideoAvailabilityEvent *clone;
-	clone = Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState());
+	clone = Class<StageVideoAvailabilityEvent>::getInstanceSRaw(getSystemState());
 	clone->availability = availability;
 	// Event
 	clone->type = type;

@@ -210,7 +210,7 @@ ASFUNCTIONBODY_ATOM(ASString,match)
 	}
 	else
 	{
-		re = _MNR(Class<RegExp>::getInstanceS(sys,args[0]->toString()));
+		re = _NR<RegExp>(Class<RegExp>::getInstanceS(sys,args[0]->toString()));
 	}
 
 	if (re->global)

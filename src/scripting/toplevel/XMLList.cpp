@@ -352,7 +352,7 @@ ASFUNCTIONBODY_ATOM(XMLList,generator)
 		args[0]->is<UInteger>() ||
 		args[0]->is<Boolean>())
 	{
-		return asAtom::fromObject(Class<XMLList>::getInstanceS(getSys(),args[0]->toString()));
+		return asAtom::fromObject(Class<XMLList>::getInstanceSRaw(getSys(),args[0]->toString()));
 	}
 	else if(args[0]->is<XMLList>())
 	{
@@ -362,7 +362,7 @@ ASFUNCTIONBODY_ATOM(XMLList,generator)
 	{
 		XML::XMLVector nodes;
 		nodes.push_back(_IMR(args[0]->as<XML>()));
-		return asAtom::fromObject(Class<XMLList>::getInstanceS(getSys(),nodes));
+		return asAtom::fromObject(Class<XMLList>::getInstanceSRaw(getSys(),nodes));
 	}
 	else if(args[0]->type ==T_NULL ||
 		args[0]->type ==T_UNDEFINED)

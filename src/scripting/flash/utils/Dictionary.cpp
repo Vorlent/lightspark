@@ -114,9 +114,9 @@ void Dictionary::setVariableByMultiname(const multiname& name, asAtomR& o, CONST
 
 		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 		if(it!=data.end())
-			it->second=_MR(o->toObject(getSystemState()));
+			it->second=_IMR(o->toObject(getSystemState()));
 		else
-			data.insert(make_pair(name_o,_MR(o->toObject(getSystemState()))));
+			data.insert(make_pair(name_o,_IMR(o->toObject(getSystemState()))));
 	}
 	else
 	{

@@ -28,7 +28,7 @@ ASFUNCTIONBODY(lightspark,generateRandomBytes)
 	uint32_t numbytes;
 	ARG_UNPACK (numbytes);
 	std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char> engine;
-	ByteArray *ret = Class<ByteArray>::getInstanceS(obj->getSystemState());
+	ByteArray *ret = Class<ByteArray>::getInstanceSRaw(obj->getSystemState());
 
     for (uint32_t i = 0; i < numbytes; i++)
         ret->writeByte((uint8_t)engine());

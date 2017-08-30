@@ -524,6 +524,20 @@ public:
 		Class<IFunction>* ret = getClass(sys);
 		return _IMR(ret);
 	}
+	static Ref<Function> getFunctionRef(SystemState* sys,Function::as_function v, int len = 0)
+	{
+		Class<IFunction>* c=Class<IFunction>::getClass(sys);
+		Function*  ret = c->freelist[0].getObjectFromFreeList()->as<Function>();
+		if (!ret)
+			ret=new (c->memoryAccount) Function(c, v);
+		else
+			ret->val = v;
+		ret->val_atom= NULL;
+		ret->length = len;
+		ret->constructIndicator = true;
+		ret->constructorCallComplete = true;
+		return _MR(ret);
+	}
 	static Function* getFunction(SystemState* sys,Function::as_function v, int len = 0)
 	{
 		Class<IFunction>* c=Class<IFunction>::getClass(sys);
@@ -551,6 +565,20 @@ public:
 		ret->constructIndicator = true;
 		ret->constructorCallComplete = true;
 		return ret;
+	}
+	static Ref<Function> getFunctionRef(SystemState* sys,Function::as_atom_function v, int len = 0, Class_base* returnType=NULL)
+	{
+		Class<IFunction>* c=Class<IFunction>::getClass(sys);
+		Function*  ret = c->freelist[0].getObjectFromFreeList()->as<Function>();
+		if (!ret)
+			ret=new (c->memoryAccount) Function(c, NULL);
+		ret->val= NULL;
+		ret->val_atom = v;
+		ret->returnType = returnType;
+		ret->length = len;
+		ret->constructIndicator = true;
+		ret->constructorCallComplete = true;
+		return _MNR(ret);
 	}
 
 	static SyntheticFunction* getSyntheticFunction(SystemState* sys,method_info* m)

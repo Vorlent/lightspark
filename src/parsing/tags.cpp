@@ -1116,7 +1116,7 @@ ASObject* DefineMorphShapeTag::instance(Class_base* c) const
 	if(c==NULL)
 		c=Class<MorphShape>::getClass(loadedFrom->getSystemState());
 	LOG(LOG_NOT_IMPLEMENTED, _("MorphShape not really supported"));
-	return Class<MorphShape>::getInstanceS(c->getSystemState(),c);
+	return Class<MorphShape>::getInstanceSRaw(c->getSystemState(),c);
 }
 
 DefineMorphShape2Tag::DefineMorphShape2Tag(RECORDHEADER h, std::istream& in, RootMovieClip* root):DefineMorphShapeTag(h, root, 2)
@@ -1544,7 +1544,7 @@ ASObject* DefineButtonTag::instance(Class_base* c) const
 			{
 				if(!isSprite[j])
 				{
-					Sprite* spr = Class<Sprite>::getInstanceS(loadedFrom->getSystemState());
+					Sprite* spr = Class<Sprite>::getInstanceSRaw(loadedFrom->getSystemState());
 					spr->insertLegacyChildAt(curDepth[j],states[j]);
 					states[j] = spr;
 					//spr->name = "Button_spr";
@@ -1737,11 +1737,11 @@ void StartSoundTag::execute(RootMovieClip* root) const
 
 void StartSoundTag::play(const DefineSoundTag *soundTag) const
 {
-	_NR<SoundChannel> schannel = _MNR(Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
+	_NR<SoundChannel> schannel = Class<SoundChannel>::getInstanceS(soundTag->loadedFrom->getSystemState(),
 		soundTag->getSoundData(),
 		AudioFormat(soundTag->getAudioCodec(),
 			    soundTag->getSampleRate(),
-				soundTag->getChannels())));
+				soundTag->getChannels()));
 
 	// SoundChannel thread keeps one reference, which will be
 	// removed thread is finished

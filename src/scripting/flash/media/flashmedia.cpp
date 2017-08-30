@@ -302,7 +302,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(th->getSystemState()));
 		return _MAR(asAtom::invalidAtom);
 	}
 
@@ -324,7 +324,7 @@ ASFUNCTIONBODY_ATOM(Sound,load)
 	}
 	if(th->downloader->hasFailed())
 	{
-		getVm(th->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		getVm(th->getSystemState())->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(th->getSystemState()));
 	}
 	return _MAR(asAtom::invalidAtom);
 }
@@ -339,9 +339,9 @@ ASFUNCTIONBODY(Sound,play)
 		LOG(LOG_NOT_IMPLEMENTED,"startTime not supported in Sound::play");
 
 	if (th->container)
-		return Class<SoundChannel>::getInstanceS(obj->getSystemState(),th->soundData);
+		return Class<SoundChannel>::getInstanceSRaw(obj->getSystemState(),th->soundData);
 	else
-		return Class<SoundChannel>::getInstanceS(obj->getSystemState(),th->soundData, th->format);
+		return Class<SoundChannel>::getInstanceSRaw(obj->getSystemState(),th->soundData, th->format);
 }
 
 ASFUNCTIONBODY(Sound,close)
@@ -363,10 +363,10 @@ void Sound::setBytesLoaded(uint32_t b)
 	if(b!=bytesLoaded)
 	{
 		bytesLoaded=b;
-		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IMR(this),Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal));
 		if(bytesLoaded==bytesTotal)
 		{
-			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+			getVm(getSystemState())->addEvent(_IMR(this),Class<Event>::getInstanceS(getSystemState(),"complete"));
 		}
 	}
 }
@@ -431,7 +431,7 @@ ASFUNCTIONBODY_GETTER_SETTER(SoundLoaderContext,checkPolicyFile);
 
 SoundChannel::SoundChannel(Class_base* c, _NR<StreamCache> _stream, AudioFormat _format)
 	: EventDispatcher(c),stream(_stream),stopped(false),audioDecoder(NULL),audioStream(NULL),
-	format(_format),oldVolume(-1.0),soundTransform(_MR(Class<SoundTransform>::getInstanceS(c->getSystemState()))),
+	format(_format),oldVolume(-1.0),soundTransform(Class<SoundTransform>::getInstanceS(c->getSystemState())),
 	leftPeak(1),position(0),rightPeak(1)
 {
 	subtype=SUBTYPE_SOUNDCHANNEL;
@@ -586,7 +586,7 @@ void SoundChannel::playStream()
 
 	if (!ACQUIRE_READ(stopped))
 	{
-		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"soundComplete")));
+		getVm(getSystemState())->addEvent(_IMR(this),Class<Event>::getInstanceS(getSystemState(),"soundComplete"));
 	}
 }
 

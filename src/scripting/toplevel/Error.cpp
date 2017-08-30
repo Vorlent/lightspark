@@ -150,7 +150,7 @@ ASFUNCTIONBODY(ASError,_constructor)
 
 ASFUNCTIONBODY_ATOM(ASError,generator)
 {
-	ASError* th=Class<ASError>::getInstanceS(getSys());
+	ASError* th=Class<ASError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -200,7 +200,7 @@ ASFUNCTIONBODY(SecurityError,_constructor)
 
 ASFUNCTIONBODY_ATOM(SecurityError,generator)
 {
-	ASError* th=Class<SecurityError>::getInstanceS(getSys());
+	ASError* th=Class<SecurityError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -227,7 +227,7 @@ ASFUNCTIONBODY(ArgumentError,_constructor)
 
 ASFUNCTIONBODY_ATOM(ArgumentError,generator)
 {
-	ASError* th=Class<ArgumentError>::getInstanceS(getSys());
+	ASError* th=Class<ArgumentError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -254,7 +254,7 @@ ASFUNCTIONBODY(DefinitionError,_constructor)
 
 ASFUNCTIONBODY_ATOM(DefinitionError,generator)
 {
-	ASError* th=Class<DefinitionError>::getInstanceS(getSys());
+	ASError* th=Class<DefinitionError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -281,7 +281,7 @@ ASFUNCTIONBODY(EvalError,_constructor)
 
 ASFUNCTIONBODY_ATOM(EvalError,generator)
 {
-	ASError* th=Class<EvalError>::getInstanceS(getSys());
+	ASError* th=Class<EvalError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -308,7 +308,7 @@ ASFUNCTIONBODY(RangeError,_constructor)
 
 ASFUNCTIONBODY_ATOM(RangeError,generator)
 {
-	ASError* th=Class<RangeError>::getInstanceS(getSys());
+	ASError* th=Class<RangeError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -335,7 +335,7 @@ ASFUNCTIONBODY(ReferenceError,_constructor)
 
 ASFUNCTIONBODY_ATOM(ReferenceError,generator)
 {
-	ASError* th=Class<ReferenceError>::getInstanceS(getSys());
+	ASError* th=Class<ReferenceError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -362,7 +362,7 @@ ASFUNCTIONBODY(SyntaxError,_constructor)
 
 ASFUNCTIONBODY_ATOM(SyntaxError,generator)
 {
-	ASError* th=Class<SyntaxError>::getInstanceS(getSys());
+	ASError* th=Class<SyntaxError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -389,7 +389,7 @@ ASFUNCTIONBODY(TypeError,_constructor)
 
 ASFUNCTIONBODY_ATOM(TypeError,generator)
 {
-	ASError* th=Class<TypeError>::getInstanceS(getSys());
+	ASError* th=Class<TypeError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -416,7 +416,7 @@ ASFUNCTIONBODY(URIError,_constructor)
 
 ASFUNCTIONBODY_ATOM(URIError,generator)
 {
-	ASError* th=Class<URIError>::getInstanceS(getSys());
+	ASError* th=Class<URIError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -443,7 +443,7 @@ ASFUNCTIONBODY(VerifyError,_constructor)
 
 ASFUNCTIONBODY_ATOM(VerifyError,generator)
 {
-	ASError* th=Class<VerifyError>::getInstanceS(getSys());
+	ASError* th=Class<VerifyError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }
@@ -470,7 +470,7 @@ ASFUNCTIONBODY(UninitializedError,_constructor)
 
 ASFUNCTIONBODY_ATOM(UninitializedError,generator)
 {
-	ASError* th=Class<UninitializedError>::getInstanceS(getSys());
+	ASError* th=Class<UninitializedError>::getInstanceSRaw(getSys());
 	errorGenerator(th, args, argslen);
 	return asAtom::fromObject(th);
 }

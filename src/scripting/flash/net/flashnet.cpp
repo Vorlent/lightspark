@@ -352,7 +352,7 @@ void URLLoaderThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
@@ -367,7 +367,7 @@ void URLLoaderThread::execute()
 			tiny_string dataFormat=loader->getDataFormat();
 			if(dataFormat=="binary")
 			{
-				_R<ByteArray> byteArray=_MR(Class<ByteArray>::getInstanceS(loader->getSystemState()));
+				_R<ByteArray> byteArray=Class<ByteArray>::getInstanceS(loader->getSystemState());
 				byteArray->acquireBuffer(buf,downloader->getLength());
 				data=byteArray;
 				//The buffers must not be deleted, it's now handled by the ByteArray instance
@@ -379,7 +379,7 @@ void URLLoaderThread::execute()
 			}
 			else if(dataFormat=="variables")
 			{
-				data=_MR(Class<URLVariables>::getInstanceS(loader->getSystemState(),(char*)buf));
+				data=Class<URLVariables>::getInstanceS(loader->getSystemState(),(char*)buf);
 				delete[] buf;
 			}
 			else
@@ -398,14 +398,14 @@ void URLLoaderThread::execute()
 		//Send a complete event for this object
 		loader->setData(data);
 
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength()));
 		//Send a complete event for this object
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"complete")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"complete"));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 	}
 
 	{
@@ -477,7 +477,7 @@ void URLLoader::setBytesLoaded(uint32_t b)
 	if (cur > timestamp_last_progress+ 40*1000)
 	{
 		timestamp_last_progress = cur;
-		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal)));
+		getVm(getSystemState())->addEvent(_IMR(this),Class<ProgressEvent>::getInstanceS(getSystemState(),b,bytesTotal));
 	}
 }
 
@@ -510,7 +510,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	if(!url.isValid())
 	{
 		//Notify an error during loading
-		th->getSystemState()->currentVm->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(th->getSystemState())));
+		th->getSystemState()->currentVm->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(th->getSystemState()));
 		return _MAR(asAtom::invalidAtom);
 	}
 
@@ -669,7 +669,7 @@ ASFUNCTIONBODY_ATOM(SharedObject,getLocal)
 
 	tiny_string fullname = localPath + "|";
 	fullname += name;
-	SharedObject* res = Class<SharedObject>::getInstanceS(sys);
+	SharedObject* res = Class<SharedObject>::getInstanceSRaw(sys);
 	std::map<tiny_string, ASObject* >::iterator it = sharedobjectmap.find(fullname);
 	if (it == sharedobjectmap.end())
 	{
@@ -821,7 +821,7 @@ ASFUNCTIONBODY(NetConnection,call)
 		rest->push(argi);
 	}
 
-	_R<ByteArray> message=_MR(Class<ByteArray>::getInstanceS(obj->getSystemState()));
+	_R<ByteArray> message=Class<ByteArray>::getInstanceS(obj->getSystemState());
 	//Version?
 	message->writeByte(0x00);
 	message->writeByte(0x03);
@@ -875,7 +875,7 @@ void NetConnection::execute()
 	}
 	std::streambuf *sbuf = cache->createReader();
 	istream s(sbuf);
-	_R<ByteArray> message=_MR(Class<ByteArray>::getInstanceS(getSys()));
+	_R<ByteArray> message=Class<ByteArray>::getInstanceS(getSys());
 	uint8_t* buf=message->getBuffer(downloader->getLength(), true);
 	s.read((char*)buf,downloader->getLength());
 	//Download is done, destroy it
@@ -969,7 +969,7 @@ ASFUNCTIONBODY(NetConnection,connect)
 	//When the URI is undefined the connect is successful (tested on Adobe player)
 	if(isNull || isRTMP)
 	{
-		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetConnection.Connect.Success"));
 	}
 	return NULL;
 }
@@ -1131,7 +1131,7 @@ NetStream::NetStream(Class_base* c):EventDispatcher(c),tickStarted(false),paused
 	backBufferLength(0),backBufferTime(30),bufferLength(0),bufferTime(0.1),bufferTimeMax(0),
 	maxPauseBufferTime(0)
 {
-	soundTransform = _MNR(Class<SoundTransform>::getInstanceS(c->getSystemState()));
+	soundTransform = _MNR(Class<SoundTransform>::getInstanceSRaw(c->getSystemState()));
 }
 
 void NetStream::finalize()
@@ -1201,7 +1201,7 @@ ASFUNCTIONBODY_GETTER_SETTER(NetStream,useHardwareDecoder);
 ASFUNCTIONBODY(NetStream,_getInfo)
 {
 	NetStream* th=Class<NetStream>::cast(obj);
-	NetStreamInfo* res = Class<NetStreamInfo>::getInstanceS(obj->getSystemState());
+	NetStreamInfo* res = Class<NetStreamInfo>::getInstanceSRaw(obj->getSystemState());
 	if(th->isReady())
 	{
 		res->byteCount = th->getReceivedLength();
@@ -1380,7 +1380,7 @@ ASFUNCTIONBODY(NetStream,play)
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		getVm(obj->getSystemState())->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(obj->getSystemState())));
+		getVm(obj->getSystemState())->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(obj->getSystemState()));
 	}
 	else //The URL is valid so we can start the download and add ourself as a job
 	{
@@ -1410,7 +1410,7 @@ ASFUNCTIONBODY(NetStream,resume)
 			if(th->audioStream)
 				th->audioStream->resume();
 		}
-		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Unpause.Notify"));
 	}
 	return NULL;
 }
@@ -1426,7 +1426,7 @@ ASFUNCTIONBODY(NetStream,pause)
 			if(th->audioStream)
 				th->audioStream->pause();
 		}
-		getVm(obj->getSystemState())->addEvent(_IMR(th),_MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th),Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Pause.Notify"));
 	}
 	return NULL;
 }
@@ -1450,7 +1450,7 @@ ASFUNCTIONBODY(NetStream,close)
 	if(!th->closed)
 	{
 		th->threadAbort();
-		getVm(obj->getSystemState())->addEvent(_IMR(th), _MR(Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop")));
+		getVm(obj->getSystemState())->addEvent(_IMR(th), Class<NetStatusEvent>::getInstanceS(obj->getSystemState(),"status", "NetStream.Play.Stop"));
 	}
 	LOG(LOG_CALLS, _("NetStream::close called"));
 	return NULL;
@@ -1760,7 +1760,7 @@ void NetStream::execute()
 			return;
 		if(downloader->hasFailed())
 		{
-			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<IOErrorEvent>::getInstanceS(getSystemState())));
+			getVm(getSystemState())->addEvent(_IMR(this),Class<IOErrorEvent>::getInstanceS(getSystemState()));
 			getSystemState()->downloadManager->destroy(downloader);
 			downloader = NULL;
 			return;
@@ -1851,7 +1851,7 @@ void NetStream::execute()
 						{
 							bufferfull = false;
 							this->bufferLength=0;
-							getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty")));
+							getVm(getSystemState())->addEvent(_IMR(this),Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Empty"));
 						}
 					}
 				}
@@ -1861,7 +1861,7 @@ void NetStream::execute()
 			{
 				videoDecoder=streamDecoder->videoDecoder;
 				getVm(getSystemState())->addEvent(_IMR(this),
-								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Start")));
+								  Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Start"));
 			}
 			if(audioDecoder==NULL && streamDecoder->audioDecoder)
 				audioDecoder=streamDecoder->audioDecoder;
@@ -1872,7 +1872,7 @@ void NetStream::execute()
 			{
 				tickStarted=true;
 				getVm(getSystemState())->addEvent(_IMR(this),
-								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
+								  Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full"));
 				getSystemState()->addTick(1000/frameRate,this);
 				//Also ask for a render rate equal to the video one (capped at 24)
 				float localRenderRate=dmin(frameRate,24);
@@ -1882,7 +1882,7 @@ void NetStream::execute()
 			{
 				bufferfull = true;
 				getVm(getSystemState())->addEvent(_IMR(this),
-								  _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full")));
+								  Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Full"));
 			}
 			profile->accountTime(chronometer.checkpoint());
 			if(threadAborting)
@@ -1918,8 +1918,8 @@ void NetStream::execute()
 		if(videoDecoder)
 			videoDecoder->waitFlushed();
 
-		getVm(getSystemState())->addEvent(_IMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop")));
-		getVm(getSystemState())->addEvent(_IMR(this), _MR(Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush")));
+		getVm(getSystemState())->addEvent(_IMR(this), Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Play.Stop"));
+		getVm(getSystemState())->addEvent(_IMR(this), Class<NetStatusEvent>::getInstanceS(getSystemState(),"status", "NetStream.Buffer.Flush"));
 	}
 	//Before deleting stops ticking, removeJobs also spin waits for termination
 	getSystemState()->removeJob(this);

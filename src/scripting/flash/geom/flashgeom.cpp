@@ -181,7 +181,7 @@ ASFUNCTIONBODY(Rectangle,_getBottomRight)
 {
 	assert_and_throw(argslen==0);
 	Rectangle* th = static_cast<Rectangle*>(obj);
-	Point* ret = Class<Point>::getInstanceS(obj->getSystemState(),th->x + th->width, th->y + th->height);
+	Point* ret = Class<Point>::getInstanceSRaw(obj->getSystemState(),th->x + th->width, th->y + th->height);
 	return ret;
 }
 
@@ -199,7 +199,7 @@ ASFUNCTIONBODY(Rectangle,_getTopLeft)
 {
 	assert_and_throw(argslen==0);
 	Rectangle* th = static_cast<Rectangle*>(obj);
-	Point* ret = Class<Point>::getInstanceS(obj->getSystemState(),th->x, th->y);
+	Point* ret = Class<Point>::getInstanceSRaw(obj->getSystemState(),th->x, th->y);
 	return ret;
 }
 
@@ -217,7 +217,7 @@ ASFUNCTIONBODY(Rectangle,_getSize)
 {
 	assert_and_throw(argslen==0);
 	Rectangle* th = static_cast<Rectangle*>(obj);
-	Point* ret = Class<Point>::getInstanceS(obj->getSystemState(),th->width, th->height);
+	Point* ret = Class<Point>::getInstanceSRaw(obj->getSystemState(),th->width, th->height);
 	return ret;
 }
 
@@ -248,7 +248,7 @@ ASFUNCTIONBODY(Rectangle,_setHeight)
 ASFUNCTIONBODY(Rectangle,clone)
 {
 	Rectangle* th=static_cast<Rectangle*>(obj);
-	Rectangle* ret=Class<Rectangle>::getInstanceS(obj->getSystemState());
+	Rectangle* ret=Class<Rectangle>::getInstanceSRaw(obj->getSystemState());
 	ret->x=th->x;
 	ret->y=th->y;
 	ret->width=th->width;
@@ -335,7 +335,7 @@ ASFUNCTIONBODY(Rectangle,intersection)
 	assert_and_throw(argslen == 1);
 	Rectangle* th = static_cast<Rectangle*>(obj);
 	Rectangle* ti = static_cast<Rectangle*>(args[0]);
-	Rectangle* ret = Class<Rectangle>::getInstanceS(obj->getSystemState());
+	Rectangle* ret = Class<Rectangle>::getInstanceSRaw(obj->getSystemState());
 
 	number_t thtop = th->y;
 	number_t thleft = th->x;
@@ -455,7 +455,7 @@ ASFUNCTIONBODY(Rectangle,_union)
 	assert_and_throw(argslen == 1);
 	Rectangle* th = static_cast<Rectangle*>(obj);
 	Rectangle* ti = static_cast<Rectangle*>(args[0]);
-	Rectangle* ret = Class<Rectangle>::getInstanceS(obj->getSystemState());
+	Rectangle* ret = Class<Rectangle>::getInstanceSRaw(obj->getSystemState());
 
 	ret->x = th->x;
 	ret->y = th->y;
@@ -844,7 +844,7 @@ ASFUNCTIONBODY(Point,interpolate)
 	Point* pt1=static_cast<Point*>(args[0]);
 	Point* pt2=static_cast<Point*>(args[1]);
 	number_t f=args[2]->toNumber();
-	Point* ret=Class<Point>::getInstanceS(obj->getSystemState());
+	Point* ret=Class<Point>::getInstanceSRaw(obj->getSystemState());
 	ret->x = pt1->x + pt2->x * f;
 	ret->y = pt1->y + pt2->y * f;
 	return ret;
@@ -864,7 +864,7 @@ ASFUNCTIONBODY(Point,add)
 	Point* th=static_cast<Point*>(obj);
 	assert_and_throw(argslen==1);
 	Point* v=static_cast<Point*>(args[0]);
-	Point* ret=Class<Point>::getInstanceS(obj->getSystemState());
+	Point* ret=Class<Point>::getInstanceSRaw(obj->getSystemState());
 	ret->x = th->x + v->x;
 	ret->y = th->y + v->y;
 	return ret;
@@ -875,7 +875,7 @@ ASFUNCTIONBODY(Point,subtract)
 	Point* th=static_cast<Point*>(obj);
 	assert_and_throw(argslen==1);
 	Point* v=static_cast<Point*>(args[0]);
-	Point* ret=Class<Point>::getInstanceS(obj->getSystemState());
+	Point* ret=Class<Point>::getInstanceSRaw(obj->getSystemState());
 	ret->x = th->x - v->x;
 	ret->y = th->y - v->y;
 	return ret;
@@ -885,7 +885,7 @@ ASFUNCTIONBODY(Point,clone)
 {
 	Point* th=static_cast<Point*>(obj);
 	assert_and_throw(argslen==0);
-	Point* ret=Class<Point>::getInstanceS(obj->getSystemState());
+	Point* ret=Class<Point>::getInstanceSRaw(obj->getSystemState());
 	ret->x = th->x;
 	ret->y = th->y;
 	return ret;
@@ -926,7 +926,7 @@ ASFUNCTIONBODY(Point,polar)
 	assert_and_throw(argslen==2);
 	number_t len = args[0]->toNumber();
 	number_t angle = args[1]->toNumber();
-	Point* ret=Class<Point>::getInstanceS(obj->getSystemState());
+	Point* ret=Class<Point>::getInstanceSRaw(obj->getSystemState());
 	ret->x = len * cos(angle);
 	ret->y = len * sin(angle);
 	return ret;
@@ -982,7 +982,7 @@ ASFUNCTIONBODY(Transform,_getMatrix)
 	if (th->owner->matrix.isNull())
 		return obj->getSystemState()->getNullRef();
 	const MATRIX& ret=th->owner->getMatrix();
-	return Class<Matrix>::getInstanceS(obj->getSystemState(),ret);
+	return Class<Matrix>::getInstanceSRaw(obj->getSystemState(),ret);
 }
 
 ASFUNCTIONBODY(Transform,_setMatrix)
@@ -998,7 +998,7 @@ ASFUNCTIONBODY_ATOM(Transform,_getColorTransform)
 {
 	Transform* th=obj->as<Transform>();
 	if (th->owner->colorTransform.isNull())
-		th->owner->colorTransform = _MNR(Class<ColorTransform>::getInstanceS(sys));
+		th->owner->colorTransform = Class<ColorTransform>::getInstanceS(sys);
 	return asAtom::fromObject(th->owner->colorTransform.getPtr());
 }
 
@@ -1018,7 +1018,7 @@ ASFUNCTIONBODY(Transform,_setColorTransform)
 ASFUNCTIONBODY(Transform,_getConcatenatedMatrix)
 {
 	Transform* th=Class<Transform>::cast(obj);
-	return Class<Matrix>::getInstanceS(obj->getSystemState(),th->owner->getConcatenatedMatrix());
+	return Class<Matrix>::getInstanceSRaw(obj->getSystemState(),th->owner->getConcatenatedMatrix());
 }
 
 void Transform::buildTraits(ASObject* o)
@@ -1205,7 +1205,7 @@ ASFUNCTIONBODY(Matrix,clone)
 	assert_and_throw(argslen==0);
 
 	Matrix* th=static_cast<Matrix*>(obj);
-	Matrix* ret=Class<Matrix>::getInstanceS(obj->getSystemState(),th->matrix);
+	Matrix* ret=Class<Matrix>::getInstanceSRaw(obj->getSystemState(),th->matrix);
 	return ret;
 }
 
@@ -1337,7 +1337,7 @@ ASFUNCTIONBODY(Matrix,transformPoint)
 	number_t ttx = pt->getX();
 	number_t tty = pt->getY();
 	cairo_matrix_transform_point(&th->matrix,&ttx,&tty);
-	return Class<Point>::getInstanceS(obj->getSystemState(),ttx, tty);
+	return Class<Point>::getInstanceSRaw(obj->getSystemState(),ttx, tty);
 }
 
 ASFUNCTIONBODY(Matrix,deltaTransformPoint)
@@ -1349,7 +1349,7 @@ ASFUNCTIONBODY(Matrix,deltaTransformPoint)
 	number_t ttx = pt->getX();
 	number_t tty = pt->getY();
 	cairo_matrix_transform_distance(&th->matrix,&ttx,&tty);
-	return Class<Point>::getInstanceS(obj->getSystemState(),ttx, tty);
+	return Class<Point>::getInstanceSRaw(obj->getSystemState(),ttx, tty);
 }
 
 void Vector3D::sinit(Class_base* c)
@@ -1522,7 +1522,7 @@ ASFUNCTIONBODY(Vector3D,clone)
 	assert_and_throw(argslen==0);
 
 	Vector3D* th=static_cast<Vector3D*>(obj);
-	Vector3D* ret=Class<Vector3D>::getInstanceS(obj->getSystemState());
+	Vector3D* ret=Class<Vector3D>::getInstanceSRaw(obj->getSystemState());
 
 	ret->w = th->w;
 	ret->x = th->x;
@@ -1538,7 +1538,7 @@ ASFUNCTIONBODY(Vector3D,add)
 
 	Vector3D* th=static_cast<Vector3D*>(obj);
 	Vector3D* vc=static_cast<Vector3D*>(args[0]);
-	Vector3D* ret=Class<Vector3D>::getInstanceS(obj->getSystemState());
+	Vector3D* ret=Class<Vector3D>::getInstanceSRaw(obj->getSystemState());
 
 	ret->x = th->x + vc->x;
 	ret->y = th->y + vc->y;
@@ -1568,7 +1568,7 @@ ASFUNCTIONBODY(Vector3D,crossProduct)
 
 	Vector3D* th=static_cast<Vector3D*>(obj);
 	Vector3D* vc=static_cast<Vector3D*>(args[0]);
-	Vector3D* ret=Class<Vector3D>::getInstanceS(obj->getSystemState());
+	Vector3D* ret=Class<Vector3D>::getInstanceSRaw(obj->getSystemState());
 
 	ret->x = th->y * vc->z - th->z * vc->y;
 	ret->y = th->z * vc->x - th->x * vc->z;
@@ -1733,7 +1733,7 @@ ASFUNCTIONBODY(Vector3D,subtract)
 
 	Vector3D* th=static_cast<Vector3D*>(obj);
 	Vector3D* vc=static_cast<Vector3D*>(args[0]);
-	Vector3D* ret=Class<Vector3D>::getInstanceS(obj->getSystemState());
+	Vector3D* ret=Class<Vector3D>::getInstanceSRaw(obj->getSystemState());
 
 	ret->x = th->x - vc->x;
 	ret->y = th->y - vc->y;
@@ -1764,7 +1764,7 @@ ASFUNCTIONBODY(Matrix3D,clone)
 {
 	//Matrix3D * th=static_cast<Matrix3D*>(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"Matrix3D.clone is not implemented");
-	return Class<Matrix3D>::getInstanceS(obj->getSystemState());
+	return Class<Matrix3D>::getInstanceSRaw(obj->getSystemState());
 }
 ASFUNCTIONBODY(Matrix3D,recompose)
 {

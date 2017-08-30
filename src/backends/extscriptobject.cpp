@@ -253,16 +253,16 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 	switch(getType())
 	{
 	case EV_STRING:
-		asobj = Class<ASString>::getInstanceS(getSys(),getString().c_str());
+		asobj = Class<ASString>::getInstanceSRaw(getSys(),getString().c_str());
 		break;
 	case EV_INT32:
-		asobj = Class<Integer>::getInstanceS(getSys(),getInt());
+		asobj = Class<Integer>::getInstanceSRaw(getSys(),getInt());
 		break;
 	case EV_DOUBLE:
-		asobj = Class<Number>::getInstanceS(getSys(),getDouble());
+		asobj = Class<Number>::getInstanceSRaw(getSys(),getDouble());
 		break;
 	case EV_BOOLEAN:
-		asobj = Class<Boolean>::getInstanceS(getSys(),getBoolean());
+		asobj = Class<Boolean>::getInstanceSRaw(getSys(),getBoolean());
 		break;
 	case EV_OBJECT:
 		{

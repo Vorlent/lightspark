@@ -58,9 +58,9 @@ LoaderInfo::LoaderInfo(Class_base* c):EventDispatcher(c),applicationDomain(NullR
 	childAllowsParent(true),uncaughtErrorEvents(NullRef),parentAllowsChild(true),frameRate(0)
 {
 	subtype=SUBTYPE_LOADERINFO;
-	sharedEvents=_MR(Class<EventDispatcher>::getInstanceS(c->getSystemState()));
-	parameters = _MR(Class<ASObject>::getInstanceS(c->getSystemState()));
-	uncaughtErrorEvents = _MR(Class<UncaughtErrorEvents>::getInstanceS(c->getSystemState()));
+	sharedEvents=Class<EventDispatcher>::getInstanceS(c->getSystemState());
+	parameters = _NR<ASObject>(Class<ASObject>::getInstanceS(c->getSystemState()));
+	uncaughtErrorEvents = Class<UncaughtErrorEvents>::getInstanceS(c->getSystemState());
 	LOG(LOG_NOT_IMPLEMENTED,"LoaderInfo: childAllowsParent and parentAllowsChild always return true");
 }
 
@@ -71,9 +71,9 @@ LoaderInfo::LoaderInfo(Class_base* c, _R<Loader> l):EventDispatcher(c),applicati
 	childAllowsParent(true),uncaughtErrorEvents(NullRef),parentAllowsChild(true),frameRate(0)
 {
 	subtype=SUBTYPE_LOADERINFO;
-	sharedEvents=_MR(Class<EventDispatcher>::getInstanceS(c->getSystemState()));
-	parameters = _MR(Class<ASObject>::getInstanceS(c->getSystemState()));
-	uncaughtErrorEvents = _MR(Class<UncaughtErrorEvents>::getInstanceS(c->getSystemState()));
+	sharedEvents=Class<EventDispatcher>::getInstanceS(c->getSystemState());
+	parameters = _NR<ASObject>(Class<ASObject>::getInstanceS(c->getSystemState()));
+	uncaughtErrorEvents = Class<UncaughtErrorEvents>::getInstanceS(c->getSystemState());
 	LOG(LOG_NOT_IMPLEMENTED,"LoaderInfo: childAllowsParent and parentAllowsChild always return true");
 }
 
@@ -156,14 +156,14 @@ void LoaderInfo::setBytesLoaded(uint32_t b)
 		bytesLoaded=b;
 		if(getVm(getSystemState()))
 		{
-			getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal)));
+			getVm(getSystemState())->addEvent(_IMR(this),Class<ProgressEvent>::getInstanceS(getSystemState(),bytesLoaded,bytesTotal));
 		}
 		if(loadStatus==INIT_SENT)
 		{
 			//The clip is also complete now
 			if(getVm(getSystemState()))
 			{
-				getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+				getVm(getSystemState())->addEvent(_IMR(this),Class<Event>::getInstanceS(getSystemState(),"complete"));
 			}
 			loadStatus=COMPLETE;
 		}
@@ -172,13 +172,13 @@ void LoaderInfo::setBytesLoaded(uint32_t b)
 
 void LoaderInfo::sendInit()
 {
-	getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"init")));
+	getVm(getSystemState())->addEvent(_IMR(this),Class<Event>::getInstanceS(getSystemState(),"init"));
 	assert(loadStatus==STARTED);
 	loadStatus=INIT_SENT;
 	if(bytesTotal && bytesLoaded==bytesTotal)
 	{
 		//The clip is also complete now
-		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<Event>::getInstanceS(getSystemState(),"complete")));
+		getVm(getSystemState())->addEvent(_IMR(this),Class<Event>::getInstanceS(getSystemState(),"complete"));
 		loadStatus=COMPLETE;
 	}
 }
@@ -367,19 +367,19 @@ void LoaderThread::execute()
 		if(cache->hasFailed()) //Check to see if the download failed for some reason
 		{
 			LOG(LOG_ERROR, "Loader::execute(): Download of URL failed: " << url);
-			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
-			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 			delete sbuf;
 			// downloader will be deleted in jobFence
 			return;
 		}
-		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 	}
 	else if(source==BYTES)
 	{
 		assert_and_throw(bytes->bytes);
 
-		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(loader->getSystemState(),"open")));
+		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 		loaderInfo->setBytesTotal(bytes->getLength());
 		loaderInfo->setBytesLoaded(bytes->getLength());
 
@@ -409,7 +409,7 @@ void LoaderThread::execute()
 		// The stream did not contain RootMovieClip or Bitmap
 		if(!threadAborting)
 		{
-			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),_MR(Class<IOErrorEvent>::getInstanceS(loader->getSystemState())));
+			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 		}
 		return;
 	}
@@ -421,7 +421,7 @@ ASFUNCTIONBODY_ATOM(Loader,_constructor)
 	std::vector<asAtomR> empty;
 	DisplayObjectContainer::_constructor(sys,obj,empty,0);
 	th->contentLoaderInfo->setLoaderURL(th->getSystemState()->mainClip->getOrigin().getParsedURL());
-	th->uncaughtErrorEvents = _MR(Class<UncaughtErrorEvents>::getInstanceS(sys));
+	th->uncaughtErrorEvents = Class<UncaughtErrorEvents>::getInstanceS(sys);
 	return _MAR(asAtom::invalidAtom);
 }
 
@@ -493,7 +493,7 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 		_NR<ApplicationDomain> parentDomain = currentRoot->applicationDomain;
 		//Support for LoaderContext
 		if(context.isNull() || context->applicationDomain.isNull())
-			th->contentLoaderInfo->applicationDomain = _MR(Class<ApplicationDomain>::getInstanceS(sys,parentDomain));
+			th->contentLoaderInfo->applicationDomain = Class<ApplicationDomain>::getInstanceS(sys,parentDomain);
 		else
 			th->contentLoaderInfo->applicationDomain = context->applicationDomain;
 		th->contentLoaderInfo->securityDomain = curSecDomain;
@@ -502,14 +502,14 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 	{
 		//Different domain
 		_NR<ApplicationDomain> parentDomain =  sys->systemDomain;
-		th->contentLoaderInfo->applicationDomain = _MR(Class<ApplicationDomain>::getInstanceS(sys,parentDomain));
-		th->contentLoaderInfo->securityDomain = _MR(Class<SecurityDomain>::getInstanceS(sys));
+		th->contentLoaderInfo->applicationDomain = Class<ApplicationDomain>::getInstanceS(sys,parentDomain);
+		th->contentLoaderInfo->securityDomain = Class<SecurityDomain>::getInstanceS(sys);
 	}
 
 	if(!th->url.isValid())
 	{
 		//Notify an error during loading
-		sys->currentVm->addEvent(_IMR(th),_MR(Class<IOErrorEvent>::getInstanceS(sys)));
+		sys->currentVm->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(sys));
 		return _MAR(asAtom::invalidAtom);
 	}
 
@@ -551,7 +551,7 @@ ASFUNCTIONBODY_ATOM(Loader,loadBytes)
 
 	_NR<ApplicationDomain> parentDomain = ABCVm::getCurrentApplicationDomain(getVm(th->getSystemState())->currentCallContext);
 	if(context.isNull() || context->applicationDomain.isNull())
-		th->contentLoaderInfo->applicationDomain = _MR(Class<ApplicationDomain>::getInstanceS(sys,parentDomain));
+		th->contentLoaderInfo->applicationDomain = Class<ApplicationDomain>::getInstanceS(sys,parentDomain);
 	else
 		th->contentLoaderInfo->applicationDomain = context->applicationDomain;
 	//Always loaded in the current security domain
@@ -565,7 +565,7 @@ ASFUNCTIONBODY_ATOM(Loader,loadBytes)
 
 	if(bytes->getLength()!=0)
 	{
-		LoaderThread *thread=new LoaderThread(_MR(bytes), _IMR(th));
+		LoaderThread *thread=new LoaderThread(Ref<ByteArray>(bytes), _IMR(th));
 		SpinlockLocker l(th->spinlock);
 		th->jobs.push_back(thread);
 		sys->addJob(thread);
@@ -612,7 +612,7 @@ void Loader::unload()
 	
 	if(loaded)
 	{
-		getVm(getSystemState())->addEvent(_IMR(contentLoaderInfo.getPtr()),_MR(Class<Event>::getInstanceS(getSystemState(),"unload")));
+		getVm(getSystemState())->addEvent(_IMR(contentLoaderInfo.getPtr()),Class<Event>::getInstanceS(getSystemState(),"unload"));
 		loaded=false;
 	}
 
@@ -633,7 +633,7 @@ void Loader::finalize()
 
 Loader::Loader(Class_base* c):DisplayObjectContainer(c),content(NullRef),contentLoaderInfo(NullRef),loaded(false), allowCodeImport(true),uncaughtErrorEvents(NullRef)
 {
-	contentLoaderInfo=_MR(Class<LoaderInfo>::getInstanceS(c->getSystemState(),_IMR(this)));
+	contentLoaderInfo=Class<LoaderInfo>::getInstanceS(c->getSystemState(),_IMR(this));
 }
 
 Loader::~Loader()
@@ -937,7 +937,7 @@ ASFUNCTIONBODY_ATOM(Sprite,_getGraphics)
 	Sprite* th=obj->as<Sprite>();
 	//Probably graphics is not used often, so create it here
 	if(th->graphics.isNull())
-		th->graphics=_MR(Class<Graphics>::getInstanceS(sys,th));
+		th->graphics=Class<Graphics>::getInstanceS(sys,th);
 
 	return asAtom::fromObject(th->graphics.getPtr());
 }
@@ -1022,7 +1022,7 @@ ASFUNCTIONBODY_ATOM(Scene,_getLabels)
 	ret->resize(th->labels.size());
 	for(size_t i=0; i<th->labels.size(); ++i)
 	{
-		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceS(sys,th->labels[i]));
+		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,th->labels[i]));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1354,7 +1354,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getScenes)
 			numFrames = th->totalFrames_unreliable - th->scenes[i].startframe;
 		else
 			numFrames = th->scenes[i].startframe - th->scenes[i+1].startframe;
-		asAtomR v = asAtom::fromObject(Class<Scene>::getInstanceS(sys,th->scenes[i],numFrames));
+		asAtomR v = asAtom::fromObject(Class<Scene>::getInstanceSRaw(sys,th->scenes[i],numFrames));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1380,7 +1380,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentScene)
 	else
 		numFrames = th->scenes[curScene].startframe - th->scenes[curScene+1].startframe;
 
-	return asAtom::fromObject(Class<Scene>::getInstanceS(sys,th->scenes[curScene],numFrames));
+	return asAtom::fromObject(Class<Scene>::getInstanceSRaw(sys,th->scenes[curScene],numFrames));
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentFrame)
@@ -1437,7 +1437,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentLabels)
 	ret->resize(sc.labels.size());
 	for(size_t i=0; i<sc.labels.size(); ++i)
 	{
-		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceS(sys,sc.labels[i]));
+		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,sc.labels[i]));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1847,7 +1847,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 	th->_addChildAt(d,index);
 
 	//Notify the object
-	getVm(sys)->addEvent(_IMR(d.getPtr()),_MR(Class<Event>::getInstanceS(sys,"added")));
+	getVm(sys)->addEvent(_IMR(d.getPtr()),Class<Event>::getInstanceS(sys,"added"));
 
 	return args[0];
 }
@@ -1868,7 +1868,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChild)
 	th->_addChildAt(d,numeric_limits<unsigned int>::max());
 
 	//Notify the object
-	getVm(sys)->addEvent(d,_IMR(Class<Event>::getInstanceS(sys,"added")));
+	getVm(sys)->addEvent(d,Class<Event>::getInstanceS(sys,"added"));
 
 	return asAtom::fromObject(d.getPtr());
 }
@@ -2155,7 +2155,7 @@ ASFUNCTIONBODY_ATOM(Shape,_getGraphics)
 {
 	Shape* th=obj->as<Shape>();
 	if(th->graphics.isNull())
-		th->graphics=_MR(Class<Graphics>::getInstanceS(sys,th));
+		th->graphics=Class<Graphics>::getInstanceS(sys,th);
 	return asAtom::fromObject(th->graphics.getPtr());
 }
 
@@ -2264,7 +2264,7 @@ void Stage::eventListenerAdded(const tiny_string& eventName)
 	{
 		// StageVideoAvailabilityEvent is dispatched directly after an eventListener is added added
 		// see https://www.adobe.com/devnet/flashplayer/articles/stage_video.html 
-		getVm(getSystemState())->addEvent(_IMR(this),_MR(Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState())));
+		getVm(getSystemState())->addEvent(_IMR(this),Class<StageVideoAvailabilityEvent>::getInstanceS(getSystemState()));
 	}
 }
 
@@ -2578,7 +2578,7 @@ Bitmap::Bitmap(Class_base* c, _NR<LoaderInfo> li, std::istream *s, FILE_TYPE typ
 		loaderInfo->setWaitedObject(_IMR(this));
 	}
 
-	bitmapData = _MR(Class<BitmapData>::getInstanceS(c->getSystemState()));
+	bitmapData = Class<BitmapData>::getInstanceS(c->getSystemState());
 	bitmapData->addUser(this);
 	if(!s)
 		return;

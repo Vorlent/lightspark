@@ -430,7 +430,7 @@ ASFUNCTIONBODY_ATOM(TextField, appendText)
 ASFUNCTIONBODY_ATOM(TextField,_getTextFormat)
 {
 	TextField* th=obj->as<TextField>();
-	TextFormat *format=Class<TextFormat>::getInstanceS(sys);
+	TextFormat *format=Class<TextFormat>::getInstanceSRaw(sys);
 
 	format->color= _MAR(asAtom(th->textColor.toUInt()));
 	format->font = th->font;
@@ -467,7 +467,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getDefaultTextFormat)
 {
 	TextField* th=obj->as<TextField>();
 	
-	TextFormat* tf = Class<TextFormat>::getInstanceS(sys);
+	TextFormat* tf = Class<TextFormat>::getInstanceSRaw(sys);
 	tf->font = th->font;
 	LOG(LOG_NOT_IMPLEMENTED,"getDefaultTextFormat does not get all fields of TextFormat");
 	return asAtom::fromObject(tf);
@@ -582,7 +582,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineMetrics)
 	if (lineIndex < 0 || lineIndex >= (int32_t)lines.size())
 		throwError<RangeError>(kParamRangeError);
 
-	return asAtom::fromObject(Class<TextLineMetrics>::getInstanceS(sys,
+	return asAtom::fromObject(Class<TextLineMetrics>::getInstanceSRaw(sys,
 		lines[lineIndex].indent,
 		lines[lineIndex].extents.Xmax - lines[lineIndex].extents.Xmin,
 		lines[lineIndex].extents.Ymax - lines[lineIndex].extents.Ymin,
@@ -786,7 +786,7 @@ ASFUNCTIONBODY_ATOM(TextField,_replaceText)
 void TextField::replaceText(unsigned int begin, unsigned int end, const tiny_string& newText)
 {
 	if (!styleSheet.isNull())
-		throw Class<ASError>::getInstanceS(getSystemState(),"Can not replace text on text field with a style sheet");
+		throw Class<ASError>::getInstanceSRaw(getSystemState(),"Can not replace text on text field with a style sheet");
 
 	if (begin >= text.numChars())
 	{

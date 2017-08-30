@@ -269,7 +269,7 @@ void Date::MakeDate(int64_t year, int64_t month, int64_t day, int64_t hour, int6
 
 ASFUNCTIONBODY_ATOM(Date,generator)
 {
-	Date* th=Class<Date>::getInstanceS(getSys());
+	Date* th=Class<Date>::getInstanceSRaw(getSys());
 	GDateTime* tmp = g_date_time_new_now_utc();
 	th->MakeDateFromMilliseconds(g_date_time_to_unix(tmp)*1000 + g_date_time_get_microsecond (tmp)/1000);
 	g_date_time_unref(tmp);
@@ -286,7 +286,7 @@ ASFUNCTIONBODY(Date,UTC)
 	}
 	number_t year, month, day, hour, minute, second, millisecond;
 	ARG_UNPACK (year) (month) (day, 1) (hour, 0) (minute, 0) (second, 0) (millisecond, 0);
-	_R<Date> dt=_MR(Class<Date>::getInstanceS(args[0]->getSystemState()));
+	_R<Date> dt=Class<Date>::getInstanceS(args[0]->getSystemState());
 	dt->MakeDate(year, month+1, day, hour, minute,second, millisecond,false);
 	if(dt->nan) {
 		return abstract_d(args[0]->getSystemState(),Number::NaN);
@@ -1066,7 +1066,7 @@ number_t Date::parse(tiny_string str)
 				y += 1900;
 			if (mon >= 1 && mon <= 12 && d >= 1 && d <= 31 && h >= 0 && h <= 23 && m >= 0 && m <= 59 && s >= 0 && s <= 59)
 			{
-				_R<Date> dt=_MR(Class<Date>::getInstanceS(getSys()));
+				_R<Date> dt=Class<Date>::getInstanceS(getSys());
 				if (tz == 0)
 					dt->MakeDate(y, mon, d, h, m, s, 0,bIsLocalTime);
 				else
