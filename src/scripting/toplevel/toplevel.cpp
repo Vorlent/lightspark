@@ -2605,8 +2605,7 @@ void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtomR& o, 
 
 ObjectConstructor::ObjectConstructor(Class_base* c,uint32_t length) : ASObject(c,T_OBJECT,SUBTYPE_OBJECTCONSTRUCTOR),_length(length)
 {
-	Class<ASObject>::getRef(c->getSystemState())->prototype->incRef();
-	this->prototype = Class<ASObject>::getRef(c->getSystemState())->prototype.getPtr();
+	this->prototype = Class<ASObject>::getRef(c->getSystemState())->prototype;
 }
 
 asAtomR ObjectConstructor::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)

@@ -352,7 +352,7 @@ public:
  */
 class ObjectConstructor: public ASObject
 {
-	Prototype* prototype;
+	_NR<Prototype> prototype;
 	uint32_t _length;
 public:
 	ObjectConstructor(Class_base* c,uint32_t length);
