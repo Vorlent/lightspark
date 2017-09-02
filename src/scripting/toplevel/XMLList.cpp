@@ -1052,7 +1052,6 @@ void XMLList::replace(unsigned int idx, ASObject *o, const XML::XMLVector &retno
 		{
 			nodes[idx]->childrenlist->clear();
 			_R<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
-			nodes[idx]->incRef();
 			tmp->parentNode = nodes[idx];
 			tmp->nodetype = pugi::node_pcdata;
 			tmp->nodename = "text";
@@ -1075,7 +1074,6 @@ void XMLList::replace(unsigned int idx, ASObject *o, const XML::XMLVector &retno
 		{
 			nodes[idx]->childrenlist->clear();
 			_R<XML> tmp = _MR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
-			nodes[idx]->incRef();
 			tmp->parentNode = nodes[idx];
 			tmp->nodetype = pugi::node_pcdata;
 			tmp->nodename = "text";

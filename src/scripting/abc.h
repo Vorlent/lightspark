@@ -330,6 +330,7 @@ private:
 	static void newClass(call_context* th, int n);
 	static void newArray(call_context* th, int n); 
 	static ASObject* findPropStrict(call_context* th, multiname* name);
+	static asAtomR findPropStrictAtom(call_context* th, multiname* name);
 	static asAtomR findPropStrictCache(call_context* th, memorystream& code);
 	static ASObject* findProperty(call_context* th, multiname* name);
 	static asAtomR findPropertyAtom(call_context* th, multiname* name);
@@ -345,6 +346,7 @@ private:
 	static void coerce(call_context* th, int n);
 	static void checkDeclaredTraits(ASObject *obj);
 	static ASObject* getProperty(ASObject* obj, multiname* name);
+	static asAtomR getPropertyAtom(ASObject* objPtr, multiname* name);
 	static int32_t getProperty_i(ASObject* obj, multiname* name);
 	static void setProperty(ASObject* value,ASObject* obj, multiname* name);
 	static void setProperty_i(int32_t value,ASObject* obj, multiname* name);
@@ -353,6 +355,7 @@ private:
 	static void construct(call_context* th, int n);
 	static void constructGenericType(call_context* th, int n);
 	static ASObject* newFunction(call_context* th, int n);
+	static asAtomR newFunctionAtom(call_context* th, int n);
 	static void setSuper(call_context* th, int n);
 	static void getSuper(call_context* th, int n);
 	static void pushScope(call_context* obj);
@@ -711,6 +714,7 @@ public:
 	bool hasEverStarted() const { return status!=CREATED; }
 
 	static Global* getGlobalScope(call_context* th);
+	static asAtomR getGlobalScopeAtom(call_context* th);
 	static bool strictEqualImpl(ASObject*, ASObject*);
 	static void publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event);
 	static _R<ApplicationDomain> getCurrentApplicationDomain(call_context* th);

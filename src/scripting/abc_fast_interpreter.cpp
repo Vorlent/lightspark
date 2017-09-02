@@ -634,7 +634,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x40:
 			{
 				//newfunction
-				asAtomR value = asAtom::fromObject(newFunction(context,data->uints[0]));
+				asAtomR value = newFunctionAtom(context,data->uints[0]);
 				runtime_stack_push_ref(context, value);
 				instructionPointer+=4;
 				break;
@@ -872,7 +872,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t t=data->uints[0];
 				instructionPointer+=4;
 				multiname* name=context->context->getMultiname(t,context);
-				asAtomR value = asAtom::fromObject(findPropStrict(context,name));
+				asAtomR value = findPropStrictAtom(context,name);
 				runtime_stack_push_ref(context, value);
 				name->resetNameIfObject();
 				break;
@@ -955,7 +955,7 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x64:
 			{
 				//getglobalscope
-				asAtomR value = asAtom::fromObject(getGlobalScope(context));
+				asAtomR value = getGlobalScopeAtom(context);
 				runtime_stack_push_ref(context, value);
 				break;
 			}
@@ -980,11 +980,10 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 
 				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,obj,function->getSystemState());
 
-				ASObject* ret=getProperty(obj,name);
+				asAtomR ret=getPropertyAtom(obj,name);
 				name->resetNameIfObject();
 
-				asAtomR value = asAtom::fromObject(ret);
-				runtime_stack_push_ref(context, value);
+				runtime_stack_push_ref(context, ret);
 				break;
 			}
 			case 0x68:
@@ -1042,8 +1041,8 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t t=data->uints[0];
 				instructionPointer+=4;
 
-				Global* globalscope = getGlobalScope(context);
-				asAtomR value = globalscope->getSlot(t);
+				asAtomR globalscope = getGlobalScopeAtom(context);
+				asAtomR value = globalscope->as<Global>()->getSlot(t);
 				runtime_stack_push_ref(context, value);
 				break;
 			}
@@ -1053,9 +1052,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t t=data->uints[0];
 				instructionPointer+=4;
 
-				Global* globalscope = getGlobalScope(context);
+				asAtomR globalscope = getGlobalScopeAtom(context);
 				RUNTIME_STACK_POP_CREATE_REF(context,obj);
-				globalscope->setSlot(t,obj);
+				globalscope->as<Global>()->setSlot(t,obj);
 				break;
 			}
 			case 0x70:

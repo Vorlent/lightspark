@@ -973,7 +973,7 @@ void ABCVm::abc_newfunction(call_context* context,memorystream& code)
 {
 	//newfunction
 	uint32_t t = code.readu30();
-	asAtomR value = asAtom::fromObject(newFunction(context,t));
+	asAtomR value = newFunctionAtom(context,t);
 	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_call(call_context* context,memorystream& code)
@@ -1141,7 +1141,7 @@ void ABCVm::abc_findpropstrict(call_context* context,memorystream& code)
 	//findpropstrict
 //		uint32_t t = code.readu30();
 //		multiname* name=context->context->getMultiname(t,context);
-//		RUNTIME_STACK_PUSH(context,asAtom::fromObject(findPropStrict(context,name)));
+//		RUNTIME_STACK_PUSH(context,findPropStrictAtom(context,name));
 //		name->resetNameIfObject();
 
 	asAtomR o = findPropStrictCache(context,code);
@@ -1240,7 +1240,7 @@ void ABCVm::abc_setlocal(call_context* context,memorystream& code)
 void ABCVm::abc_getglobalscope(call_context* context,memorystream& code)
 {
 	//getglobalscope
-	asAtomR value = asAtom::fromObject(getGlobalScope(context));
+	asAtomR value = getGlobalScopeAtom(context);
 	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_getscopeobject(call_context* context,memorystream& code)
@@ -1334,8 +1334,8 @@ void ABCVm::abc_getglobalSlot(call_context* context,memorystream& code)
 	//getglobalSlot
 	uint32_t t = code.readu30();
 
-	Global* globalscope = getGlobalScope(context);
-	asAtomR value = globalscope->getSlot(t);
+	asAtomR globalscope = getGlobalScopeAtom(context);
+	asAtomR value = globalscope->as<Global>()->getSlot(t);
 	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_setglobalSlot(call_context* context,memorystream& code)
@@ -1343,9 +1343,9 @@ void ABCVm::abc_setglobalSlot(call_context* context,memorystream& code)
 	//setglobalSlot
 	uint32_t t = code.readu30();
 
-	Global* globalscope = getGlobalScope(context);
+	asAtomR globalscope = getGlobalScopeAtom(context);
 	RUNTIME_STACK_POP_CREATE_REF(context,o);
-	globalscope->setSlot(t,o);
+	globalscope->as<Global>()->setSlot(t,o);
 }
 void ABCVm::abc_convert_s(call_context* context,memorystream& code)
 {

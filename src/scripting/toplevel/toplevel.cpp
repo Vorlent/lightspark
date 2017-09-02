@@ -380,8 +380,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 		cc.locals.push_back(_MAR(asAtom::invalidAtom));
 	cc.max_stack = mi->body->max_stack;
 	//asAtom* stack = g_newa(asAtom, cc.max_stack);
-	std::vector<asAtomR> stack(cc.max_stack);
-	cc.stack=stack;
+	cc.stack=std::vector<asAtomR>(cc.max_stack);
 	cc.stack_index=0;
 	cc.context=mi->context;
 	//cc.code= new istringstream(mi->body->code);

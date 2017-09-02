@@ -82,11 +82,7 @@ struct call_context
 	static void handleError(int errorcode);
 	inline void runtime_stack_clear()
 	{
-		while(stack_index > 0)
-		{
-			--stack_index;
-			stack.pop_back();
-		}
+		stack.clear();
 	}
 };
 #define RUNTIME_STACK_PUSH(context,val) \
@@ -131,15 +127,8 @@ inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 	else context->handleError(kStackUnderflowError);
 
 
-#define RUNTIME_STACK_POP_CREATE_ASOBJECT_REF(context,ret, sys) \
-	_NR<ASObject> ret = NullRef; \
-	RUNTIME_STACK_POP_ASOBJECT_REF(context,ret, sys)
-
 #define RUNTIME_STACK_PEEK(context,ret) \
 	ret= context->stack_index ? *(context->stack[context->stack_index-1].getPtr()) : asAtom::invalidAtom;
-
-#define RUNTIME_STACK_PEEK_ASOBJECT(context,ret, sys) \
-	ret= context->stack_index ? context->stack[context->stack_index-1]->toObject(sys) : NULL;
 
 #define RUNTIME_STACK_PEEK_CREATE(context,ret) \
 	asAtom ret; \
