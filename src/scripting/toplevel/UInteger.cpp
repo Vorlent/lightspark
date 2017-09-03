@@ -92,10 +92,10 @@ ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 	if(argslen==0)
 	{
 		//The uint is already initialized to 0
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	th->val=args[0]->toUInt();
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,generator)

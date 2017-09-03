@@ -58,7 +58,7 @@ ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
 		getVm(th->getSystemState())->addEvent(_IMR(th), Class<InvokeEvent>::getInstanceS(sys));
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void NativeDragManager::sinit(Class_base* c)

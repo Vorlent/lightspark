@@ -46,7 +46,7 @@ ASFUNCTIONBODY(JSON,_constructor)
 ASFUNCTIONBODY_ATOM(JSON,generator)
 {
 	throwError<ArgumentError>(kCoerceArgumentCountError);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASObject *JSON::doParse(const tiny_string &jsonstring, asAtomR& reviver)

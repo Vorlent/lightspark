@@ -289,7 +289,7 @@ private:
 	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
 	{
 		throw RunTimeException("Class_object::getInstance");
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	void buildInstanceTraits(ASObject* o) const
 	{
@@ -323,6 +323,8 @@ public:
 	_NR<Prototype> prevPrototype;
 	inline void incRef() { obj->incRef(); }
 	inline void decRef() { obj->decRef(); }
+	inline void incRefRef(int id) { obj->incRefRef(id); }
+	inline void decRefRef(int id) { obj->decRefRef(id); }
 	inline ASObject* getObj() {return obj; }
 	bool isSealed;
 	/*
@@ -584,7 +586,7 @@ public:
 	static SyntheticFunction* getSyntheticFunction(SystemState* sys,method_info* m)
 	{
 		Class<IFunction>* c=Class<IFunction>::getClass(sys);
-		SyntheticFunction*  ret;
+		SyntheticFunction* ret;
 		ret= c->freelist[1].getObjectFromFreeList()->as<SyntheticFunction>();
 		if (!ret)
 		{

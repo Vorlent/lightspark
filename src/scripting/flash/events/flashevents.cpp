@@ -403,7 +403,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localX)
 		InteractiveObject* tar = static_cast<InteractiveObject*>((th->target)->getObject());
 		tar->localToGlobal(th->localX, th->localY, th->stageX, th->stageY);
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localY)
@@ -420,7 +420,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localY)
 		InteractiveObject* tar = static_cast<InteractiveObject*>((th->target)->getObject());
 		tar->localToGlobal(th->localX, th->localY, th->stageX, th->stageY);
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_altKey)
@@ -433,7 +433,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_altKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	th->modifiers |= KMOD_ALT;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_controlKey)
@@ -446,7 +446,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_controlKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	th->modifiers |= KMOD_CTRL;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_ctrlKey)
@@ -459,7 +459,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_ctrlKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	th->modifiers |= KMOD_CTRL;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_shiftKey)
@@ -472,7 +472,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_shiftKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj->getObject());
 	th->modifiers |= KMOD_SHIFT;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 ASFUNCTIONBODY(MouseEvent,updateAfterEvent)
 {
@@ -587,7 +587,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj->getObject());
 	if(args[0]->type !=T_STRING || args[1]->type !=T_FUNCTION)
 		//throw RunTimeException("Type mismatch in EventDispatcher::addEventListener");
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 
 	bool useCapture=false;
 	int32_t priority=0;
@@ -616,7 +616,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 		listeners.insert(insertionPoint,newListener);
 	}
 	th->eventListenerAdded(eventName);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(EventDispatcher,_hasEventListener)
@@ -633,7 +633,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj->getObject());
 	
 	if (args[1]->type == T_NULL) // it seems that null is allowed as function
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	if(args[0]->type !=T_STRING || args[1]->type !=T_FUNCTION)
 		throw RunTimeException("Type mismatch in EventDispatcher::removeEventListener");
 
@@ -649,7 +649,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 		if(h==th->handlers.end())
 		{
 			LOG(LOG_CALLS,_("Event not found"));
-			return _MAR(asAtom::invalidAtom);
+			return asAtomR::invalidAtomR;
 		}
 
 		std::list<listener>::iterator it=find(h->second.begin(),h->second.end(),
@@ -671,7 +671,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 		th->getSystemState()->unregisterFrameListener(_IMR(th->as<DisplayObject>()));
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
@@ -710,12 +710,12 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,_constructor)
 	if(forcedTarget->type != T_INVALID)
 	{
 		if(forcedTarget->type==T_NULL || forcedTarget->type==T_UNDEFINED)
-			forcedTarget=_MAR(asAtom::invalidAtom);
+			forcedTarget=asAtomR::invalidAtomR;
 		else if(!forcedTarget->toObject(th->getSystemState())->getClass()->isSubClass(InterfaceClass<IEventDispatcher>::getClass(th->getSystemState())))
 			throw Class<ArgumentError>::getInstanceSRaw(th->getSystemState(),"Wrong argument for EventDispatcher");
 	}
 	th->forcedTarget=forcedTarget;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void EventDispatcher::handleEvent(_R<Event> e)
@@ -921,7 +921,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_altKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj->getObject());
 	th->modifiers |= KMOD_ALT;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_commandKey)
@@ -933,7 +933,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_commandKey)
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_commandKey)
 {
 	// Supported only on OSX
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_controlKey)
@@ -946,7 +946,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_controlKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj->getObject());
 	th->modifiers |= KMOD_CTRL;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_ctrlKey)
@@ -959,7 +959,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_ctrlKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj->getObject());
 	th->modifiers |= KMOD_CTRL;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_shiftKey)
@@ -972,7 +972,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_shiftKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj->getObject());
 	th->modifiers |= KMOD_SHIFT;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 Event* KeyboardEvent::cloneImpl() const
@@ -1442,5 +1442,5 @@ ASFUNCTIONBODY_ATOM(UncaughtErrorEvents, _constructor)
 	//EventDispatcher::_constructor(obj, NULL, 0);
 	//UncaughtErrorEvents* th=Class<UncaughtErrorEvents>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"UncaughtErrorEvents is not implemented");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }

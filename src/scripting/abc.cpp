@@ -983,7 +983,7 @@ multiname* ABCContext::getMultinameImpl(asAtomR& n, asAtomR& n2, unsigned int mi
 		{
 			assert(n.type != T_INVALID && n2->type != T_INVALID);
 			assert_and_throw(n->type== T_NAMESPACE);
-			Namespace* tmpns=static_cast<Namespace*>(n->objval);
+			Namespace* tmpns=static_cast<Namespace*>(n->objval.getPtr());
 			ret->ns.clear();
 			ret->ns.emplace_back(root->getSystemState(),tmpns->uri,tmpns->nskind);
 			ret->hasEmptyNS = (ret->ns.begin()->hasEmptyName());
@@ -1625,10 +1625,6 @@ call_context::~call_context()
 	if(stack_index)
 	{
 		LOG(LOG_ERROR,_("Stack not clean at the end of function"));
-		/*for(uint32_t i=0;i<stack_index;i++)
-		{
-			//ASATOM_DECREF(stack[i]);
-		}*/
 	}
 }
 
@@ -2393,7 +2389,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 			else
 			{
 				LOG_CALL(_("Slot ")<< t->slot_id<<  _(" vindex 0 ") << *mname <<_(" type ")<<*tname<<" "<<isBorrowed);
-				ret = _MAR(asAtom::invalidAtom);
+				ret = asAtomR::invalidAtomR;
 			}
 
 			obj->initializeVariableByMultiname(*mname, ret, tname, this, isBorrowed ? INSTANCE_TRAIT : DECLARED_TRAIT,t->slot_id,isenumerable);

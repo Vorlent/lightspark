@@ -92,10 +92,10 @@ ASFUNCTIONBODY_ATOM(Boolean,_constructor)
 	if(argslen==0)
 	{
 		//No need to handle default argument. The object is initialized to false anyway
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	th->val=args[0]->Boolean_concrete();
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(Boolean,_toString)

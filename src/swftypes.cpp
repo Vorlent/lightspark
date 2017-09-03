@@ -157,7 +157,7 @@ void multiname::setName(asAtomR& n,SystemState* sys)
 		break;
 	case T_QNAME:
 		{
-			ASQName* qname=static_cast<ASQName*>(n->objval);
+			ASQName* qname=static_cast<ASQName*>(n->objval.getPtr());
 			name_s_id=qname->local_name;
 			name_type = NAME_STRING;
 		}
@@ -168,7 +168,7 @@ void multiname::setName(asAtomR& n,SystemState* sys)
 				name_s_id=n->stringID;
 			else
 			{
-				ASString* o=static_cast<ASString*>(n->objval);
+				ASString* o=static_cast<ASString*>(n->objval.getPtr());
 				name_s_id=o->hasId ? o->toStringId() : o->getSystemState()->getUniqueStringId(o->getData());
 			}
 			name_type = NAME_STRING;
@@ -186,7 +186,7 @@ void multiname::setName(asAtomR& n,SystemState* sys)
 		break;
 	default:
 		n->objval->incRef();
-		name_o=n->objval;
+		name_o=n->objval.getPtr();
 		name_type = NAME_OBJECT;
 		name_s_id = UINT32_MAX;
 		break;

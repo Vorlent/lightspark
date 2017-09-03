@@ -86,7 +86,7 @@ ASFUNCTIONBODY_ATOM(ASFont,enumerateFonts)
 ASFUNCTIONBODY_ATOM(ASFont,registerFont)
 {
 	getFontList()->push_back(args[0]);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(ASFont,hasGlyphs)
 {
@@ -253,7 +253,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setWordWrap)
 	th->hasChanged=true;
 	if(th->onStage && th->isVisible())
 		th->requestInvalidation(th->getSystemState());
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getAutoSize)
@@ -270,7 +270,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getAutoSize)
 		case AS_CENTER:
 			return asAtom::fromString(sys,"center");
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setAutoSize)
@@ -300,7 +300,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setAutoSize)
 			th->requestInvalidation(th->getSystemState());
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void TextField::setSizeAndPositionFromAutoSize()
@@ -351,7 +351,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setWidth)
 		else
 			th->updateSizes();
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getHeight)
@@ -375,7 +375,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setHeight)
 			th->updateSizes();
 	}
 	//else do nothing as the height is determined by autoSize
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextWidth)
@@ -402,7 +402,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setHtmlText)
 	tiny_string value;
 	ARG_UNPACK_ATOM(value);
 	th->setHtmlText(value);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getText)
@@ -416,7 +416,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setText)
 	TextField* th=obj->as<TextField>();
 	assert_and_throw(argslen==1);
 	th->updateText(args[0]->toString());
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField, appendText)
@@ -424,7 +424,7 @@ ASFUNCTIONBODY_ATOM(TextField, appendText)
 	TextField* th=obj->as<TextField>();
 	assert_and_throw(argslen==1);
 	th->updateText(th->text + args[0]->toString());
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextFormat)
@@ -460,7 +460,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setTextFormat)
 	th->fontSize = tf->size;
 
 	LOG(LOG_NOT_IMPLEMENTED,"setTextFormat does not read all fields of TextFormat");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getDefaultTextFormat)
@@ -486,7 +486,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setDefaultTextFormat)
 		th->font = tf->font;
 	th->fontSize = tf->size;
 	LOG(LOG_NOT_IMPLEMENTED,"setDefaultTextFormat does not set all fields of TextFormat");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField, _getter_type)
@@ -512,7 +512,7 @@ ASFUNCTIONBODY_ATOM(TextField, _setter_type)
 	else
 		throwError<ArgumentError>(kInvalidEnumError, "type");
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineIndexAtPoint)
@@ -643,7 +643,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setAntiAliasType)
 		th->antiAliasType = AA_NORMAL;
 
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getGridFitType)
@@ -672,7 +672,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setGridFitType)
 
 	LOG(LOG_NOT_IMPLEMENTED, "TextField gridFitType not implemented");
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLength)
@@ -716,7 +716,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getRestrict)
 {
 	TextField* th=obj->as<TextField>();
 	if (th->restrictChars.isNull())
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	else
 	{
 		return asAtom::fromObject(th->restrictChars.getPtr());
@@ -729,7 +729,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setRestrict)
 	ARG_UNPACK_ATOM(th->restrictChars);
 	if (!th->restrictChars.isNull())
 		LOG(LOG_NOT_IMPLEMENTED, "TextField restrict property");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextInteractionMode)
@@ -760,7 +760,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setSelection)
 
 	LOG(LOG_NOT_IMPLEMENTED, "TextField selection will not be rendered");
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_replaceSelectedText)
@@ -769,7 +769,7 @@ ASFUNCTIONBODY_ATOM(TextField,_replaceSelectedText)
 	tiny_string newText;
 	ARG_UNPACK_ATOM(newText);
 	th->replaceText(th->selectionBeginIndex, th->selectionEndIndex, newText);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_replaceText)
@@ -780,7 +780,7 @@ ASFUNCTIONBODY_ATOM(TextField,_replaceText)
 	tiny_string newText;
 	ARG_UNPACK_ATOM(begin) (end) (newText);
 	th->replaceText(begin, end, newText);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void TextField::replaceText(unsigned int begin, unsigned int end, const tiny_string& newText)
@@ -1241,7 +1241,7 @@ ASFUNCTIONBODY_ATOM(TextFormat,_constructor)
 		(th->rightMargin,_MAR(asAtom::nullAtom))
 		(th->indent,_MAR(asAtom::nullAtom))
 		(th->leading,_MAR(asAtom::nullAtom));
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER_CB(TextFormat,align,onAlign);
@@ -1307,7 +1307,7 @@ ASFUNCTIONBODY_ATOM(StyleSheet,setStyle)
 		it->second=args[1];
 	else
 		th->styles.insert(make_pair(arg0,args[1]));
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(StyleSheet,getStyle)
@@ -1328,7 +1328,7 @@ ASFUNCTIONBODY_ATOM(StyleSheet,getStyle)
 		// instead of Null as is said in the documentation
 		return asAtom::fromObject(Class<ASObject>::getInstanceS(sys));
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(StyleSheet,_getStyleNames)
@@ -1440,12 +1440,12 @@ ASFUNCTIONBODY_ATOM(TextLineMetrics, _constructor)
 	{
 		//Assume that the values were initialized by the C++
 		//constructor
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 
 	TextLineMetrics* th=obj->as<TextLineMetrics>();
 	ARG_UNPACK_ATOM (th->x) (th->width) (th->height) (th->ascent) (th->descent) (th->leading);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(TextLineMetrics, ascent);

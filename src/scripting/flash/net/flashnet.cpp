@@ -490,7 +490,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,_constructor)
 		//URLRequest* urlRequest=Class<URLRequest>::dyncast(args[0]);
 		load(sys, obj, args, argslen);
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(URLLoader,load)
@@ -511,7 +511,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	{
 		//Notify an error during loading
 		th->getSystemState()->currentVm->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(th->getSystemState()));
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 
 	//TODO: support the right events (like SecurityErrorEvent)
@@ -525,7 +525,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	URLLoaderThread *job=new URLLoaderThread(_IMR(urlRequest), _IMR(th));
 	getSys()->addJob(job);
 	th->job=job;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(URLLoader,close)
@@ -601,10 +601,11 @@ void SharedObjectFlushStatus::sinit(Class_base* c)
 }
 
 std::map<tiny_string, ASObject* > SharedObject::sharedobjectmap;
-SharedObject::SharedObject(Class_base* c):EventDispatcher(c),client(this),objectEncoding(ObjectEncoding::AMF3)
+SharedObject::SharedObject(Class_base* c):EventDispatcher(c),objectEncoding(ObjectEncoding::AMF3)
 {
 	subtype=SUBTYPE_SHAREDOBJECT;
 	data=_MR(new_asobject(c->getSystemState()));
+	client = asAtom::fromObject(this);
 }
 
 void SharedObject::sinit(Class_base* c)
@@ -787,7 +788,7 @@ ASFUNCTIONBODY_ATOM(NetConnection, _constructor)
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	NetConnection* th=Class<NetConnection>::cast(obj->getObject());
 	th->objectEncoding = getSys()->staticNetConnectionDefaultObjectEncoding;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(NetConnection,call)
@@ -1302,7 +1303,7 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 	th->connection=netConnection;
 	th->client = _IMNR<ASObject>(th);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(NetStream,play)
@@ -2360,7 +2361,7 @@ ASFUNCTIONBODY_ATOM(Responder, _constructor)
 	{
 		th->status = args[1];
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Responder, onResult)
@@ -2371,7 +2372,7 @@ ASFUNCTIONBODY_ATOM(Responder, onResult)
 	arg0.reserve(1);
 	arg0.push_back(args[0]);
 	asAtomR ret=th->result->callFunction(asAtomR::nullAtomR, arg0, argslen,false);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 LocalConnection::LocalConnection(Class_base* c):
@@ -2401,7 +2402,7 @@ ASFUNCTIONBODY_ATOM(LocalConnection, _constructor)
 	LocalConnection* th=Class<LocalConnection>::cast(obj->getObject());
 	th->client = _IMNR<LocalConnection>(th);
 	LOG(LOG_NOT_IMPLEMENTED,"LocalConnection is not implemented");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 ASFUNCTIONBODY(LocalConnection, domain)
 {
@@ -2461,7 +2462,7 @@ ASFUNCTIONBODY_ATOM(NetGroup, _constructor)
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//NetGroup* th=Class<NetGroup>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"NetGroup is not implemented");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 FileReference::FileReference(Class_base* c):
@@ -2480,7 +2481,7 @@ ASFUNCTIONBODY_ATOM(FileReference, _constructor)
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//FileReference* th=Class<FileReference>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"FileReference is not implemented");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASSocket::ASSocket(Class_base* c):
@@ -2499,7 +2500,7 @@ ASFUNCTIONBODY_ATOM(ASSocket, _constructor)
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//ASSocket* th=Class<ASSocket>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"ASSocket is not implemented");
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 DRMManager::DRMManager(Class_base* c):

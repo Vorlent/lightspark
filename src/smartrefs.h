@@ -22,9 +22,18 @@
 
 #include <stdexcept>
 #include "compat.h"
+#include "logger.h"
 
 namespace lightspark
 {
+
+static void breakpoint() {
+	rand();
+	rand();
+	rand();
+	rand();
+	rand();
+}
 
 class RefCountable {
 private:
@@ -51,12 +60,18 @@ public:
 	{
 		if (!isConstant)
 			++ref_count;
+		if(ref_count > 300) {
+			LOG(LOG_INFO, _("incRefStatic refcount: ") << ref_count << _(" ptr: ") << this);
+			breakpoint();
+		}
 	}
 	
 	inline void incRef()
 	{
 		if (!isConstant)
 			++ref_count;
+		LOG(LOG_INFO, _("incRef refcount: ") << ref_count << _(" ptr: ") << this);
+		breakpoint();
 	}
 	inline bool decRef()
 	{
@@ -69,12 +84,54 @@ public:
 				{
 					//Let's make refcount very invalid
 					ref_count=-1024;
+					LOG(LOG_INFO, _("decRef refcount: ") << ref_count << _(" ptr: ") << this);
+					breakpoint();
 					delete this;
 				}
 				return true;
 			}
 			else
 				--ref_count;
+			LOG(LOG_INFO, _("decRef refcount: ") << ref_count << _(" ptr: ") << this);
+			breakpoint();
+		}
+		return false;
+	}
+
+	inline void incRefRef(int id)
+	{
+		if (!isConstant && ref_count > -999)
+			++ref_count;
+		if(ref_count > 300) {
+			LOG(LOG_INFO, _("incRefRef refcount: ") << ref_count << _(" ptr: ") << this << _(" id: ") << id);
+			breakpoint();
+		}
+	}
+	inline bool decRefRef(int id)
+	{
+		assert(ref_count>0);
+		if (!isConstant && ref_count > -888)
+		{
+			if (ref_count == 1)
+			{
+				if (destruct())
+				{
+					//Let's make refcount very invalid
+					if(ref_count > 300) {
+						LOG(LOG_INFO, _("decRefRef refcount: ") << -1024 << _(" ptr: ") << this << _(" id: ") << id);
+						breakpoint();
+					}
+					ref_count=-1024;
+					delete this;
+				}
+				return true;
+			}
+			else
+				--ref_count;
+			if(ref_count > 300) {
+				LOG(LOG_INFO, _("decRefRef refcount: ") << ref_count << _(" ptr: ") << this << _(" id: ") << id);
+				breakpoint();
+			}
 		}
 		return false;
 	}
@@ -98,43 +155,50 @@ class Ref
 private:
 	T* m;
 public:
-	explicit Ref(T* o):m(o)
+	int id;
+	explicit Ref(T* o):m(o), id(-1)
 	{
 		assert(m);
 	}
 	Ref(const Ref<T>& r):m(r.m)
 	{
-		m->incRef();
+		id = rand();
+		m->incRefRef(id);
 	}
 	//Constructible from any compatible reference
 	template<class D> Ref(const Ref<D>& r):m(r.getPtr())
 	{
-		m->incRef();
+		id = rand();
+		m->incRefRef(id);
 	}
 	template<class D> Ref(const NullableRef<D>& r);
 	Ref<T>& operator=(const Ref<T>& r)
 	{
+		int old_id = id;
+		id = rand();
 		//incRef before decRef to make sure this works even if the pointer is the same
-		r.m->incRef();
+		r.m->incRefRef(id);
 
 		T* old=m;
 		m=r.m;
 
 		//decRef as the very last function call, because it
 		//may cause this Ref to be deleted (if old owns this Ref)
-		old->decRef();
+		old->decRefRef(old_id);
 
 		return *this;
 	}
 	template<class D> inline Ref<T>& operator=(const Ref<D>& r)
 	{
+		int old_id = id;
+		id = rand();
 		//incRef before decRef to make sure this works even if the pointer is the same
-		r.m->incRef();
+		r.m->incRefRef(id);
 
 		T* old=m;
 		m=r.m;
 
-		old->decRef();
+		old->decRefRef(old_id);
 
 		return *this;
 	}
@@ -163,7 +227,7 @@ public:
 	}
 	~Ref()
 	{
-		m->decRef();
+		m->decRefRef(id);
 	}
 	inline T* operator->() const 
 	{
@@ -201,55 +265,65 @@ class NullableRef
 private:
 	T* m;
 public:
-	NullableRef(): m(NULL) {}
-	explicit NullableRef(T* o):m(o){}
-	NullableRef(NullRef_t):m(NULL){}
+	int id;
+	NullableRef(): m(NULL), id(-1) {}
+	explicit NullableRef(T* o):m(o), id(-1){}
+	NullableRef(NullRef_t):m(NULL), id(-1){}
 	NullableRef(const NullableRef& r):m(r.m)
 	{
+		id = rand();
 		if(m)
-			m->incRef();
+			m->incRefRef(id);
 	}
 	//Constructible from any compatible nullable reference and reference
 	template<class D> NullableRef(const NullableRef<D>& r):m(r.getPtr())
 	{
+		id = rand();
 		if(m)
-			m->incRef();
+			m->incRefRef(id);
 	}
 	template<class D> NullableRef(const Ref<D>& r):m(r.getPtr())
 	{
+		id = rand();
 		//The right hand Ref object is guaranteed to be valid
-		m->incRef();
+		m->incRefRef(id);
 	}
 	inline NullableRef<T>& operator=(const NullableRef<T>& r)
 	{
+		int old_id = id;
+		id = rand();
 		if(r.m)
-			r.m->incRef();
+			r.m->incRefRef(id);
 
 		T* old=m;
 		m=r.m;
 		if(old)
-			old->decRef();
+			old->decRefRef(old_id);
 		return *this;
 	}
 	template<class D> inline NullableRef<T>& operator=(const NullableRef<D>& r)
 	{
+		int old_id = id;
+		id = rand();
 		if(r.getPtr())
-			r->incRef();
+			r->incRefRef(id);
 
 		T* old=m;
 		m=r.getPtr();
 		if(old)
-			old->decRef();
+			old->decRefRef(old_id);
 		return *this;
 	}
 	template<class D> inline NullableRef<T>& operator=(const Ref<D>& r)
 	{
-		r.getPtr()->incRef();
+		int old_id = id;
+		id = rand();
+		r.getPtr()->incRefRef(id);
 
 		T* old=m;
 		m=r.getPtr();
 		if(old)
-			old->decRef();
+			old->decRefRef(old_id);
 		return *this;
 	}
 	template<class D> inline bool operator==(const NullableRef<D>& r) const
@@ -293,7 +367,7 @@ public:
 	~NullableRef()
 	{
 		if(m)
-			m->decRef();
+			m->decRefRef(id);
 	}
 	inline T* operator->() const
 	{
@@ -309,7 +383,7 @@ public:
 		T* old=m;
 		m=NULL;
 		if(old)
-			old->decRef();
+			old->decRefRef(id);
 	}
 	inline void fakeRelease()
 	{
@@ -327,8 +401,7 @@ public:
 		if(!m)
 			return NullRef;
 		D* p = static_cast<D*>(m);
-		p->incRef();
-		return _MNR(p);
+		return _IMNR(p);
 	}
 };
 
@@ -348,21 +421,33 @@ inline std::ostream& operator<<(std::ostream& s, const NullableRef<T>& r)
 template<class T>
 Ref<T> _IMR(T* a)
 {
-	a->incRef();
-	return Ref<T>(a);
+	Ref<T> r(a);
+	r.id = rand();
+	a->incRefRef(r.id);
+	return r;
 }
 
 template<class T>
 NullableRef<T> _IMNR(T* a)
 {
-	a->incRef();
-	return NullableRef<T>(a);
+	NullableRef<T> r(a);
+	r.id = rand();
+	a->incRefRef(r.id);
+	return r;
 }
 
 template<class T>
 Ref<T> _MR(NullableRef<T> a)
 {
 	return Ref<T>(a);
+}
+
+template<class T>
+NullableRef<T> _MNR_(T* a)
+{
+	NullableRef<T> r(a);
+	a->incRefRef(r.id);
+	return r;
 }
 
 template<class T>
@@ -373,8 +458,9 @@ NullableRef<T> _MNR(T* a)
 
 template<class T> template<class D> Ref<T>::Ref(const NullableRef<D>& r):m(r.getPtr())
 {
+	id = rand();
 	assert(m);
-	m->incRef();
+	m->incRefRef(id);
 }
 
 template<class T> template<class D> bool Ref<T>::operator==(const NullableRef<D>&r) const

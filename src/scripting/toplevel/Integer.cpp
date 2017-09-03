@@ -66,10 +66,10 @@ ASFUNCTIONBODY_ATOM(Integer,_constructor)
 	if(argslen==0)
 	{
 		//The int is already initialized to 0
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	th->val=args[0]->toInt();
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Integer,generator)

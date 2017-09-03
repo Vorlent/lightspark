@@ -352,7 +352,7 @@ class InterfaceClass: public Class_base
 	asAtomR getInstance(bool, std::vector<asAtomR>&, unsigned int, Class_base* realClass)
 	{
 		assert(false);
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
 	{
@@ -443,10 +443,8 @@ public:
 	asAtomR coerce(SystemState* sys,asAtomR& o) const
 	{
 		if (o->type == T_UNDEFINED)
-		{
-			asAtom res;
-			res.type = T_NULL;
-			return _MAR(res);
+		{;
+			return asAtomR::nullAtomR;
 		}
 		else if ((o->getObject() && o->getObject()->is<T>() && o->getObject()->as<T>()->sameType(this)) ||
 				 o->type ==T_NULL)
@@ -460,7 +458,7 @@ public:
 			tiny_string clsname = o->getObject() ? o->getObject()->getClassName() : "";
 			throwError<TypeError>(kCheckTypeFailedError, clsname,
 								  Class<T>::getQualifiedClassName());
-			return _MAR(asAtom::invalidAtom); // not reached
+			return asAtomR::invalidAtomR; // not reached
 		}
 	}
 };
@@ -470,7 +468,7 @@ template<class T>
 class Template : public Template_base
 {
 public:
-	Template(QName name) : Template_base(name) {};
+	Template(QName name) : Template_base(name) {}
 
 	QName getQName(SystemState* sys, const std::vector<const Type*>& types)
 	{

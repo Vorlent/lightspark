@@ -1502,7 +1502,7 @@ asAtomR variables_map::getSlot(unsigned int n)
 			return it->second.var;
 		it++;
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 void variables_map::setSlot(unsigned int n, asAtomR& o,SystemState* sys)
 {
@@ -2101,20 +2101,20 @@ asAtomR asAtomR::falseAtomR = asAtomR(asAtom::falseAtom);
 
 ASObject *asAtom::toObject(SystemState *sys)
 {
-	if (objval)
-		return objval;
+	if (objval.getPtr())
+		return objval.getPtr();
 	switch(type)
 	{
 		case T_INTEGER:
 			// ints are internally treated as numbers, so create a Number instance
-			objval = abstract_di(sys,intval);
+			objval = _IMNR(abstract_di(sys,intval));
 			break;
 		case T_UINTEGER:
 			// uints are internally treated as numbers, so create a Number instance
-			objval = abstract_di(sys,uintval);
+			objval = _IMNR(abstract_di(sys,uintval));
 			break;
 		case T_NUMBER:
-			objval = abstract_d(sys,numberval);
+			objval = _IMNR(abstract_d(sys,numberval));
 			break;
 		case T_BOOLEAN:
 			return (boolval ? sys->getTrueRef(): sys->getFalseRef());
@@ -2124,15 +2124,15 @@ ASObject *asAtom::toObject(SystemState *sys)
 			return sys->getUndefinedRef();
 		case T_STRING:
 			if (stringID != UINT32_MAX)
-				objval = abstract_s(sys,stringID);
+				objval = _IMNR(abstract_s(sys,stringID));
 			break;
 		case T_INVALID:
 			LOG(LOG_ERROR,"calling toObject on invalid asAtom, should not happen");
-			return objval;
+			return objval.getPtr();
 		default:
 			break;
 	}
-	return objval;
+	return objval.getPtr();
 }
 
 asAtomR asAtom::fromString(SystemState* sys, const tiny_string& s)
@@ -2140,8 +2140,8 @@ asAtomR asAtom::fromString(SystemState* sys, const tiny_string& s)
 	asAtom a;
 	a.type = T_STRING;
 	a.stringID = sys->getUniqueStringId(s);
-	a.objval = NULL;
-	return _MAR(a);
+	a.objval = NullRef;
+	return _IMAR(a);
 }
 
 asAtomR asAtom::callFunction(asAtomR& obj, std::vector<asAtomR>& args, uint32_t num_args, bool args_refcounted)
@@ -2223,7 +2223,7 @@ void asAtom::replace(ASObject *obj)
 		default:
 			break;
 	}
-	objval = obj;
+	objval = _IMNR(obj);
 }
 
 std::string asAtom::toDebugString()
@@ -2337,6 +2337,7 @@ tiny_string asAtom::toString()
 asAtomR asAtom::fromObject(ASObject* obj)
 {
 	asAtom a;
+	a.id = rand();
 	if (obj)
 		a.replace(obj);
 	return _IMAR(a);
@@ -2344,6 +2345,7 @@ asAtomR asAtom::fromObject(ASObject* obj)
 
 asAtomR asAtom::fromFunction(Ref<ASObject> f, ASObject *closure) {
 	asAtom a;
+	a.id = rand();
 	a.replace(f.getPtr());
 	a.closure_this = closure;
 	return _IMAR(a);
@@ -2352,9 +2354,10 @@ asAtomR asAtom::fromFunction(Ref<ASObject> f, ASObject *closure) {
 asAtomR asAtom::fromStringID(uint32_t sID)
 {
 	asAtom a;
+	a.id = rand();
 	a.type = T_STRING;
 	a.stringID = sID;
-	a.objval = NULL;
+	a.objval = NullRef;
 	return _IMAR(a);
 }
 
@@ -2376,7 +2379,7 @@ tiny_string asAtom::toLocaleString()
 			return UInteger::toString(uintval);
 		case T_STRING:
 			if (!objval && stringID != UINT32_MAX)
-				objval = abstract_s(getSys(),stringID);
+				objval = _IMNR(abstract_s(getSys(),stringID));
 			assert(objval);
 			return objval->toLocaleString();
 		case T_INVALID:
@@ -2538,7 +2541,7 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 		LOG_CALL("add " << a << '+' << b);
 		type = T_STRING;
 		stringID = UINT32_MAX;
-		objval = abstract_s(sys,a + b);
+		objval = _IMNR(abstract_s(sys,a + b));
 	}
 	else
 	{
@@ -2563,7 +2566,7 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 			//The references of val1 and val2 have been passed to the smart references
 			//no decRef is needed
 			type = T_OBJECT;
-			objval = newList;
+			objval = _IMNR(newList);
 		}
 		else
 		{//If none of the above apply, convert both to primitives with no hint
@@ -2578,7 +2581,7 @@ void asAtom::add(asAtomR& v2, SystemState* sys)
 				LOG_CALL("add " << a << '+' << b);
 				type = T_STRING;
 				stringID = UINT32_MAX;
-				objval = abstract_s(sys,a+b);
+				objval = _IMNR(abstract_s(sys,a+b));
 			}
 			else
 			{//Convert both to numbers and add

@@ -71,7 +71,7 @@ ASFUNCTIONBODY_ATOM(GraphicsGradientFill, _constructor)
 		(th->spreadMethod, "pad")
 		(th->interpolationMethod, "rgb")
 		(th->focalPointRatio, 0);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsGradientFill, alphas);

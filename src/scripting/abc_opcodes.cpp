@@ -1588,6 +1588,13 @@ bool ABCVm::getLex(call_context* th, int n)
 		canCache = false;
 
 	runtime_stack_push_ref(th,o);
+	if(o->getObject() && o->getObject()->getRefCount() > 300) {
+
+		rand();
+		rand();
+		rand();
+
+	}
 	name->resetNameIfObject();
 	return canCache;
 }

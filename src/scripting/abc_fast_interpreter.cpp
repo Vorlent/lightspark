@@ -1082,28 +1082,28 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x73:
 			{
 				//convert_i
-				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				RUNTIME_STACK_PEEK_CREATE_REF(context,val);
 				val->convert_i();
 				break;
 			}
 			case 0x74:
 			{
 				//convert_u
-				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				RUNTIME_STACK_PEEK_CREATE_REF(context,val);
 				val->convert_u();
 				break;
 			}
 			case 0x75:
 			{
 				//convert_d
-				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				RUNTIME_STACK_PEEK_CREATE_REF(context,val);
 				val->convert_d();
 				break;
 			}
 			case 0x76:
 			{
 				//convert_b
-				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				RUNTIME_STACK_PEEK_CREATE_REF(context,val);
 				val->convert_b();
 				break;
 			}

@@ -238,12 +238,12 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_constructor)
 	if(!th->parentDomain.isNull())
 		// Don't override parentDomain if it was set in the
 		// C++ constructor
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	else if(parentDomain.isNull())
 		th->parentDomain =  sys->systemDomain;
 	else
 		th->parentDomain = parentDomain;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getMinDomainMemoryLength)

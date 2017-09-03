@@ -220,7 +220,7 @@ asAtomR Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_O
 				return asAtom::fromObject(it->second.getPtr());
 			}
 			else
-				return _MAR(asAtom::invalidAtom);
+				return asAtomR::invalidAtomR;
 		}
 		else
 		{

@@ -718,7 +718,7 @@ asAtomR XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTI
 		}
 
 		if(retnodes.size()==0 && (opt & XML_STRICT)!=0)
-			return _MAR(asAtom::invalidAtom);
+			return asAtomR::invalidAtomR;
 
 		return asAtom::fromObject(create(getSystemState(),retnodes,_IMR(this),name));
 	}
@@ -746,7 +746,7 @@ asAtomR XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTI
 		}
 
 		if(retnodes.size()==0 && (opt & XML_STRICT)!=0)
-			return _MAR(asAtom::invalidAtom);
+			return asAtomR::invalidAtomR;
 
 		return asAtom::fromObject(create(getSystemState(),retnodes,_IMR(this),name));
 	}

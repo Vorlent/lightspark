@@ -103,7 +103,7 @@
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return _MAR(asAtom::invalidAtom); \
+		return asAtomR::invalidAtomR; \
 	}
 
 #define ASFUNCTIONBODY_SETTER_NOT_IMPLEMENTED(c,name) \
@@ -116,7 +116,7 @@
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		LOG(LOG_NOT_IMPLEMENTED,obj->getObject()->getClassName() <<"."<< #name << " setter is not implemented"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return _MAR(asAtom::invalidAtom); \
+		return asAtomR::invalidAtomR; \
 	}
 
 /* full body for a getter declared by ASPROPERTY_SETTER or ASFUNCTION_SETTER.
@@ -133,7 +133,7 @@
 		decltype(th->name) oldValue = th->name; \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
 		th->callback(oldValue); \
-		return _MAR(asAtom::invalidAtom); \
+		return asAtomR::invalidAtomR; \
 	}
 
 /* full body for a getter declared by ASPROPERTY_GETTER_SETTER or ASFUNCTION_GETTER_SETTER */
@@ -214,19 +214,41 @@ private:
 		bool boolval;
 		ASObject* closure_this; // used for T_FUNCTION objects
 	};
-	ASObject* objval;
-	inline void decRef();
+	_NR<ASObject> objval;
 public:
+	int id;
 	SWFOBJECT_TYPE type;
-	asAtom():objval(NULL),type(T_INVALID) {}
-	asAtom(SWFOBJECT_TYPE _t):objval(NULL),type(_t) {}
-	asAtom(int32_t val):intval(val),objval(NULL),type(T_INTEGER) {}
-	asAtom(uint32_t val):uintval(val),objval(NULL),type(T_UINTEGER) {}
-	asAtom(number_t val):numberval(val),objval(NULL),type(T_NUMBER) {}
-	asAtom(bool val):boolval(val),objval(NULL),type(T_BOOLEAN) {}
+	asAtom():objval(NullRef),id(-1),type(T_INVALID) {}
+	explicit asAtom(SWFOBJECT_TYPE _t):objval(NullRef),id(-1),type(_t) {
+		switch(type)
+		{
+			case T_INTEGER:
+				intval = 0;
+				break;
+			case T_UINTEGER:
+				uintval = 0;
+				break;
+			case T_NUMBER:
+				numberval = 0;
+				break;
+			case T_BOOLEAN:
+				boolval = false;
+			break;
+			case T_STRING:
+				stringID = UINT32_MAX;
+				break;
+			default:
+				break;
+		}
+	}
+	explicit asAtom(int32_t val):intval(val),objval(NullRef),id(-1),type(T_INTEGER) {}
+	explicit asAtom(uint32_t val):uintval(val),objval(NullRef),id(-1),type(T_UINTEGER) {}
+	explicit asAtom(number_t val):numberval(val),objval(NullRef),id(-1),type(T_NUMBER) {}
+	explicit asAtom(bool val):boolval(val),objval(NullRef),id(-1),type(T_BOOLEAN) {}
+
 	ASObject* toObject(SystemState* sys);
 	// returns NULL if this atom is a primitive;
-	inline ASObject* getObject() const { return objval; }
+	inline ASObject* getObject() const { return objval.getPtr(); }
 	static asAtomR fromObject(ASObject* obj);
 	
 	static asAtomR fromFunction(Ref<ASObject> f, ASObject *closure);
@@ -300,9 +322,9 @@ public:
 	inline void multiply_i(asAtomR& v2);
 	template<class T> bool is() const;
 	template<class T> const T* as() const { return static_cast<const T*>(this->objval); }
-	template<class T> T* as() { return static_cast<T*>(this->objval); }
+	template<class T> T* as() { return static_cast<T*>(this->objval.getPtr()); }
 };
-//#define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRef()
+//#define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRefRef()
 //#define ASATOM_DECREF(a) do { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
 //#define ASATOM_DECREF_POINTER(a) { ASObject* b = a->getObject(); if (b) b->decRef(); } while (0)
 
@@ -311,8 +333,9 @@ class asAtomR
 private:
 	asAtom m;
 public:
-	inline asAtomR():m() {}
-	inline explicit asAtomR(asAtom o):m(o)
+	int id;
+	inline asAtomR():m(),id(-1) {}
+	inline explicit asAtomR(asAtom o):m(o), id(-1)
 	{
 		assert(m);
 	}
@@ -884,20 +907,23 @@ public:
 };
 
 inline asAtomR::~asAtomR() {
-	if (m.getObject()) m.getObject()->decRef();
+	if (m.getObject()) m.getObject()->decRefRef(id);
 }
 
 
 inline asAtomR::asAtomR(const asAtomR& r):m(r.m)
 {
-	if (m.getObject()) m.getObject()->incRef();
+	id = rand();
+	if (m.getObject()) m.getObject()->incRefRef(id);
 }
 
 inline asAtomR& asAtomR::operator=(const asAtomR& r)
 {
-	if (r.m.getObject()) r.m.getObject()->incRef();
+	int old_id = id;
+	id = rand();
+	if (r.m.getObject()) r.m.getObject()->incRefRef(id);
 
-	if (m.getObject()) m.getObject()->decRef();
+	if (m.getObject()) m.getObject()->decRefRef(old_id);
 	m=r.m;
 
 	return *this;
@@ -905,8 +931,10 @@ inline asAtomR& asAtomR::operator=(const asAtomR& r)
 
 inline asAtomR _IMAR(asAtom a)
 {
-	if (a.getObject()) a.getObject()->incRef();
-	return asAtomR(a);
+	asAtomR r(a);
+	r.id = rand();
+	if (a.getObject()) a.getObject()->incRefRef(r.id);
+	return r;
 }
 
 inline asAtomR _MAR(asAtom a)
@@ -1043,7 +1071,7 @@ template<> inline bool ASObject::is<XMLList>() const { return subtype==SUBTYPE_X
 
 
 template<class T> inline bool asAtom::is() const {
-	return objval ? objval->is<T>() : false;
+	return objval.getPtr() ? objval.getPtr()->is<T>() : false;
 }
 template<> inline bool asAtom::is<Array>() const { return type==T_ARRAY; }
 template<> inline bool asAtom::is<asAtom>() const { return true; }
@@ -1060,13 +1088,6 @@ template<> inline bool asAtom::is<Number>() const { return type==T_NUMBER; }
 template<> inline bool asAtom::is<Type>() const { return type==T_CLASS; }
 template<> inline bool asAtom::is<UInteger>() const { return type==T_UINTEGER; }
 template<> inline bool asAtom::is<Undefined>() const { return type==T_UNDEFINED; }
-
-
-void asAtom::decRef()
-{
-	if (objval && objval->decRef())
-		objval = NULL;
-}
 
 static int32_t NumbertoInt(number_t val)
 {
@@ -1092,10 +1113,10 @@ static int32_t NumbertoInt(number_t val)
 }
 ASObject* asAtom::checkObject()
 {
-	if (type == T_STRING && stringID != UINT32_MAX && !objval)
-		objval = (ASObject*)abstract_s(getSys(),stringID);
-	assert(objval);
-	return objval;
+	if (type == T_STRING && stringID != UINT32_MAX && !objval.getPtr())
+		objval = _IMR((ASObject*)abstract_s(getSys(),stringID));
+	assert(objval.getPtr());
+	return objval.getPtr();
 }
 
 int32_t asAtom::toInt()
@@ -1198,8 +1219,8 @@ void asAtom::applyProxyProperty(SystemState* sys,multiname &name)
 		case T_INVALID:
 			break;
 		case T_STRING:
-			if (!objval && stringID != UINT32_MAX)
-				objval = toObject(sys);
+			if (!objval.getPtr() && stringID != UINT32_MAX)
+				/*objval = */toObject(sys);
 			assert(objval);
 			objval->applyProxyProperty(name);
 			break;
@@ -1410,7 +1431,7 @@ bool asAtom::isEqual(SystemState *sys, asAtom* v2)
 				case T_BOOLEAN:
 					return boolval==v2->boolval;
 				case T_STRING:
-					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
+					if ((!v2->objval.getPtr() && v2->stringID == UINT32_MAX) || (v2->objval.getPtr() && !v2->objval.getPtr()->isConstructed()))
 						return false;
 					return boolval==v2->toNumber();
 				case T_INTEGER:
@@ -1442,7 +1463,7 @@ bool asAtom::isEqual(SystemState *sys, asAtom* v2)
 						return true;
 					return false;
 				case T_STRING:
-					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
+					if ((!v2->objval.getPtr() && v2->stringID == UINT32_MAX) || (v2->objval.getPtr() && !v2->objval.getPtr()->isConstructed()))
 						return true;
 					return false;
 				default:
@@ -1467,7 +1488,7 @@ bool asAtom::isEqual(SystemState *sys, asAtom* v2)
 						return true;
 					return false;
 				case T_STRING:
-					if ((!v2->objval && v2->stringID == UINT32_MAX) || (v2->objval && !v2->objval->isConstructed()))
+					if ((!v2->objval.getPtr() && v2->stringID == UINT32_MAX) || (v2->objval.getPtr() && !v2->objval.getPtr()->isConstructed()))
 						return true;
 					return false;
 				default:
@@ -1589,28 +1610,28 @@ void asAtom::setInt(int32_t val)
 {
 	type = T_INTEGER;
 	intval = val;
-	objval = NULL;
+	objval = NullRef;
 }
 
 void asAtom::setUInt(uint32_t val)
 {
 	type = T_UINTEGER;
 	uintval = val;
-	objval = NULL;
+	objval = NullRef;
 }
 
 void asAtom::setNumber(number_t val)
 {
 	type = T_NUMBER;
 	numberval = val;
-	objval = NULL;
+	objval = NullRef;
 }
 
 void asAtom::setBool(bool val)
 {
 	type = T_BOOLEAN;
 	boolval = val;
-	objval = NULL;
+	objval = NullRef;
 }
 
 void asAtom::increment()

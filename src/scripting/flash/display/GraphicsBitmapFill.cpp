@@ -49,7 +49,7 @@ ASFUNCTIONBODY_ATOM(GraphicsBitmapFill, _constructor)
 {
 	GraphicsBitmapFill* th = obj->as<GraphicsBitmapFill>();
 	ARG_UNPACK_ATOM (th->bitmapData, NullRef) (th->matrix, NullRef) (th->repeat, true) (th->smooth, false);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsBitmapFill, bitmapData);

@@ -104,7 +104,7 @@ ASFUNCTIONBODY_ATOM(Array,_constructor)
 {
 	Array* th=obj->as<Array>();
 	th->constructorImpl(args, argslen);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,generator)
@@ -355,12 +355,12 @@ ASFUNCTIONBODY_ATOM(Array,_setLength)
 	ARG_UNPACK_ATOM(newLen);
 	Array* th=obj->as<Array>();
 	if (th->getClass() && th->getClass()->isSealed)
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	//If newLen is equal to size do nothing
 	if(newLen==th->size())
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	th->resize(newLen);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,forEach)
@@ -369,7 +369,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 	asAtomR f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	std::vector<asAtomR> params(3);
 
 	uint32_t index = 0;
@@ -407,7 +407,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 		}
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array, _reverse)
@@ -1289,7 +1289,7 @@ ASFUNCTIONBODY_ATOM(Array,insertAt)
 		th->set(index,o,false);
 	}
 	LOG(LOG_ERROR,"insertat:"<<index<<" "<<th->toString_priv());
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,removeAt)
@@ -1398,7 +1398,7 @@ asAtomR Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION
 	}
 	if(index<size())
 		return _MAR(asAtom::undefinedAtom);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void Array::setVariableByMultiname_i(const multiname& name, int32_t value)
@@ -1523,7 +1523,7 @@ bool Array::deleteVariableByMultiname(const multiname& name)
 		return true;
 	if (index < data_first.size())
 	{
-		data_first[index]=_MAR(asAtom::invalidAtom);
+		data_first[index]=asAtomR::invalidAtomR;
 		return true;
 	}
 	

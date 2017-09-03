@@ -1462,7 +1462,7 @@ asAtomR XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION o
 		{
 			const XMLVector& ret=getValuesByMultiname(childrenlist,name);
 			if(ret.empty() && (opt & XML_STRICT)!=0)
-				return _MAR(asAtom::invalidAtom);
+				return asAtomR::invalidAtomR;
 			
 			asAtomR ch =asAtom::fromObject(XMLList::create(getSystemState(),ret,this->getChildrenlist(),name));
 			return ch;

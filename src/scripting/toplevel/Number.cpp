@@ -362,7 +362,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->ival = 0;
 			th->isfloat =false;
 		}
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	switch (args[0]->type)
 	{
@@ -377,7 +377,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->isfloat = true;
 			break;
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Number,toFixed)

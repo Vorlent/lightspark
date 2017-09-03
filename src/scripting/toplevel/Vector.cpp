@@ -160,7 +160,7 @@ asAtomR Vector::generator(SystemState *sys, asAtomR& o_class, std::vector<asAtom
 		throwError<ArgumentError>(kCheckTypeFailedError, args[0]->toObject(sys)->getClassName(), "Vector");
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector,_constructor)
@@ -173,9 +173,9 @@ ASFUNCTIONBODY_ATOM(Vector,_constructor)
 	Vector* th=obj->as< Vector>();
 	assert(th->vec_type);
 	th->fixed = fixed;
-	th->vec.resize(len, _MAR(asAtom::invalidAtom));
+	th->vec.resize(len, asAtomR::invalidAtomR);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector,_concat)
@@ -184,7 +184,7 @@ ASFUNCTIONBODY_ATOM(Vector,_concat)
 	std::vector<asAtomR> empty;
 	Vector* ret= th->getClass()->getInstance(true,empty,0)->as<Vector>();
 	// copy values into new Vector
-	ret->vec.resize(th->size(), _MAR(asAtom::invalidAtom));
+	ret->vec.resize(th->size(), asAtomR::invalidAtomR);
 	auto it=th->vec.begin();
 	uint32_t index = 0;
 	for(;it != th->vec.end();++it)
@@ -198,7 +198,7 @@ ASFUNCTIONBODY_ATOM(Vector,_concat)
 		if (args[i]->is<Vector>())
 		{
 			Vector* arg=args[i]->as<Vector>();
-			ret->vec.resize(index+arg->size(), _MAR(asAtom::invalidAtom));
+			ret->vec.resize(index+arg->size(), asAtomR::invalidAtomR);
 			auto it=arg->vec.begin();
 			for(;it != arg->vec.end();++it)
 			{
@@ -425,8 +425,8 @@ ASFUNCTIONBODY_ATOM(Vector,setLength)
 		//for(size_t i=len; i< th->vec.size(); ++i)
 			//ASATOM_DECREF(th->vec[i]);*/
 	}
-	th->vec.resize(len, _MAR(asAtom::invalidAtom));
-	return _MAR(asAtom::invalidAtom);
+	th->vec.resize(len, asAtomR::invalidAtomR);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector,getFixed)
@@ -440,7 +440,7 @@ ASFUNCTIONBODY_ATOM(Vector,setFixed)
 	bool fixed;
 	ARG_UNPACK_ATOM (fixed);
 	th->fixed = fixed;
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector,forEach)
@@ -473,7 +473,7 @@ ASFUNCTIONBODY_ATOM(Vector,forEach)
 		}
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector, _reverse)
@@ -483,7 +483,7 @@ ASFUNCTIONBODY_ATOM(Vector, _reverse)
 	std::vector<asAtomR> tmp = std::vector<asAtomR>(th->vec.begin(),th->vec.end());
 	uint32_t size = th->size();
 	th->vec.clear();
-	th->vec.resize(size, _MAR(asAtom::invalidAtom));
+	th->vec.resize(size, asAtomR::invalidAtomR);
 	std::vector<asAtomR>::iterator it=tmp.begin();
 	uint32_t index = size-1;
 	for(;it != tmp.end();++it)
@@ -559,7 +559,7 @@ ASFUNCTIONBODY_ATOM(Vector,shift)
 	{
 		th->vec[i-1]=th->vec[i];
 	}
-	th->vec.resize(th->size()-1, _MAR(asAtom::invalidAtom));
+	th->vec.resize(th->size()-1, asAtomR::invalidAtomR);
 	return ret;
 }
 
@@ -597,7 +597,7 @@ ASFUNCTIONBODY_ATOM(Vector,slice)
 	endIndex=th->capIndex(endIndex);
 	std::vector<asAtomR> empty;
 	Vector* ret= th->getClass()->getInstance(true,empty,0)->as<Vector>();
-	ret->vec.resize(endIndex-startIndex, _MAR(asAtom::invalidAtom));
+	ret->vec.resize(endIndex-startIndex, asAtomR::invalidAtomR);
 	int j = 0;
 	for(int i=startIndex; i<endIndex; i++) 
 	{
@@ -630,7 +630,7 @@ ASFUNCTIONBODY_ATOM(Vector,splice)
 	if((startIndex+deleteCount)>totalSize)
 		deleteCount=totalSize-startIndex;
 
-	ret->vec.resize(deleteCount, _MAR(asAtom::invalidAtom));
+	ret->vec.resize(deleteCount, asAtomR::invalidAtomR);
 	if(deleteCount)
 	{
 		// write deleted items to return array
@@ -641,21 +641,21 @@ ASFUNCTIONBODY_ATOM(Vector,splice)
 		// delete items from current array
 		for (int i = 0; i < deleteCount; i++)
 		{
-			th->vec[startIndex+i] = _MAR(asAtom::invalidAtom);
+			th->vec[startIndex+i] = asAtomR::invalidAtomR;
 		}
 	}
 	// remember items in current array that have to be moved to new position
 	vector<asAtomR> tmp = vector<asAtomR>(totalSize- (startIndex+deleteCount));
-	tmp.resize(totalSize- (startIndex+deleteCount), _MAR(asAtom::invalidAtom));
+	tmp.resize(totalSize- (startIndex+deleteCount), asAtomR::invalidAtomR);
 	for (int i = startIndex+deleteCount; i < totalSize ; i++)
 	{
 		if (th->vec[i]->type != T_INVALID)
 		{
 			tmp[i-(startIndex+deleteCount)] = th->vec[i];
-			th->vec[i] = _MAR(asAtom::invalidAtom);
+			th->vec[i] = asAtomR::invalidAtomR;
 		}
 	}
-	th->vec.resize(startIndex, _MAR(asAtom::invalidAtom));
+	th->vec.resize(startIndex, asAtomR::invalidAtomR);
 
 	
 	//Insert requested values starting at startIndex
@@ -664,7 +664,7 @@ ASFUNCTIONBODY_ATOM(Vector,splice)
 		th->vec.push_back(args[i]);
 	}
 	// move remembered items to new position
-	th->vec.resize((totalSize-deleteCount)+(argslen > 2 ? argslen-2 : 0), _MAR(asAtom::invalidAtom));
+	th->vec.resize((totalSize-deleteCount)+(argslen > 2 ? argslen-2 : 0), asAtomR::invalidAtomR);
 	for(int i=0;i<totalSize- (startIndex+deleteCount);i++)
 	{
 		th->vec[startIndex+i+(argslen > 2 ? argslen-2 : 0)] = tmp[i];
@@ -830,11 +830,11 @@ ASFUNCTIONBODY_ATOM(Vector,unshift)
 	if (argslen > 0)
 	{
 		uint32_t s = th->size();
-		th->vec.resize(th->size()+argslen, _MAR(asAtom::invalidAtom));
+		th->vec.resize(th->size()+argslen, asAtomR::invalidAtomR);
 		for(uint32_t i=s;i> 0;i--)
 		{
 			th->vec[(i-1)+argslen]=th->vec[i-1];
-			th->vec[i-1] = _MAR(asAtom::invalidAtom);
+			th->vec[i-1] = asAtomR::invalidAtomR;
 		}
 		
 		for(uint32_t i=0;i<argslen;i++)
@@ -911,7 +911,7 @@ ASFUNCTIONBODY_ATOM(Vector,insertAt)
 	{
 		th->vec.insert(th->vec.begin()+index,o);
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Vector,removeAt)
@@ -996,7 +996,7 @@ asAtomR Vector::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 				       Integer::toString(vec.size()));
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void Vector::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
@@ -1040,7 +1040,7 @@ tiny_string Vector::toString()
 {
 	//TODO: test
 	tiny_string t;
-	asAtomR natom = asAtomR(asAtomR(T_NULL));
+	asAtomR natom = asAtomR::nullAtomR;
 	for(size_t i = 0; i < vec.size(); ++i)
 	{
 		if( i )

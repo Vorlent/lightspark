@@ -67,7 +67,7 @@ ASFUNCTIONBODY_ATOM(ASString,_constructor)
 		th->stringId = UINT32_MAX;
 		th->datafilled = true;
 	}
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(ASString,_getLength)

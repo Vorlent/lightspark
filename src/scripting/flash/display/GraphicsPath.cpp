@@ -64,7 +64,7 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, _constructor)
 	if (!data.isNull())
 		th->data = data;
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void GraphicsPath::finalize()
@@ -85,10 +85,10 @@ void GraphicsPath::ensureValid()
 ASFUNCTIONBODY_ATOM(GraphicsPath, curveTo)
 {
 	GraphicsPath* th=obj->as<GraphicsPath>();
-	asAtomR cx(T_NUMBER);
-	asAtomR cy(T_NUMBER);
-	asAtomR ax(T_NUMBER);
-	asAtomR ay(T_NUMBER);
+	asAtomR cx = asAtomR(asAtom(T_NUMBER));
+	asAtomR cy = asAtomR(asAtom(T_NUMBER));
+	asAtomR ax = asAtomR(asAtom(T_NUMBER));
+	asAtomR ay = asAtomR(asAtom(T_NUMBER));
 	ARG_UNPACK_ATOM (cx) (cy) (ax) (ay);
 
 	th->ensureValid();
@@ -99,14 +99,14 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, curveTo)
 	th->data->append(cx);
 	th->data->append(cy);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(GraphicsPath, lineTo)
 {
 	GraphicsPath* th=obj->as<GraphicsPath>();
-	asAtomR x(T_NUMBER);
-	asAtomR y(T_NUMBER);
+	asAtomR x = asAtomR(asAtom(T_NUMBER));
+	asAtomR y = asAtomR(asAtom(T_NUMBER));
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
@@ -115,14 +115,14 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, lineTo)
 	th->data->append(x);
 	th->data->append(y);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(GraphicsPath, moveTo)
 {
 	GraphicsPath* th=obj->as<GraphicsPath>();
-	asAtomR x(T_NUMBER);
-	asAtomR y(T_NUMBER);
+	asAtomR x = asAtomR(asAtom(T_NUMBER));
+	asAtomR y = asAtomR(asAtom(T_NUMBER));
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
@@ -131,14 +131,14 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, moveTo)
 	th->data->append(x);
 	th->data->append(y);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(GraphicsPath, wideLineTo)
 {
 	GraphicsPath* th=obj->as<GraphicsPath>();
-	asAtomR x(T_NUMBER);
-	asAtomR y(T_NUMBER);
+	asAtomR x = asAtomR(asAtom(T_NUMBER));
+	asAtomR y = asAtomR(asAtom(T_NUMBER));
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
@@ -150,14 +150,14 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, wideLineTo)
 	th->data->append(x);
 	th->data->append(y);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(GraphicsPath, wideMoveTo)
 {
 	GraphicsPath* th=obj->as<GraphicsPath>();
-	asAtomR x(T_NUMBER);
-	asAtomR y(T_NUMBER);
+	asAtomR x = asAtomR(asAtom(T_NUMBER));
+	asAtomR y = asAtomR(asAtom(T_NUMBER));
 	ARG_UNPACK_ATOM (x) (y);
 
 	th->ensureValid();
@@ -169,7 +169,7 @@ ASFUNCTIONBODY_ATOM(GraphicsPath, wideMoveTo)
 	th->data->append(x);
 	th->data->append(y);
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 void GraphicsPath::appendToTokens(tokensVector& tokens)

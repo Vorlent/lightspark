@@ -377,7 +377,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 	cc.locals_size=mi->body->local_count+1;
 	cc.locals.reserve(cc.locals_size);
 	for(uint32_t i=0;i<cc.locals_size;++i)
-		cc.locals.push_back(_MAR(asAtom::invalidAtom));
+		cc.locals.push_back(asAtomR::invalidAtomR);
 	cc.max_stack = mi->body->max_stack;
 	//asAtom* stack = g_newa(asAtom, cc.max_stack);
 	cc.stack=std::vector<asAtomR>(cc.max_stack);
@@ -393,7 +393,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 	cc.scope_stack_dynamic=g_newa(bool, cc.max_scope_stack);
 	
 	for(uint32_t i=0;i<cc.max_scope_stack;++i)
-		cc.scope_stack.push_back(_MAR(asAtom::invalidAtom));
+		cc.scope_stack.push_back(asAtomR::invalidAtomR);
 	cc.stack_index=0;
 	
 	call_context* saved_cc = getVm(getSystemState())->currentCallContext;
@@ -677,7 +677,7 @@ asAtomR Null::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION 
 {
 	LOG(LOG_ERROR,"trying to get variable on null:"<<name);
 	throwError<TypeError>(kConvertNullToObjectError);
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 int32_t Null::toInt()
@@ -846,7 +846,7 @@ asAtomR Class_base::coerce(SystemState* sys, asAtomR& o) const
 	switch (o->type)
 	{
 		case T_UNDEFINED:
-			return _MAR(asAtom::nullAtom);
+			return asAtomR::nullAtomR;
 		case T_NULL:
 			return o;
 		case T_INTEGER:
@@ -1639,7 +1639,7 @@ ASFUNCTIONBODY_ATOM(ASQName,generator)
 	if(argslen==1)
 	{
 		nameval=args[0];
-		namespaceval=_MAR(asAtom::invalidAtom);
+		namespaceval=asAtomR::invalidAtomR;
 	}
 	else if(argslen==2)
 	{
@@ -1825,12 +1825,12 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 	if (argslen == 0)
 	{
 		//Return before resetting the value to preserve those eventually set by the C++ constructor
-		return _MAR(asAtom::invalidAtom);
+		return asAtomR::invalidAtomR;
 	}
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = _MAR(asAtom::invalidAtom);
+		prefixval = asAtomR::invalidAtomR;
 	}
 	else
 	{
@@ -1900,7 +1900,7 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 		}
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(Namespace,generator)
 {
@@ -1919,7 +1919,7 @@ ASFUNCTIONBODY_ATOM(Namespace,generator)
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = _MAR(asAtom::invalidAtom);
+		prefixval = asAtomR::invalidAtomR;
 	}
 	else
 	{
@@ -2160,7 +2160,7 @@ Class<IFunction>* Class<IFunction>::getClass(SystemState* sys)
 		//Thus we make sure that everything is in order when getFunction() below is called
 		ret->addPrototypeGetter();
 		IFunction::sinit(ret);
-		ret->constructorprop = _IMAR(new_objectConstructor(ret,ret->length));
+		ret->constructorprop = asAtom::fromObject(new_objectConstructor(ret,ret->length));
 
 		ret->addConstructorGetter();
 

@@ -222,7 +222,7 @@ ASFUNCTIONBODY_ATOM(XMLSocket, _constructor)
 			th->connect(host, port);
 	}
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(XMLSocket, _close)

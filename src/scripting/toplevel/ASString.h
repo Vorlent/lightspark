@@ -128,10 +128,9 @@ inline asAtomR Class<ASString>::coerce(SystemState* sys, asAtomR& o) const
 	//Special handling for Null and Undefined follows avm2overview's description of 'coerce_s' opcode
 	if(o->type == T_NULL)
 		return o;
-	asAtomR res;
+	asAtomR res = asAtomR::nullAtomR;
 	if(o->type == T_UNDEFINED)
 	{
-		res->type = T_NULL;
 		return res;
 	}
 	if(!o->isConstructed())

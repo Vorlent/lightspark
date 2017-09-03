@@ -77,7 +77,7 @@ ASFUNCTIONBODY_ATOM(Timer,_constructor)
 	if(argslen>=2)
 		th->repeatCount=args[1]->toInt();
 
-	return _MAR(asAtom::invalidAtom);
+	return asAtomR::invalidAtomR;
 }
 
 ASFUNCTIONBODY(Timer,_getCurrentCount)
