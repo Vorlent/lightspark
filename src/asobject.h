@@ -84,12 +84,12 @@
 #define ASFUNCTIONBODY_GETTER_NOT_IMPLEMENTED(c,name) \
 	asAtom c::_getter_##name(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen) \
 	{ \
-		if(!obj->is<c>()) \
+		if(!obj.is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj->as<c>(); \
+		c* th = obj.as<c>(); \
 		if(argslen != 0) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
-		LOG(LOG_NOT_IMPLEMENTED,obj->getObject()->getClassName() <<"."<< #name << " getter is not implemented"); \
+		LOG(LOG_NOT_IMPLEMENTED,obj.getObject()->getClassName() <<"."<< #name << " getter is not implemented"); \
 		return ArgumentConversionAtom<decltype(th->name)>::toAbstract(sys,th->name); \
 	}
 
@@ -97,26 +97,26 @@
 #define ASFUNCTIONBODY_SETTER(c,name) \
 	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen) \
 	{ \
-		if(!obj->is<c>()) \
+		if(!obj.is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj->as<c>(); \
+		c* th = obj.as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return asAtom::invalidAtomR; \
+		return asAtom::invalidAtom; \
 	}
 
 #define ASFUNCTIONBODY_SETTER_NOT_IMPLEMENTED(c,name) \
 	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen) \
 	{ \
-		if(!obj->is<c>()) \
+		if(!obj.is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj->as<c>(); \
+		c* th = obj.as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
-		LOG(LOG_NOT_IMPLEMENTED,obj->getObject()->getClassName() <<"."<< #name << " setter is not implemented"); \
+		LOG(LOG_NOT_IMPLEMENTED,obj.getObject()->getClassName() <<"."<< #name << " setter is not implemented"); \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
-		return asAtom::invalidAtomR; \
+		return asAtom::invalidAtom; \
 	}
 
 /* full body for a getter declared by ASPROPERTY_SETTER or ASFUNCTION_SETTER.
@@ -125,15 +125,15 @@
 #define ASFUNCTIONBODY_SETTER_CB(c,name,callback) \
 	asAtom c::_setter_##name(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen) \
 	{ \
-		if(!obj->is<c>()) \
+		if(!obj.is<c>()) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object"); \
-		c* th = obj->as<c>(); \
+		c* th = obj.as<c>(); \
 		if(argslen != 1) \
 			throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter"); \
 		decltype(th->name) oldValue = th->name; \
 		th->name = ArgumentConversionAtom<decltype(th->name)>::toConcrete(args[0],th->name); \
 		th->callback(oldValue); \
-		return asAtom::invalidAtomR; \
+		return asAtom::invalidAtom; \
 	}
 
 /* full body for a getter declared by ASPROPERTY_GETTER_SETTER or ASFUNCTION_GETTER_SETTER */
@@ -326,7 +326,7 @@ public:
 };
 //#define ASATOM_INCREF(a) if (a.getObject()) a.getObject()->incRefRef()
 //#define ASATOM_DECREF(a) do { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
-//#define ASATOM_DECREF_POINTER(a) { ASObject* b = a->getObject(); if (b) b->decRef(); } while (0)
+//#define ASATOM_DECREF_POINTER(a) { ASObject* b = a.getObject(); if (b) b->decRef(); } while (0)
 
 
 struct variable

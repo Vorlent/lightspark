@@ -42,7 +42,7 @@ ASFUNCTIONBODY_ATOM(PrintJob, _constructor)
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//PrintJob* th=Class<PrintJob>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"PrintJob is not implemented");
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 PrintJobOptions::PrintJobOptions(Class_base* c):

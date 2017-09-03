@@ -51,14 +51,14 @@ ASFUNCTIONBODY_ATOM(NativeApplication, _getNativeApplication)
 
 ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
 {
-	EventDispatcher* th = obj->as<EventDispatcher>();
+	EventDispatcher* th = obj.as<EventDispatcher>();
 	EventDispatcher::addEventListener(sys,obj, args, argslen);
-	if (args[0]->toString() == "invoke")
+	if (args[0].toString() == "invoke")
 	{
 		getVm(th->getSystemState())->addEvent(_IMR(th), Class<InvokeEvent>::getInstanceS(sys));
 	}
 
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void NativeDragManager::sinit(Class_base* c)

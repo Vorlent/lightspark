@@ -179,7 +179,7 @@ void Number::purgeTrailingZeroes(char* buf)
 
 ASFUNCTIONBODY_ATOM(Number,_toString)
 {
-	if(Class<Number>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 	if(!obj->isNumeric())
 		throwError<TypeError>(kInvokeOnIncompatibleObjectError, "Number.toString");
@@ -200,7 +200,7 @@ ASFUNCTIONBODY_ATOM(Number,_toString)
 }
 ASFUNCTIONBODY_ATOM(Number,_toLocaleString)
 {
-	if(Class<Number>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 	if(!obj->isNumeric())
 		return asAtom::fromString(sys,"0");
@@ -362,7 +362,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->ival = 0;
 			th->isfloat =false;
 		}
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 	switch (args[0]->type)
 	{
@@ -377,7 +377,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->isfloat = true;
 			break;
 	}
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Number,toFixed)
@@ -571,7 +571,7 @@ tiny_string Number::toPrecisionString(double v, int32_t precision)
 
 ASFUNCTIONBODY_ATOM(Number,_valueOf)
 {
-	if(Class<Number>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return _MAR(asAtom(0));
 
 	if(!obj->isNumeric())

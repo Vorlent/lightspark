@@ -322,11 +322,11 @@ ASFUNCTIONBODY_ATOM(XML,_appendChild)
 	XML* th=obj->as<XML>();
 	assert_and_throw(argslen==1);
 	_NR<XML> arg;
-	if(args[0]->getObject()->getClass()==Class<XML>::getClass(sys))
+	if(args[0].getObject()->getClass()==Class<XML>::getClass(sys))
 	{
 		arg=_IMR(args[0]->as<XML>());
 	}
-	else if(args[0]->getObject()->getClass()==Class<XMLList>::getClass(sys))
+	else if(args[0].getObject()->getClass()==Class<XMLList>::getClass(sys))
 	{
 		XMLList* list=args[0]->as<XMLList>();
 		list->appendNodesTo(th);
@@ -1462,7 +1462,7 @@ asAtom XML::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION op
 		{
 			const XMLVector& ret=getValuesByMultiname(childrenlist,name);
 			if(ret.empty() && (opt & XML_STRICT)!=0)
-				return asAtom::invalidAtomR;
+				return asAtom::invalidAtom;
 			
 			asAtom ch =asAtom::fromObject(XMLList::create(getSystemState(),ret,this->getChildrenlist(),name));
 			return ch;
@@ -1507,9 +1507,9 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 	if(isAttr)
 	{
 		tiny_string nodeval;
-		if(o->getObject() && o->getObject()->is<XMLList>())
+		if(o.getObject() && o.getObject()->is<XMLList>())
 		{
-			_NR<XMLList> x = _NR<XMLList>(o->getObject()->as<XMLList>());
+			_NR<XMLList> x = _NR<XMLList>(o.getObject()->as<XMLList>());
 			for (auto it2 = x->nodes.begin(); it2 != x->nodes.end(); it2++)
 			{
 				if (nodeval != "")
@@ -1563,17 +1563,17 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 			_R<XML> tmpnode = childrenlist->nodes.back();
 			if (tmpnode->nodenamespace_uri == ns_uri && tmpnode->nodename == normalizedName)
 			{
-				if(o->getObject() && o->getObject()->is<XMLList>())
+				if(o.getObject() && o.getObject()->is<XMLList>())
 				{
 					if (!found)
 					{
-						_NR<XMLList> x = _NR<XMLList>(Class<XMLList>::getInstanceS(getSystemState(),o->getObject()->as<XMLList>()->toXMLString_internal(false)));
+						_NR<XMLList> x = _NR<XMLList>(Class<XMLList>::getInstanceS(getSystemState(),o.getObject()->as<XMLList>()->toXMLString_internal(false)));
 						tmpnodes.insert(tmpnodes.end(), x->nodes.rbegin(),x->nodes.rend());
 					}
 				}
-				else if(o->getObject() && o->getObject()->is<XML>())
+				else if(o.getObject() && o.getObject()->is<XML>())
 				{
-					if (o->getObject()->as<XML>()->getNodeKind() == pugi::node_pcdata)
+					if (o.getObject()->as<XML>()->getNodeKind() == pugi::node_pcdata)
 					{
 						_R<XML> tmp = _IMR<XML>(Class<XML>::getInstanceSNoArgs(getSystemState()));
 						tmp->parentNode = tmpnode;
@@ -1590,7 +1590,7 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 					}
 					else
 					{
-						_NR<XML> tmp = _MR<XML>(o->getObject()->as<XML>());
+						_NR<XML> tmp = _MR<XML>(o.getObject()->as<XML>());
 						tmp->parentNode = _MR<XML>(this);
 						if (!found)
 							tmpnodes.push_back(tmp);
@@ -1626,9 +1626,9 @@ void XML::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED
 		}
 		if (!found)
 		{
-			if(o->getObject() && o->getObject()->is<XML>())
+			if(o.getObject() && o.getObject()->is<XML>())
 			{
-				_R<XML> tmp = _MR<XML>(o->getObject()->as<XML>());
+				_R<XML> tmp = _MR<XML>(o.getObject()->as<XML>());
 				tmp->parentNode = _MR<XML>(this);
 				tmpnodes.insert(tmpnodes.begin(),tmp);
 			}
@@ -2749,11 +2749,11 @@ ASFUNCTIONBODY_ATOM(XML,_prependChild)
 	XML* th=obj->as<XML>();
 	assert_and_throw(argslen==1);
 	_NR<XML> arg;
-	if(args[0]->getObject()->getClass()==Class<XML>::getClass(sys))
+	if(args[0].getObject()->getClass()==Class<XML>::getClass(sys))
 	{
 		arg=_IMR(args[0]->as<XML>());
 	}
-	else if(args[0]->getObject()->getClass()==Class<XMLList>::getClass(sys))
+	else if(args[0].getObject()->getClass()==Class<XMLList>::getClass(sys))
 	{
 		_NR<XMLList> list=_IMNR(args[0]->as<XMLList>());
 		list->prependNodesTo(th);

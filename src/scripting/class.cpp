@@ -145,7 +145,7 @@ template<>
 asAtom Class<Global>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	throwError<TypeError>(kConstructOfNonFunctionError);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tiny_string& interfaceNs)

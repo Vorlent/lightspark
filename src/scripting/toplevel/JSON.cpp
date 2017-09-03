@@ -46,7 +46,7 @@ ASFUNCTIONBODY(JSON,_constructor)
 ASFUNCTIONBODY_ATOM(JSON,generator)
 {
 	throwError<ArgumentError>(kCoerceArgumentCountError);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASObject *JSON::doParse(const tiny_string &jsonstring, asAtom& reviver)
@@ -120,9 +120,9 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 		}
 		else
 		{
-			if(space->getObject() && space->getObject()->has_toString())
+			if(space.getObject() && space.getObject()->has_toString())
 			{
-				_R<ASObject> ret = space->getObject()->call_toString();
+				_R<ASObject> ret = space.getObject()->call_toString();
 				spaces = ret->toString();
 			}
 			else
@@ -222,7 +222,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 			params[1] = asAtom::fromObject(*parent);
 		}
 
-		asAtom funcret=reviver->callFunction(asAtom::nullAtomR, params, 2,true);
+		asAtom funcret=reviver.callFunction(asAtom::nullAtom, params, 2,true);
 		if(funcret->type != T_INVALID)
 		{
 			if (haskey)
@@ -237,7 +237,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 				}
 			}
 			else 
-				*parent= funcret->toObject(getSys());
+				*parent= funcret.toObject(getSys());
 		}
 	}
 	return pos;
@@ -309,7 +309,7 @@ int JSON::parseNull(const tiny_string &jsonstring, int pos,ASObject** parent,con
 			if (*parent == NULL)
 				*parent = getSys()->getNullRef();
 			else
-				(*parent)->setVariableByMultiname(key,asAtom::nullAtomR,ASObject::CONST_NOT_ALLOWED);
+				(*parent)->setVariableByMultiname(key,asAtom::nullAtom,ASObject::CONST_NOT_ALLOWED);
 		}
 		else
 			throwError<SyntaxError>(kJSONInvalidParseInput);

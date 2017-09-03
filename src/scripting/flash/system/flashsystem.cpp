@@ -238,12 +238,12 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_constructor)
 	if(!th->parentDomain.isNull())
 		// Don't override parentDomain if it was set in the
 		// C++ constructor
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	else if(parentDomain.isNull())
 		th->parentDomain =  sys->systemDomain;
 	else
 		th->parentDomain = parentDomain;
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getMinDomainMemoryLength)
@@ -379,7 +379,7 @@ ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& na
 		{
 			target=globalScopes[i];
 			// No incRef, return a reference borrowed from globalScopes
-			return o->toObject(getSystemState());
+			return o.toObject(getSystemState());
 		}
 	}
 	return NULL;
@@ -401,7 +401,7 @@ ASObject* ApplicationDomain::getVariableByMultinameOpportunistic(const multiname
 		if(o->type != T_INVALID)
 		{
 			// No incRef, return a reference borrowed from globalScopes
-			return o->toObject(getSystemState());
+			return o.toObject(getSystemState());
 		}
 	}
 	return NULL;

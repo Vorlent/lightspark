@@ -114,9 +114,9 @@ void Dictionary::setVariableByMultiname(const multiname& name, asAtom& o, CONST_
 
 		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
 		if(it!=data.end())
-			it->second=_IMR(o->toObject(getSystemState()));
+			it->second=_IMR(o.toObject(getSystemState()));
 		else
-			data.insert(make_pair(name_o,_IMR(o->toObject(getSystemState()))));
+			data.insert(make_pair(name_o,_IMR(o.toObject(getSystemState()))));
 	}
 	else
 	{
@@ -220,7 +220,7 @@ asAtom Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_OP
 				return asAtom::fromObject(it->second.getPtr());
 			}
 			else
-				return asAtom::invalidAtomR;
+				return asAtom::invalidAtom;
 		}
 		else
 		{
@@ -399,8 +399,8 @@ void Dictionary::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stri
 		tmp = 0;
 		while ((tmp = nextNameIndex(tmp)) != 0)
 		{
-			nextName(tmp)->toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
-			nextValue(tmp)->toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
+			nextName(tmp).toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
+			nextValue(tmp).toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
 		}
 	}
 }

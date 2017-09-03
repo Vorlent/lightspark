@@ -92,10 +92,10 @@ ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 	if(argslen==0)
 	{
 		//The uint is already initialized to 0
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 	th->val=args[0]->toUInt();
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,generator)
@@ -107,7 +107,7 @@ ASFUNCTIONBODY_ATOM(UInteger,generator)
 
 ASFUNCTIONBODY_ATOM(UInteger,_valueOf)
 {
-	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return _MAR(asAtom((uint32_t)0));
 
 	if(!obj->is<UInteger>())
@@ -138,7 +138,7 @@ void UInteger::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toString)
 {
-	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 
 	UInteger* th=obj->as<UInteger>();

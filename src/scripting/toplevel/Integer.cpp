@@ -28,7 +28,7 @@ using namespace lightspark;
 
 ASFUNCTIONBODY_ATOM(Integer,_toString)
 {
-	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 
 	Integer* th=obj->as<Integer>();
@@ -51,7 +51,7 @@ ASFUNCTIONBODY_ATOM(Integer,_toString)
 
 ASFUNCTIONBODY_ATOM(Integer,_valueOf)
 {
-	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return _MAR(asAtom(0));
 
 	if(!obj->is<Integer>())
@@ -66,10 +66,10 @@ ASFUNCTIONBODY_ATOM(Integer,_constructor)
 	if(argslen==0)
 	{
 		//The int is already initialized to 0
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 	th->val=args[0]->toInt();
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Integer,generator)

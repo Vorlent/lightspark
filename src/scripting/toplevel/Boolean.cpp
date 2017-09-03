@@ -88,14 +88,14 @@ void Boolean::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(Boolean,_constructor)
 {
-	Boolean* th=static_cast<Boolean*>(obj->getObject());
+	Boolean* th=static_cast<Boolean*>(obj.getObject());
 	if(argslen==0)
 	{
 		//No need to handle default argument. The object is initialized to false anyway
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 	th->val=args[0]->Boolean_concrete();
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(Boolean,_toString)

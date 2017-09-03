@@ -44,7 +44,7 @@ ASFUNCTIONBODY_ATOM(ContextMenu,_constructor)
 	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	LOG(LOG_NOT_IMPLEMENTED,"ContextMenu constructor is a stub");
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(ContextMenu,hideBuiltInItems)

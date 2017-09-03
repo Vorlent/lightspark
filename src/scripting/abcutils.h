@@ -112,9 +112,9 @@ inline void runtime_stack_push_ref(call_context* context, asAtom& val) {
 	asAtom& ret = context->stack[context->stack_index-1];
 
 #define RUNTIME_STACK_POINTER_CREATE_REF(context,ret) \
-	asAtom& ret = nullptr; \
-	if(context->stack_index) ret=context->stack[context->stack_index-1]; \
-	else context->handleError(kStackUnderflowError);
+	if(!context->stack_index)  \
+		context->handleError(kStackUnderflowError); \
+	asAtom& ret = context->stack[context->stack_index-1];
 
 }
 #endif /* SCRIPTING_ABCUTILS_H */

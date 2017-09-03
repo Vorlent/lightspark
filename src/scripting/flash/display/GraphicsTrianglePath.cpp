@@ -59,7 +59,7 @@ ASFUNCTIONBODY_ATOM(GraphicsTrianglePath, _constructor)
 		(th->indices, NullRef)
 		(th->uvtData, NullRef)
 		(th->culling, "none");
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsTrianglePath, culling);

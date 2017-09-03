@@ -274,7 +274,7 @@ ASFUNCTIONBODY_ATOM(avmplusDomain,_getDomainMemory)
 {
 	avmplusDomain* th = obj->as<avmplusDomain>();
 	if (th->appdomain->domainMemory.isNull())
-		return asAtom::nullAtomR;
+		return asAtom::nullAtom;
 	return asAtom::fromObject(th->appdomain->domainMemory.getPtr());
 }
 ASFUNCTIONBODY(avmplusDomain,_setDomainMemory)

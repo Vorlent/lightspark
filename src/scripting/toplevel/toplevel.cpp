@@ -190,7 +190,7 @@ ASFUNCTIONBODY_ATOM(IFunction,apply)
 	}
 	if(argslen == 2 && args[1]->type==T_ARRAY)
 	{
-		Array* array=Class<Array>::cast(args[1]->getObject());
+		Array* array=Class<Array>::cast(args[1].getObject());
 		newArgsLen=array->size();
 		newArgs.reserve(newArgsLen);
 		for(int i=0;i<newArgsLen;i++)
@@ -199,14 +199,14 @@ ASFUNCTIONBODY_ATOM(IFunction,apply)
 			newArgs.push_back(val);
 		}
 	}
-	asAtom ret=obj->callFunction(newObj,newArgs,newArgsLen,false);
+	asAtom ret=obj.callFunction(newObj,newArgs,newArgsLen,false);
 	return ret;
 }
 
 ASFUNCTIONBODY_ATOM(IFunction,_call)
 {
 	/* This function never changes the 'this' pointer of a method closure */
-	IFunction* th=static_cast<IFunction*>(obj->getObject());
+	IFunction* th=static_cast<IFunction*>(obj.getObject());
 	asAtom newObj;
 	std::vector<asAtom> newArgs;
 	uint32_t newArgsLen=0;
@@ -235,7 +235,7 @@ ASFUNCTIONBODY_ATOM(IFunction,_call)
 			newArgs.push_back(args[i+1]);
 		}
 	}
-	return obj->callFunction(newObj,newArgs,newArgsLen,false);
+	return obj.callFunction(newObj,newArgs,newArgsLen,false);
 }
 
 ASFUNCTIONBODY(IFunction,_toString)
@@ -327,7 +327,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 		 * This is in accordance with the proprietary player. */
 		if(isMethod() || mi->hasExplicitTypes)
 			throwError<ArgumentError>(kWrongArgumentCountError,
-						  obj->toObject(getSystemState())->getClassName(),
+						  obj.toObject(getSystemState())->getClassName(),
 						  Integer::toString(mi->numArgs()-mi->numOptions()),
 						  Integer::toString(numArgs));
 	}
@@ -377,7 +377,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 	cc.locals_size=mi->body->local_count+1;
 	cc.locals.reserve(cc.locals_size);
 	for(uint32_t i=0;i<cc.locals_size;++i)
-		cc.locals.push_back(asAtom::invalidAtomR);
+		cc.locals.push_back(asAtom::invalidAtom);
 	cc.max_stack = mi->body->max_stack;
 	//asAtom* stack = g_newa(asAtom, cc.max_stack);
 	cc.stack=std::vector<asAtom>(cc.max_stack);
@@ -393,7 +393,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 	cc.scope_stack_dynamic=g_newa(bool, cc.max_scope_stack);
 	
 	for(uint32_t i=0;i<cc.max_scope_stack;++i)
-		cc.scope_stack.push_back(asAtom::invalidAtomR);
+		cc.scope_stack.push_back(asAtom::invalidAtom);
 	cc.stack_index=0;
 	
 	call_context* saved_cc = getVm(getSystemState())->currentCallContext;
@@ -473,7 +473,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 				if(codeStatus == method_body_info::OPTIMIZED && getSystemState()->useFastInterpreter)
 				{
 					//This is a mildy hot function, execute it using the fast interpreter
-					ret=asAtom::fromObject(ABCVm::executeFunctionFast(this,&cc,obj->toObject(getSystemState())));
+					ret=asAtom::fromObject(ABCVm::executeFunctionFast(this,&cc,obj.toObject(getSystemState())));
 				}
 				else
 				{
@@ -581,11 +581,11 @@ asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 		{
 			if (args[i]->type == T_FUNCTION && args[i]->getClosure())
 				LOG(LOG_NOT_IMPLEMENTED,"builtin function not converted to asAtom called with function as argument:"<<obj->toDebugString()<<"."<<getSys()->getStringFromUniqueId(functionname)<<" "<<args[i]->toDebugString() );
-			newArgs[i] = args[i]->toObject(getSystemState());
+			newArgs[i] = args[i].toObject(getSystemState());
 		}
 	}
 
-	ret=asAtom::fromObject(val(obj->toObject(getSystemState()),newArgs,num_args));
+	ret=asAtom::fromObject(val(obj.toObject(getSystemState()),newArgs,num_args));
 
 	if(ret->type == T_INVALID)
 		ret=_MAR(asAtom::undefinedAtom);
@@ -677,7 +677,7 @@ asAtom Null::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION o
 {
 	LOG(LOG_ERROR,"trying to get variable on null:"<<name);
 	throwError<TypeError>(kConvertNullToObjectError);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 int32_t Null::toInt()
@@ -846,7 +846,7 @@ asAtom Class_base::coerce(SystemState* sys, asAtom& o) const
 	switch (o->type)
 	{
 		case T_UNDEFINED:
-			return asAtom::nullAtomR;
+			return asAtom::nullAtom;
 		case T_NULL:
 			return o;
 		case T_INTEGER:
@@ -867,15 +867,15 @@ asAtom Class_base::coerce(SystemState* sys, asAtom& o) const
 		|| (class_name.nameId==BUILTIN_STRINGS::STRING_CLASS && class_name.nsStringId==BUILTIN_STRINGS::EMPTY))
 			return o; /* 'this' is the type of a class */
 		else
-			throwError<TypeError>(kCheckTypeFailedError, o->toObject(sys)->getClassName(), getQualifiedClassName());
+			throwError<TypeError>(kCheckTypeFailedError, o.toObject(sys)->getClassName(), getQualifiedClassName());
 	}
-	if (o->getObject() && o->getObject()->is<ObjectConstructor>())
+	if (o.getObject() && o.getObject()->is<ObjectConstructor>())
 		return o;
 
 	//o->getClass() == NULL for primitive types
 	//those are handled in overloads Class<Number>::coerce etc.
-	if(!o->getObject() ||  !o->getObject()->getClass() || !o->getObject()->getClass()->isSubClass(this))
-		throwError<TypeError>(kCheckTypeFailedError, o->toObject(sys)->getClassName(), getQualifiedClassName());
+	if(!o.getObject() ||  !o.getObject()->getClass() || !o.getObject()->getClass()->isSubClass(this))
+		throwError<TypeError>(kCheckTypeFailedError, o.toObject(sys)->getClassName(), getQualifiedClassName());
 	return o;
 }
 
@@ -921,7 +921,7 @@ asAtom Class_base::_getter_constructorprop(SystemState* sys, asAtom& obj, std::v
 	if(obj->is<Class_base>())
 		th = obj->as<Class_base>();
 	else
-		th = obj->getObject()->getClass();
+		th = obj.getObject()->getClass();
 	if(argslen != 0)
 		throw Class<ArgumentError>::getInstanceS(th->getSystemState(),"Arguments provided in getter");
 	return th->constructorprop;
@@ -940,7 +940,7 @@ ASFUNCTIONBODY_GETTER(Class_base, length);
 
 asAtom Class_base::generator(std::vector<asAtom>& args, const unsigned int argslen)
 {
-	asAtom ret=ASObject::generator(getSystemState(),asAtom::invalidAtomR, args, argslen);
+	asAtom ret=ASObject::generator(getSystemState(),asAtom::invalidAtom, args, argslen);
 	return ret;
 }
 
@@ -972,24 +972,24 @@ void Class_base::handleConstruction(asAtom& target, std::vector<asAtom>& args, u
 {
 	if(buildAndLink)
 	{
-		setupDeclaredTraits(target->getObject());
+		setupDeclaredTraits(target.getObject());
 
 		//Tell the object that the construction is complete
-		target->getObject()->constructionComplete();
+		target.getObject()->constructionComplete();
 	}
 
 	//TODO: is there any valid case for not having a constructor?
 	if(constructor)
 	{
 		//ASATOM_INCREF(target);
-		asAtom ret=asAtom::fromObject(constructor)->callFunction(target,args,argslen,true);
-		target->getObject()->constructIndicator = true;
+		asAtom ret=asAtom::fromObject(constructor).callFunction(target,args,argslen,true);
+		target.getObject()->constructIndicator = true;
 		assert_and_throw(ret->type == T_UNDEFINED);
 		//target = asAtom::fromObject(target.getObject());
 	}
 	else
 	{
-		target->getObject()->constructIndicator = true;
+		target.getObject()->constructIndicator = true;
 		//for(uint32_t i=0;i<argslen;i++)
 		//ASATOM_DECREF(args[i]);
 		//throwError<TypeError>(kConstructOfNonFunctionError);
@@ -1109,7 +1109,7 @@ void Class_base::linkInterface(Class_base* c) const
 		LOG_CALL(_("Calling interface init for ") << class_name);
 		asAtom v = asAtom::fromObject(c);
 		std::vector<asAtom> empty;
-		asAtom ret=asAtom::fromObject(constructor)->callFunction(v,empty,0,false);
+		asAtom ret=asAtom::fromObject(constructor).callFunction(v,empty,0,false);
 		assert_and_throw(ret->type == T_INVALID);
 	}
 }
@@ -1298,9 +1298,9 @@ void Class_base::describeVariables(pugi::xml_node& root, const Class_base* c, st
 		{
 			ASObject* obj = NULL;
 			if (it->second.getter.getPtrC()->type == T_FUNCTION)
-				obj = it->second.getter.getPtrC()->getObject();
+				obj = it->second.getter.getPtrC().getObject();
 			else if (it->second.setter.getPtrC()->type == T_FUNCTION)
-				obj = it->second.setter.getPtrC()->getObject();
+				obj = it->second.setter.getPtrC().getObject();
 			if (obj)
 			{
 				if (obj->is<SyntheticFunction>())
@@ -1639,7 +1639,7 @@ ASFUNCTIONBODY_ATOM(ASQName,generator)
 	if(argslen==1)
 	{
 		nameval=args[0];
-		namespaceval=asAtom::invalidAtomR;
+		namespaceval=asAtom::invalidAtom;
 	}
 	else if(argslen==2)
 	{
@@ -1825,12 +1825,12 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 	if (argslen == 0)
 	{
 		//Return before resetting the value to preserve those eventually set by the C++ constructor
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = asAtom::invalidAtomR;
+		prefixval = asAtom::invalidAtom;
 	}
 	else
 	{
@@ -1900,7 +1900,7 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 		}
 	}
 
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 ASFUNCTIONBODY_ATOM(Namespace,generator)
 {
@@ -1919,7 +1919,7 @@ ASFUNCTIONBODY_ATOM(Namespace,generator)
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = asAtom::invalidAtomR;
+		prefixval = asAtom::invalidAtom;
 	}
 	else
 	{
@@ -2128,7 +2128,7 @@ asAtom Class<IFunction>::getInstance(bool construct, std::vector<asAtom>& args, 
 		throwError<EvalError>(kFunctionConstructorError);
 	asAtom ret = getNopFunction();
 	if (construct)
-		ret->getObject()->setConstructIndicator();
+		ret.getObject()->setConstructIndicator();
 	return ret;
 }
 

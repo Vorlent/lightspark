@@ -1390,7 +1390,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,pop)
 // this seems to be how AS3 handles generic push calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,push)
 {
-	ByteArray* th=static_cast<ByteArray*>(obj->getObject());
+	ByteArray* th=static_cast<ByteArray*>(obj.getObject());
 	th->lock();
 	th->getBuffer(th->len+argslen,true);
 	for (unsigned int i = 0; i < argslen; i++)

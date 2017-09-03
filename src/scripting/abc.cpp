@@ -995,7 +995,7 @@ multiname* ABCContext::getMultinameImpl(asAtom& n, asAtom& n2, unsigned int midx
 		case 0x12: //RTQNameLA
 		{
 			assert(n.type != T_INVALID && n2->type != T_INVALID);
-			assert_and_throw(n2.getObject()->classdef==Class<Namespace>::getClass(n2->getObject()->getSystemState()));
+			assert_and_throw(n2.getObject()->classdef==Class<Namespace>::getClass(n2.getObject()->getSystemState()));
 			Namespace* tmpns=n2.as<Namespace>();
 			ret->ns.clear();
 			ret->ns.emplace_back(root->getSystemState(),tmpns->uri,tmpns->nskind);
@@ -1188,7 +1188,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 	std::deque<_R<DisplayObject>> parents;
 	//Only set the default target is it's not overridden
 	asAtom target = asAtom::fromObject(dispatcher.getPtr());
-	if(event->target->type == T_INVALID)
+	if(event->target.type == T_INVALID)
 		event->setTarget(target);
 	/** rollOver/Out are special: according to spec 
 	http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/InteractiveObject.html?  		
@@ -1307,7 +1307,7 @@ void ABCVm::publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event)
 
 	//Reset events so they might be recycled
 	event->currentTarget=NullRef;
-	event->setTarget(asAtom::invalidAtomR);
+	event->setTarget(asAtom::invalidAtom);
 }
 
 void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
@@ -1342,7 +1342,7 @@ void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
 				FunctionEvent* ev=static_cast<FunctionEvent*>(e.second.getPtr());
 				try
 				{
-					asAtom result = ev->f->callFunction(ev->obj,ev->args,ev->numArgs,true);
+					asAtom result = ev->f.callFunction(ev->obj,ev->args,ev->numArgs,true);
 				}
 				catch(ASObject* exception)
 				{
@@ -1372,7 +1372,7 @@ void ABCVm::handleEvent(std::pair<_NR<EventDispatcher>, _R<Event> > e)
 							newArgs.push_back(asAtom::fromObject(ev->args[i]));
 						}
 					}
-					*(ev->result) = ev->f->callFunction(asAtom::nullAtom,newArgs,ev->numArgs,true);
+					*(ev->result) = ev->f.callFunction(asAtom::nullAtom,newArgs,ev->numArgs,true);
 				}
 				catch(ASObject* exception)
 				{
@@ -1749,7 +1749,7 @@ void ABCContext::runScriptInit(unsigned int i, asAtom& g)
 	entry->addToScope(scope_entry(g,false));
 
 	std::vector<asAtom> empty;
-	asAtom ret=asAtom::fromObject(entry.getPtr())->callFunction(g,empty,0,false);
+	asAtom ret=asAtom::fromObject(entry.getPtr()).callFunction(g,empty,0,false);
 	LOG(LOG_CALLS, "Finished script init for script " << i );
 }
 
@@ -1945,19 +1945,19 @@ void ABCVm::parseRPCMessage(_R<ByteArray> message, _NR<ASObject> client, _NR<Res
 			callback = client->getVariableByMultiname(headerName);
 
 		//If mustUnderstand is set there must be a suitable callback on the client
-		if(mustUnderstand && (client.isNull() || callback->type!=T_FUNCTION))
+		if(mustUnderstand && (client.isNull() || callback.type!=T_FUNCTION))
 		{
 			//TODO: use onStatus
 			throw UnsupportedException("Unsupported header with mustUnderstand");
 		}
 
-		if(callback->type == T_FUNCTION)
+		if(callback.type == T_FUNCTION)
 		{
 			std::vector<asAtom> callbackArgs;
 			callbackArgs.reserve(1);
 			callbackArgs.push_back(obj);
 			asAtom v = asAtom::fromObject(client.getPtr());
-			callback->callFunction(v, callbackArgs, 1,true);
+			callback.callFunction(v, callbackArgs, 1,true);
 		}
 	}
 	uint16_t numMessage;
@@ -1996,13 +1996,13 @@ void ABCVm::parseRPCMessage(_R<ByteArray> message, _NR<ASObject> client, _NR<Res
 			onResultName.name_s_id=m_sys->getUniqueStringId("onResult");
 			onResultName.ns.emplace_back(m_sys,BUILTIN_STRINGS::EMPTY,NAMESPACE);
 			asAtom callback = responder->getVariableByMultiname(onResultName);
-			if(callback->type == T_FUNCTION)
+			if(callback.type == T_FUNCTION)
 			{
 				std::vector<asAtom> callbackArgs;
 				callbackArgs.reserve(1);
 				callbackArgs.push_back(ret);
 				asAtom v = asAtom::fromObject(responder.getPtr());
-				callback->callFunction(v, callbackArgs, 1,true);
+				callback.callFunction(v, callbackArgs, 1,true);
 			}
 		}
 	}
@@ -2075,9 +2075,9 @@ void ABCContext::linkTrait(Class_base* c, const traits_info* t)
 
 			variable* var=NULL;
 			var = c->borrowedVariables.findObjVar(nameId,nsNameAndKind(c->getSystemState(),"",NAMESPACE),NO_CREATE_TRAIT,DECLARED_TRAIT);
-			if(var && var->var->type != T_INVALID)
+			if(var && var->var.type != T_INVALID)
 			{
-				assert_and_throw(var->var->type == T_FUNCTION);
+				assert_and_throw(var->var.type == T_FUNCTION);
 				c->setDeclaredMethodAtomByQName(nameId,mname.ns[0],var->var,NORMAL_METHOD,true);
 			}
 			else
@@ -2097,7 +2097,7 @@ void ABCContext::linkTrait(Class_base* c, const traits_info* t)
 
 			variable* var=NULL;
 			var=c->borrowedVariables.findObjVar(nameId,nsNameAndKind(c->getSystemState(),"",NAMESPACE),NO_CREATE_TRAIT,DECLARED_TRAIT);
-			if(var && var->getter->type != T_INVALID)
+			if(var && var->getter.type != T_INVALID)
 			{
 				c->setDeclaredMethodAtomByQName(nameId,mname.ns[0],var->getter,GETTER_METHOD,true);
 			}
@@ -2118,7 +2118,7 @@ void ABCContext::linkTrait(Class_base* c, const traits_info* t)
 
 			variable* var=NULL;
 			var=c->borrowedVariables.findObjVar(nameId,nsNameAndKind(c->getSystemState(),"",NAMESPACE),NO_CREATE_TRAIT,DECLARED_TRAIT);
-			if(var && var->setter->type != T_INVALID)
+			if(var && var->setter.type != T_INVALID)
 			{
 				c->setDeclaredMethodAtomByQName(nameId,mname.ns[0],var->setter,SETTER_METHOD,true);
 			}
@@ -2144,13 +2144,13 @@ asAtom ABCContext::getConstant(int kind, int index)
 	switch(kind)
 	{
 		case 0x00: //Undefined
-			return _MAR(asAtom::undefinedAtom);
+			return asAtom::undefinedAtom;
 		case 0x01: //String
 			return asAtom::fromStringID(constant_pool.strings[index]);
 		case 0x03: //Int
-			return _MAR(asAtom(constant_pool.integer[index]));
+			return asAtom(constant_pool.integer[index]);
 		case 0x06: //Double
-			return _MAR(asAtom(constant_pool.doubles[index]));
+			return asAtom(constant_pool.doubles[index]);
 		case 0x08: //Namespace
 		{
 			assert_and_throw(constant_pool.namespaces[index].name);
@@ -2160,11 +2160,11 @@ asAtom ABCContext::getConstant(int kind, int index)
 			return asAtom::fromObject(ret);
 		}
 		case 0x0a: //False
-			return _MAR(asAtom::falseAtom);
+			return asAtom::falseAtom;
 		case 0x0b: //True
-			return _MAR(asAtom::trueAtom);
+			return asAtom::trueAtom;
 		case 0x0c: //Null
-			return _MAR(asAtom::nullAtom);
+			return asAtom::nullAtom;
 		default:
 		{
 			LOG(LOG_ERROR,_("Constant kind ") << hex << kind);
@@ -2366,9 +2366,9 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 			if(t->vindex)
 				ret=getConstant(t->vkind,t->vindex);
 			else
-				ret=_MAR(asAtom::undefinedAtom);
+				ret=asAtom::undefinedAtom;
 
-			LOG(LOG_CALLS,_("Const ") << *mname <<_(" type ")<< *tname<< " = " << ret->toDebugString());
+			LOG(LOG_CALLS,_("Const ") << *mname <<_(" type ")<< *tname<< " = " << ret.toDebugString());
 
 			obj->initializeVariableByMultiname(*mname, ret, tname, this, CONSTANT_TRAIT,t->slot_id,isenumerable);
 			break;
@@ -2389,7 +2389,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 			else
 			{
 				LOG_CALL(_("Slot ")<< t->slot_id<<  _(" vindex 0 ") << *mname <<_(" type ")<<*tname<<" "<<isBorrowed);
-				ret = asAtom::invalidAtomR;
+				ret = asAtom::invalidAtom;
 			}
 
 			obj->initializeVariableByMultiname(*mname, ret, tname, this, isBorrowed ? INSTANCE_TRAIT : DECLARED_TRAIT,t->slot_id,isenumerable);
@@ -2397,7 +2397,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 		}
 		default:
 			LOG(LOG_ERROR,_("Trait not supported ") << *mname << _(" ") << t->kind);
-			obj->setVariableByMultiname(*mname, asAtom::undefinedAtomR, ASObject::CONST_NOT_ALLOWED);
+			obj->setVariableByMultiname(*mname, asAtom::undefinedAtom, ASObject::CONST_NOT_ALLOWED);
 			break;
 	}
 }

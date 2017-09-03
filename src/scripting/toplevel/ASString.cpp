@@ -67,7 +67,7 @@ ASFUNCTIONBODY_ATOM(ASString,_constructor)
 		th->stringId = UINT32_MAX;
 		th->datafilled = true;
 	}
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(ASString,_getLength)
@@ -75,7 +75,7 @@ ASFUNCTIONBODY_ATOM(ASString,_getLength)
 	// fast path if obj is ASString
 	if (obj->type == T_STRING)
 	{
-		ASString* th = obj->getObject()->as<ASString>();
+		ASString* th = obj.getObject()->as<ASString>();
 		return _MAR(asAtom((int32_t)th->getData().numChars()));
 	}
 	return _MAR(asAtom((int32_t)obj->toString().numChars()));
@@ -256,7 +256,7 @@ ASFUNCTIONBODY_ATOM(ASString,match)
 
 ASFUNCTIONBODY_ATOM(ASString,_toString)
 {
-	if(Class<ASString>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<ASString>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromStringID(BUILTIN_STRINGS::EMPTY);
 	if(!obj->is<ASString>())
 	{
@@ -672,9 +672,9 @@ ASFUNCTIONBODY_ATOM(ASString,charCodeAt)
 	// fast path if obj is ASString
 	if (obj->type == T_STRING)
 	{
-		if(index<0 || index>=(int64_t)obj->getObject()->as<ASString>()->getData().numChars())
+		if(index<0 || index>=(int64_t)obj.getObject()->as<ASString>()->getData().numChars())
 			return _MAR(asAtom(Number::NaN));
-		return _MAR(asAtom((int32_t)obj->getObject()->as<ASString>()->getData().charAt(index)));
+		return _MAR(asAtom((int32_t)obj.getObject()->as<ASString>()->getData().charAt(index)));
 	}
 	tiny_string data = obj->toString();
 	if(index<0 || index>=(int64_t)data.numChars())
@@ -839,7 +839,7 @@ ASFUNCTIONBODY_ATOM(ASString,replace)
 				subargs[capturingGroups+1]=_MAR(asAtom((int32_t)(ovector[0]-retDiff)));
 				
 				subargs[capturingGroups+2]=asAtom::fromObject(abstract_s(sys,data));
-				asAtom ret=args[1]->callFunction(asAtom::nullAtomR, subargs, 3+capturingGroups,true);
+				asAtom ret=args[1].callFunction(asAtom::nullAtom, subargs, 3+capturingGroups,true);
 				replaceWithTmp=ret->toString().raw_buf();
 			} else {
 					size_t pos, ipos = 0;

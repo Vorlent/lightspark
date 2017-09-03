@@ -138,7 +138,7 @@ ASFUNCTIONBODY_GETTER(RegExp, source);
 
 ASFUNCTIONBODY_ATOM(RegExp,exec)
 {
-	RegExp* th=static_cast<RegExp*>(obj->getObject());
+	RegExp* th=static_cast<RegExp*>(obj.getObject());
 	assert_and_throw(argslen==1);
 	const tiny_string& arg0=args[0]->toString();
 	return asAtom::fromObject(th->match(arg0));

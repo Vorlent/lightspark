@@ -50,7 +50,7 @@ uint32_t IntervalManager::setInterval(asAtom& callback, std::vector<asAtom>& arg
 	Mutex::Lock l(mutex);
 
 	uint32_t id = getFreeID();
-	IntervalRunner* runner = new (callback->getObject()->getSystemState()->unaccountedMemory)
+	IntervalRunner* runner = new (callback.getObject()->getSystemState()->unaccountedMemory)
 		IntervalRunner(IntervalRunner::INTERVAL, id, callback, args, argslen, obj, interval);
 
 	//Add runner as tickjob
@@ -67,11 +67,11 @@ uint32_t IntervalManager::setTimeout(asAtom& callback, std::vector<asAtom>& args
 	Mutex::Lock l(mutex);
 
 	uint32_t id = getFreeID();
-	IntervalRunner* runner = new (callback->getObject()->getSystemState()->unaccountedMemory)
+	IntervalRunner* runner = new (callback.getObject()->getSystemState()->unaccountedMemory)
 		IntervalRunner(IntervalRunner::TIMEOUT, id, callback, args, argslen, obj, interval);
 
 	//Add runner as waitjob
-	callback->getObject()->getSystemState()->addWait(interval, runner);
+	callback.getObject()->getSystemState()->addWait(interval, runner);
 	//Add runner to map
 	runners[id] = runner;
 	//increment currentID

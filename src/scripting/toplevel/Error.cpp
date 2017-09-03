@@ -77,7 +77,7 @@ tiny_string lightspark::createErrorMessage(int errorID, const tiny_string& arg1,
 		for (auto it = getVm(sys)->stacktrace.rbegin(); it != getVm(sys)->stacktrace.rend(); it++)
 		{
 			stacktrace += "    at ";
-			stacktrace += (*it).second->toObject(sys)->getClassName();
+			stacktrace += (*it).second.toObject(sys)->getClassName();
 			stacktrace += "/";
 			stacktrace += sys->getStringFromUniqueId((*it).first);
 			stacktrace += "()\n";
@@ -94,7 +94,7 @@ ASError::ASError(Class_base* c, const tiny_string& error_message, int id, const 
 	for (auto it = getVm(c->getSystemState())->stacktrace.rbegin(); it != getVm(c->getSystemState())->stacktrace.rend(); it++)
 	{
 		stacktrace += "    at ";
-		stacktrace += (*it).second->toObject(c->getSystemState())->getClassName();
+		stacktrace += (*it).second.toObject(c->getSystemState())->getClassName();
 		stacktrace += "/";
 		stacktrace += c->getSystemState()->getStringFromUniqueId((*it).first);
 		stacktrace += "()\n";

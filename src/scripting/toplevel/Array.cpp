@@ -104,7 +104,7 @@ ASFUNCTIONBODY_ATOM(Array,_constructor)
 {
 	Array* th=obj->as<Array>();
 	th->constructorImpl(args, argslen);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array,generator)
@@ -223,11 +223,11 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 		asAtom origval = params[0];
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
+			funcRet=f.callFunction(asAtom::nullAtom, params, 3,false);
 		}
 		else
 		{
-			funcRet=f->callFunction(args[1], params, 3,false);
+			funcRet=f.callFunction(args[1], params, 3,false);
 		}
 		if(funcRet->type != T_INVALID)
 		{
@@ -275,11 +275,11 @@ ASFUNCTIONBODY_ATOM(Array, some)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
+			funcRet=f.callFunction(asAtom::nullAtom, params, 3,false);
 		}
 		else
 		{
-			funcRet=f->callFunction(args[1], params, 3,false);
+			funcRet=f.callFunction(args[1], params, 3,false);
 		}
 		if(funcRet->type != T_INVALID)
 		{
@@ -326,11 +326,11 @@ ASFUNCTIONBODY_ATOM(Array, every)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
+			funcRet=f.callFunction(asAtom::nullAtom, params, 3,false);
 		}
 		else
 		{
-			funcRet=f->callFunction(args[1], params, 3,false);
+			funcRet=f.callFunction(args[1], params, 3,false);
 		}
 		if(funcRet->type != T_INVALID)
 		{
@@ -355,12 +355,12 @@ ASFUNCTIONBODY_ATOM(Array,_setLength)
 	ARG_UNPACK_ATOM(newLen);
 	Array* th=obj->as<Array>();
 	if (th->getClass() && th->getClass()->isSealed)
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	//If newLen is equal to size do nothing
 	if(newLen==th->size())
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	th->resize(newLen);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array,forEach)
@@ -369,7 +369,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 	asAtom f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
-		return asAtom::invalidAtomR;
+		return asAtom::invalidAtom;
 	std::vector<asAtom> params(3);
 
 	uint32_t index = 0;
@@ -399,15 +399,15 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 		asAtom funcret;
 		if( argslen == 1 )
 		{
-			funcret=f->callFunction(asAtom::nullAtomR, params, 3,false);
+			funcret=f.callFunction(asAtom::nullAtom, params, 3,false);
 		}
 		else
 		{
-			funcret=f->callFunction(args[1], params, 3,false);
+			funcret=f.callFunction(args[1], params, 3,false);
 		}
 	}
 
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array, _reverse)
@@ -509,11 +509,11 @@ ASFUNCTIONBODY_ATOM(Array,shift)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
 		asAtom v = _MAR(asAtom(res-1));
 		if (res > 0)
-			obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
+			obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
 	Array* th=obj->as<Array>();
@@ -743,11 +743,11 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
 		asAtom v = _MAR(asAtom(res-1));
 		if (res > 0)
-			obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
+			obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
 	Array* th=obj->as<Array>();
@@ -833,7 +833,7 @@ bool Array::sortComparatorWrapper::operator()(asAtom& d1, asAtom& d2)
 	objs[1]=d2;
 
 	assert(comparator->type == T_FUNCTION);
-	asAtom ret=comparator->callFunction(asAtom::nullAtomR, objs, 2,false);
+	asAtom ret=comparator.callFunction(asAtom::nullAtom, objs, 2,false);
 	assert_and_throw(ret->type != T_INVALID);
 	return (ret->toNumber()<0); //Less
 }
@@ -872,7 +872,7 @@ ASFUNCTIONBODY_ATOM(Array,_sort)
 		if ((*it1)->type==T_INVALID || (*it1)->type==T_UNDEFINED)
 			continue;
 		// ensure ASObjects are created
-		(*it1)->toObject(sys);
+		(*it1).toObject(sys);
 		tmp.push_back(*it1);
 	}
 	auto it2=th->data_second.begin();
@@ -881,7 +881,7 @@ ASFUNCTIONBODY_ATOM(Array,_sort)
 		if (it2->second->type==T_INVALID || it2->second->type==T_UNDEFINED)
 			continue;
 		// ensure ASObjects are created
-		it2->second->toObject(sys);
+		it2->second.toObject(sys);
 		tmp.push_back(it2->second);
 	}
 	
@@ -906,8 +906,8 @@ bool Array::sortOnComparator::operator()(asAtom& d1, asAtom& d2)
 	std::vector<sorton_field>::iterator it=fields.begin();
 	for(;it != fields.end();++it)
 	{
-		asAtom obj1 = d1->getObject()->getVariableByMultiname(it->fieldname);
-		asAtom obj2 = d2->getObject()->getVariableByMultiname(it->fieldname);
+		asAtom obj1 = d1.getObject()->getVariableByMultiname(it->fieldname);
+		asAtom obj2 = d2.getObject()->getVariableByMultiname(it->fieldname);
 		if(it->isNumeric)
 		{
 			number_t a=numeric_limits<double>::quiet_NaN();
@@ -1022,7 +1022,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 		if ((*it1)->type==T_INVALID || (*it1)->type==T_UNDEFINED)
 			continue;
 		// ensure ASObjects are created
-		(*it1)->toObject(sys);
+		(*it1).toObject(sys);
 		tmp.push_back(*it1);
 	}
 	auto it2=th->data_second.begin();
@@ -1031,7 +1031,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 		if (it2->second->type==T_INVALID || it2->second->type==T_UNDEFINED)
 			continue;
 		// ensure ASObjects are created
-		it2->second->toObject(sys);
+		it2->second.toObject(sys);
 		tmp.push_back(it2->second);
 	}
 	
@@ -1064,10 +1064,10 @@ ASFUNCTIONBODY_ATOM(Array,unshift)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
 		asAtom v = _MAR(asAtom(res+argslen));
-		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
+		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
 	Array* th=obj->as<Array>();
@@ -1117,10 +1117,10 @@ ASFUNCTIONBODY_ATOM(Array,_push)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
 		asAtom v = _MAR(asAtom(res+argslen));
-		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
+		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
 	Array* th=obj->as<Array>();
@@ -1150,10 +1150,10 @@ ASFUNCTIONBODY_ATOM(Array,_push_as3)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
 		asAtom v = _MAR(asAtom(res+argslen));
-		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
+		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
 	Array* th=obj->as<Array>();
@@ -1207,7 +1207,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 		asAtom funcRet;
 		if (func->type != T_INVALID)
 		{
-			funcRet = func->callFunction(argslen > 1? args[1] : asAtom::nullAtomR, params, 3,false);
+			funcRet = func.callFunction(argslen > 1? args[1] : asAtom::nullAtom, params, 3,false);
 		}
 		else
 		{
@@ -1222,7 +1222,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 
 ASFUNCTIONBODY_ATOM(Array,_toString)
 {
-	if(obj->getObject() == Class<Number>::getClass(sys)->prototype->getObj())
+	if(obj.getObject() == Class<Number>::getClass(sys)->prototype->getObj())
 		return asAtom::fromStringID(BUILTIN_STRINGS::EMPTY);
 	if(!obj->is<Array>())
 	{
@@ -1236,7 +1236,7 @@ ASFUNCTIONBODY_ATOM(Array,_toString)
 
 ASFUNCTIONBODY_ATOM(Array,_toLocaleString)
 {
-	if(obj->getObject() == Class<Number>::getClass(sys)->prototype->getObj())
+	if(obj.getObject() == Class<Number>::getClass(sys)->prototype->getObj())
 		return asAtom::fromStringID(BUILTIN_STRINGS::EMPTY);
 	if(!obj->is<Array>())
 	{
@@ -1289,7 +1289,7 @@ ASFUNCTIONBODY_ATOM(Array,insertAt)
 		th->set(index,o,false);
 	}
 	LOG(LOG_ERROR,"insertat:"<<index<<" "<<th->toString_priv());
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array,removeAt)
@@ -1398,7 +1398,7 @@ asAtom Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION 
 	}
 	if(index<size())
 		return _MAR(asAtom::undefinedAtom);
-	return asAtom::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void Array::setVariableByMultiname_i(const multiname& name, int32_t value)
@@ -1523,7 +1523,7 @@ bool Array::deleteVariableByMultiname(const multiname& name)
 		return true;
 	if (index < data_first.size())
 	{
-		data_first[index]=asAtom::invalidAtomR;
+		data_first[index]=asAtom::invalidAtom;
 		return true;
 	}
 	
@@ -1758,14 +1758,14 @@ void Array::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap
 				if (data_first[i]->type == T_INVALID)
 					out->writeByte(null_marker);
 				else
-					data_first[i]->toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
+					data_first[i].toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
 			}
 			else
 			{
 				if (data_second.find(i) == data_second.end())
 					out->writeByte(null_marker);
 				else
-					data_second.at(i)->toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
+					data_second.at(i).toObject(getSystemState())->serialize(out, stringMap, objMap, traitsMap);
 			}
 		}
 	}
@@ -1804,13 +1804,13 @@ tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtom& replacer, const
 			
 			params[0] = _MAR(asAtom(i));
 			params[1] = a;
-			asAtom funcret=replacer->callFunction(asAtom::nullAtomR, params, 2,false);
+			asAtom funcret=replacer.callFunction(asAtom::nullAtom, params, 2,false);
 			if (funcret->type != T_INVALID)
-				subres = funcret->toObject(getSystemState())->toJSON(path,asAtom::invalidAtomR,spaces,filter);
+				subres = funcret.toObject(getSystemState())->toJSON(path,asAtom::invalidAtom,spaces,filter);
 		}
 		else
 		{
-			ASObject* o = a->type == T_INVALID ? getSystemState()->getNullRef() : a->toObject(getSystemState());
+			ASObject* o = a->type == T_INVALID ? getSystemState()->getNullRef() : a.toObject(getSystemState());
 			if (o)
 				subres = o->toJSON(path,replacer,spaces,filter);
 			else

@@ -88,7 +88,7 @@ void Proxy::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOW
 	implEnable=false;
 	LOG_CALL(_("Proxy::setProperty"));
 	asAtom v = asAtom::fromObject(this);
-	asAtom ret=proxySetter->callFunction(v,args,2,true);
+	asAtom ret=proxySetter.callFunction(v,args,2,true);
 	assert_and_throw(ret->type == T_UNDEFINED);
 	implEnable=true;
 }
@@ -126,7 +126,7 @@ asAtom Proxy::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION 
 	implEnable=false;
 	LOG_CALL("Proxy::getProperty "<< name.normalizedNameUnresolved(getSystemState()) << " " << this->toDebugString());
 	asAtom v = asAtom::fromObject(this);
-	asAtom ret=o->callFunction(v,args,1,true);
+	asAtom ret=o.callFunction(v,args,1,true);
 	implEnable=true;
 	return ret;
 }
@@ -165,7 +165,7 @@ bool Proxy::hasPropertyByMultiname(const multiname& name, bool considerDynamic, 
 	implEnable=false;
 	LOG_CALL(_("Proxy::hasProperty"));
 	asAtom v = asAtom::fromObject(this);
-	asAtom ret=proxyHasProperty->callFunction(v,args,1,true);
+	asAtom ret=proxyHasProperty.callFunction(v,args,1,true);
 	implEnable=true;
 	return ret->Boolean_concrete();
 }
@@ -201,7 +201,7 @@ bool Proxy::deleteVariableByMultiname(const multiname& name)
 	implEnable=false;
 	LOG_CALL(_("Proxy::deleteProperty"));
 	asAtom v = asAtom::fromObject(this);
-	asAtom ret= proxyDeleter->callFunction(v,args,1,true);
+	asAtom ret= proxyDeleter.callFunction(v,args,1,true);
 	implEnable=true;
 	return ret->Boolean_concrete();
 }
@@ -222,7 +222,7 @@ uint32_t Proxy::nextNameIndex(uint32_t cur_index)
 	args.reserve(1);
 	args.push_back(arg);
 	asAtom v = asAtom::fromObject(this);
-	asAtom ret=o->callFunction(v,args,1,false);
+	asAtom ret=o.callFunction(v,args,1,false);
 	uint32_t newIndex=ret->toInt();
 	return newIndex;
 }
@@ -243,7 +243,7 @@ asAtom Proxy::nextName(uint32_t index)
 	args.reserve(1);
 	args.push_back(arg);
 	asAtom v = asAtom::fromObject(this);
-	return o->callFunction(v,args,1,false);
+	return o.callFunction(v,args,1,false);
 }
 
 asAtom Proxy::nextValue(uint32_t index)
@@ -262,7 +262,7 @@ asAtom Proxy::nextValue(uint32_t index)
 	args.reserve(1);
 	args.push_back(arg);
 	asAtom v = asAtom::fromObject(this);
-	return o->callFunction(v,args,1,false);
+	return o.callFunction(v,args,1,false);
 }
 bool Proxy::isConstructed() const
 {
