@@ -302,6 +302,7 @@ private:
 	static void getDescendants(call_context* th, int n); 
 	static ASObject* newCatch(call_context* th, int n); 
 	static void jump(int offset); 
+	static bool ifEqAtom(SystemState* sys, asAtomR& obj1, asAtomR& obj2);
 	static bool ifEq(ASObject*, ASObject*); 
 	static bool ifStrictEq(ASObject*, ASObject*); 
 	static bool ifNE(ASObject*, ASObject*); 
@@ -311,10 +312,14 @@ private:
 	static bool ifLE(ASObject*, ASObject*); 
 	static bool ifLT_oi(ASObject*, int32_t);
 	static bool ifLT_io(int32_t, ASObject*);
+	static bool ifNLTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
 	static bool ifNLT(ASObject*, ASObject*); 
+	static bool ifNGTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
 	static bool ifNGT(ASObject*, ASObject*); 
+	static bool ifNGEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
 	static bool ifNGE(ASObject*, ASObject*); 
 	static bool ifGE(ASObject*, ASObject*); 
+	static bool ifNLEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
 	static bool ifNLE(ASObject*, ASObject*); 
 	static bool ifStrictNE(ASObject*, ASObject*); 
 	static bool ifFalse(ASObject*); 
@@ -324,8 +329,9 @@ private:
 	static void kill(int n); 
 	static ASObject* pushString(call_context* th, int n); 
 	static bool getLex(call_context* th, int n); 
-	static ASObject* getScopeObject(call_context* th, int n); 
-	static bool deleteProperty(ASObject* obj, multiname* name);
+	static ASObject* getScopeObject(call_context* th, int n);
+	static bool deleteProperty(ASObject* objPtr, multiname* name);
+	static bool deletePropertyAtom(SystemState* th, asAtomR &obj, multiname* name);
 	static void initProperty(ASObject* obj, ASObject* val, multiname* name);
 	static void newClass(call_context* th, int n);
 	static void newArray(call_context* th, int n); 
@@ -435,7 +441,8 @@ private:
 	static bool instanceOf(ASObject* value, ASObject* type);
 	static Namespace* pushNamespace(call_context* th, int n);
 	static void dxns(call_context* th, int n);
-	static void dxnslate(call_context* th, ASObject* value);
+	static void dxnslate(call_context* th, ASObject* o);
+	static void dxnslateAtom(call_context* th, asAtomR &o);
 	//Utility
 	static void not_impl(int p);
 	static void wrong_exec_pos();

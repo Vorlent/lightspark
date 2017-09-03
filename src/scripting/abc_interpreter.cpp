@@ -396,8 +396,8 @@ void ABCVm::abc_dxns(call_context* context,memorystream& code)
 void ABCVm::abc_dxnslate(call_context* context,memorystream& code)
 {
 	//dxnslate
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v,context->context->root->getSystemState());
-	dxnslate(context, v);
+	RUNTIME_STACK_POP_CREATE_REF(context,v);
+	dxnslateAtom(context, v);
 }
 void ABCVm::abc_kill(call_context* context,memorystream& code)
 {
@@ -773,12 +773,12 @@ void ABCVm::abc_pushnull(call_context* context,memorystream& code)
 {
 	//pushnull
 	LOG_CALL("pushnull");
-	RUNTIME_STACK_PUSH(context,asAtom::nullAtom);
+	runtime_stack_push_ref(context,asAtomR::nullAtomR);
 }
 void ABCVm::abc_pushundefined(call_context* context,memorystream& code)
 {
 	LOG_CALL("pushundefined");
-	RUNTIME_STACK_PUSH(context,asAtom::undefinedAtom);
+	runtime_stack_push_ref(context,asAtomR::undefinedAtomR);
 }
 void ABCVm::abc_nextvalue(call_context* context,memorystream& code)
 {
@@ -814,13 +814,13 @@ void ABCVm::abc_pushtrue(call_context* context,memorystream& code)
 {
 	//pushtrue
 	LOG_CALL("pushtrue");
-	RUNTIME_STACK_PUSH(context,asAtom::trueAtom);
+	runtime_stack_push_ref(context,asAtomR::trueAtomR);
 }
 void ABCVm::abc_pushfalse(call_context* context,memorystream& code)
 {
 	//pushfalse
 	LOG_CALL("pushfalse");
-	RUNTIME_STACK_PUSH(context,asAtom::falseAtom);
+	runtime_stack_push_ref(context,asAtomR::falseAtomR);
 }
 void ABCVm::abc_pushnan(call_context* context,memorystream& code)
 {
@@ -838,19 +838,18 @@ void ABCVm::abc_dup(call_context* context,memorystream& code)
 {
 	//dup
 	dup();
-	RUNTIME_STACK_PEEK_CREATE(context,o);
-	asAtomR value = _IMAR(o);
+	RUNTIME_STACK_PEEK_CREATE_REF(context,value);
 	runtime_stack_push_ref(context, value);
 }
 void ABCVm::abc_swap(call_context* context,memorystream& code)
 {
 	//swap
 	swap();
-	RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POP_CREATE(context,v2);
+	RUNTIME_STACK_POP_CREATE_REF(context,v1);
+	RUNTIME_STACK_POP_CREATE_REF(context,v2);
 
-	RUNTIME_STACK_PUSH(context,v1);
-	RUNTIME_STACK_PUSH(context,v2);
+	runtime_stack_push_ref(context,v1);
+	runtime_stack_push_ref(context,v2);
 }
 void ABCVm::abc_pushstring(call_context* context,memorystream& code)
 {
@@ -1162,7 +1161,7 @@ void ABCVm::abc_finddef(call_context* context,memorystream& code)
 	uint32_t t = code.readu30();
 	multiname* name=context->context->getMultiname(t,context);
 	LOG(LOG_NOT_IMPLEMENTED,"opcode 0x5f (finddef) not implemented:"<<*name);
-	RUNTIME_STACK_PUSH(context,asAtom::nullAtom);
+	runtime_stack_push_ref(context,asAtomR::nullAtomR);
 	name->resetNameIfObject();
 }
 void ABCVm::abc_getlex(call_context* context,memorystream& code)
@@ -1181,10 +1180,10 @@ void ABCVm::abc_getlex(call_context* context,memorystream& code)
 	{
 		// put object in cache
 		cachepos->type =method_body_info_cache::CACHE_TYPE_OBJECT;
-		RUNTIME_STACK_PEEK_CREATE(context,v);
+		RUNTIME_STACK_PEEK_CREATE_REF(context,v);
 		
-		cachepos->obj = _IMR(v.getObject());
-		cachepos->closure = v.getClosure();
+		cachepos->obj = _IMR(v->toObject(context->context->root->getSystemState()));
+		cachepos->closure = v->getClosure();
 	}
 }
 void ABCVm::abc_setproperty(call_context* context,memorystream& code)
@@ -1301,8 +1300,8 @@ void ABCVm::abc_deleteproperty(call_context* context,memorystream& code)
 	//deleteproperty
 	uint32_t t = code.readu30();
 	multiname* name = context->context->getMultiname(t,context);
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(context,obj, context->context->root->getSystemState());
-	bool ret = deleteProperty(obj,name);
+	RUNTIME_STACK_POP_CREATE_REF(context,obj);
+	bool ret = deletePropertyAtom(context->context->root->getSystemState(), obj,name);
 	name->resetNameIfObject();
 	RUNTIME_STACK_PUSH(context,asAtom(ret));
 }
@@ -1443,9 +1442,6 @@ void ABCVm::abc_astype(call_context* context,memorystream& code)
 void ABCVm::abc_astypelate(call_context* context,memorystream& code)
 {
 	//astypelate
-	/*RUNTIME_STACK_POP_CREATE(context,v1);
-	RUNTIME_STACK_POINTER_CREATE(context,pval);
-	*pval = pval->asTypelate(v1);*/
 	RUNTIME_STACK_POP_CREATE_REF(context,v1);
 	RUNTIME_STACK_POP_CREATE_REF(context,pval);
 	asAtomR value = _MAR(pval->asTypelate(v1));

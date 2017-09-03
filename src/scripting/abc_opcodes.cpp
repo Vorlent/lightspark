@@ -427,7 +427,7 @@ void ABCVm::callProperty(call_context* th, int n, int m, method_info** called_mi
 		}
 		if(keepReturn)
 		{
-			RUNTIME_STACK_PUSH(th,asAtom::undefinedAtom);
+			runtime_stack_push_ref(th,asAtomR::undefinedAtomR);
 		}
 
 	}
@@ -607,6 +607,12 @@ uint64_t ABCVm::decrement_di(ASObject* oPtr)
 	_NR<ASObject> o = _MNR(oPtr);
 	LOG_CALL(_("decrement_di"));
 	return o->toInt64()-1;
+}
+
+bool ABCVm::ifNLTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1) {
+	bool ret=!(obj1->isLess(sys, obj2.getPtr())==TTRUE);
+	LOG_CALL(_("ifNLT (") << ((ret)?_("taken)"):_("not taken)")));
+	return ret;
 }
 
 bool ABCVm::ifNLT(ASObject* obj2Ptr, ASObject* obj1Ptr)
@@ -1369,6 +1375,14 @@ bool ABCVm::ifGT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 	return ret;
 }
 
+bool ABCVm::ifNGTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1)
+{
+	//Real comparision demanded to object
+	bool ret=!(obj2->isLess(sys, obj1.getPtr())==TTRUE);
+	LOG_CALL(_("ifNGT (") << ((ret)?_("taken)"):_("not taken)")));
+	return ret;
+}
+
 bool ABCVm::ifNGT(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
 	_NR<ASObject> obj1 = _MNR(obj1Ptr);
@@ -1386,6 +1400,14 @@ bool ABCVm::ifLE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 	//Real comparision demanded to object
 	bool ret=(obj2->isLess(obj1.getPtr())==TFALSE);
 	LOG_CALL(_("ifLE (") << ((ret)?_("taken)"):_("not taken)")));
+	return ret;
+}
+
+bool ABCVm::ifNLEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1)
+{
+	//Real comparision demanded to object
+	bool ret=!(obj2->isLess(sys, obj1.getPtr())==TFALSE);
+	LOG_CALL(_("ifNLE (") << ((ret)?_("taken)"):_("not taken)")));
 	return ret;
 }
 
@@ -1409,6 +1431,14 @@ bool ABCVm::ifGE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 	return ret;
 }
 
+bool ABCVm::ifNGEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1)
+{
+	//Real comparision demanded to object
+	bool ret=!(obj1->isLess(sys, obj2.getPtr())==TFALSE);
+	LOG_CALL(_("ifNGE (") << ((ret)?_("taken)"):_("not taken)")));
+	return ret;
+}
+
 bool ABCVm::ifNGE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 {
 	_NR<ASObject> obj1 = _MNR(obj1Ptr);
@@ -1422,7 +1452,7 @@ bool ABCVm::ifNGE(ASObject* obj2Ptr, ASObject* obj1Ptr)
 void ABCVm::_throw(call_context* th)
 {
 	LOG_CALL(_("throw"));
-	RUNTIME_STACK_POP_CREATE_ASOBJECT(th,exc, th->context->root->getSystemState());
+	RUNTIME_STACK_POP_CREATE_REF(th,exc);
 	throw exc;
 }
 
@@ -2064,6 +2094,14 @@ ASObject* ABCVm::asTypelate(ASObject* typePtr, ASObject* obj)
 		obj->decRef();
 		return res;
 	}
+}
+
+bool ABCVm::ifEqAtom(SystemState *sys, asAtomR& obj1, asAtomR& obj2)
+{
+	bool ret=obj1->isEqual(sys, obj2.getPtr());
+	LOG_CALL(_("ifEq (") << ((ret)?_("taken)"):_("not taken)")));
+	//Real comparision demanded to object
+	return ret;
 }
 
 bool ABCVm::ifEq(ASObject* obj1Ptr, ASObject* obj2Ptr)
@@ -2712,16 +2750,21 @@ void ABCVm::callImpl(call_context* th, asAtomR& f, asAtomR& obj, std::vector<asA
 	LOG_CALL(_("End of call ") << m << ' ' << f.type);
 }
 
-bool ABCVm::deleteProperty(ASObject* objPtr, multiname* name)
+bool ABCVm::deleteProperty(ASObject* objPtr, multiname* name) {
+	_NR<ASObject> objNR = _MNR(objPtr);
+	asAtomR obj = asAtom::fromObject(objPtr);
+	return deletePropertyAtom(objPtr->getSystemState(), obj, name);
+}
+
+bool ABCVm::deletePropertyAtom(SystemState* sys, asAtomR& obj, multiname* name)
 {
-	_NR<ASObject> obj = _MNR(objPtr);
 	LOG_CALL(_("deleteProperty ") << *name<<" "<<obj->toDebugString());
 	if (name->name_type == multiname::NAME_OBJECT && name->name_o)
 	{
 		if (name->name_o->is<XMLList>())
 			throwError<TypeError>(kDeleteTypeError,name->name_o->getClassName());
 	}
-	return obj->deleteVariableByMultiname(*name);
+	return obj->toObject(sys)->deleteVariableByMultiname(*name);
 }
 
 ASObject* ABCVm::newFunction(call_context* th, int n)
@@ -2871,12 +2914,17 @@ void ABCVm::dxns(call_context* th, int n)
 	th->defaultNamespaceUri = th->context->getString(n);
 }
 
+void ABCVm::dxnslate(call_context* th, ASObject *o) {
+	_NR<ASObject> oNR = _MNR(o);
+	asAtomR obj = asAtom::fromObject(o);
+	dxnslateAtom(th, obj);
+}
+
 /* @spec-checked avm2overview */
-void ABCVm::dxnslate(call_context* th, ASObject* oPtr)
+void ABCVm::dxnslateAtom(call_context* th, asAtomR& o)
 {
-	_NR<ASObject> o = _MNR(oPtr);
 	if(!th->mi->hasDXNS())
 		throw Class<VerifyError>::getInstanceS(th->context->root->getSystemState(),"dxnslate without SET_DXNS");
 
-	th->defaultNamespaceUri = o->toStringId();
+	th->defaultNamespaceUri = o->toStringId(th->context->root->getSystemState());
 }

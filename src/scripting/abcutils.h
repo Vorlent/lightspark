@@ -98,41 +98,19 @@ inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 	}
 }
 
-#define RUNTIME_STACK_POP(context,ret) \
-	if(context->stack_index) ret=*(context->stack[--context->stack_index].getPtr()); \
-	else context->handleError(kStackUnderflowError);
-
-#define RUNTIME_STACK_POP_CREATE(context,ret) \
-	asAtom ret; \
-	RUNTIME_STACK_POP(context,ret)
-
-#define RUNTIME_STACK_POP_REF(context,ret) \
-	if(context->stack_index) ret=context->stack[--context->stack_index]; \
-	else context->handleError(kStackUnderflowError);
-
 #define RUNTIME_STACK_POP_CREATE_REF(context,ret) \
 	_AR ret; \
-	RUNTIME_STACK_POP_REF(context,ret) \
-
-#define RUNTIME_STACK_POP_ASOBJECT(context,ret, sys) \
-	if(context->stack_index) ret=context->stack[--context->stack_index]->toObject(sys); \
+	if(context->stack_index) ret=context->stack[--context->stack_index]; \
 	else context->handleError(kStackUnderflowError);
 
 #define RUNTIME_STACK_POP_CREATE_ASOBJECT(context,ret, sys) \
 	ASObject* ret = NULL; \
-	RUNTIME_STACK_POP_ASOBJECT(context,ret, sys)
-
-#define RUNTIME_STACK_POP_ASOBJECT_REF(context,ret, sys) \
-	if(context->stack_index) ret=_IMNR(context->stack[--context->stack_index]->toObject(sys)); \
+	if(context->stack_index) ret=context->stack[--context->stack_index]->toObject(sys); \
 	else context->handleError(kStackUnderflowError);
 
-
-#define RUNTIME_STACK_PEEK(context,ret) \
-	ret= context->stack_index ? *(context->stack[context->stack_index-1].getPtr()) : asAtom::invalidAtom;
-
-#define RUNTIME_STACK_PEEK_CREATE(context,ret) \
-	asAtom ret; \
-	RUNTIME_STACK_PEEK(context,ret)
+#define RUNTIME_STACK_PEEK_CREATE_REF(context,ret) \
+	asAtomR ret; \
+	ret= context->stack[context->stack_index-1];
 
 #define RUNTIME_STACK_POINTER_CREATE(context,ret) \
 	asAtomR* ret = NULL; \

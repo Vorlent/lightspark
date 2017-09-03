@@ -117,8 +117,8 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x07:
 			{
 				//dxnslate
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v,function->getSystemState());
-				dxnslate(context, v);
+				RUNTIME_STACK_POP_CREATE_REF(context,v);
+				dxnslateAtom(context, v);
 				break;
 			}
 			case 0x08:
@@ -135,9 +135,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				//ifnlt
 				uint32_t dest=data->uints[0];
 				instructionPointer+=4;
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v1,function->getSystemState());
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2,function->getSystemState());
-				bool cond=ifNLT(v1, v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
+				bool cond=ifNLTAtom(function->getSystemState(), v1, v2);
 				if(cond)
 				{
 					assert(dest < code_len);
@@ -150,9 +150,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				//ifnle
 				uint32_t dest=data->uints[0];
 				instructionPointer+=4;
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v1,function->getSystemState());
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2,function->getSystemState());
-				bool cond=ifNLE(v1, v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
+				bool cond=ifNLEAtom(function->getSystemState(), v1, v2);
 				if(cond)
 				{
 					assert(dest < code_len);
@@ -165,9 +165,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				//ifngt
 				uint32_t dest=data->uints[0];
 				instructionPointer+=4;
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v1,function->getSystemState());
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2,function->getSystemState());
-				bool cond=ifNGT(v1, v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
+				bool cond=ifNGTAtom(function->getSystemState(), v1, v2);
 				if(cond)
 				{
 					assert(dest < code_len);
@@ -180,9 +180,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				//ifnge
 				uint32_t dest=data->uints[0];
 				instructionPointer+=4;
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v1,function->getSystemState());
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2,function->getSystemState());
-				bool cond=ifNGE(v1, v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
+				bool cond=ifNGEAtom(function->getSystemState(), v1, v2);
 				if(cond)
 				{
 					assert(dest < code_len);
@@ -236,9 +236,9 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t dest=data->uints[0];
 				instructionPointer+=4;
 
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v1,function->getSystemState());
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,v2,function->getSystemState());
-				bool cond=ifEq(v1, v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
+				bool cond=ifEqAtom(function->getSystemState(), v1, v2);
 				if(cond)
 				{
 					assert(dest < code_len);
@@ -455,13 +455,13 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x26:
 			{
 				//pushtrue
-				RUNTIME_STACK_PUSH(context,asAtom::trueAtom);
+				runtime_stack_push_ref(context,asAtomR::trueAtomR);
 				break;
 			}
 			case 0x27:
 			{
 				//pushfalse
-				RUNTIME_STACK_PUSH(context,asAtom::falseAtom);
+				runtime_stack_push_ref(context,asAtomR::falseAtomR);
 				break;
 			}
 			case 0x28:
@@ -490,11 +490,11 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			{
 				//swap
 				swap();
-				RUNTIME_STACK_POP_CREATE(context,v1);
-				RUNTIME_STACK_POP_CREATE(context,v2);
+				RUNTIME_STACK_POP_CREATE_REF(context,v1);
+				RUNTIME_STACK_POP_CREATE_REF(context,v2);
 
-				RUNTIME_STACK_PUSH(context,v1);
-				RUNTIME_STACK_PUSH(context,v2);
+				runtime_stack_push_ref(context,v1);
+				runtime_stack_push_ref(context,v2);
 				break;
 			}
 			case 0x2c:
@@ -1006,8 +1006,8 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 				uint32_t t=data->uints[0];
 				instructionPointer+=4;
 				multiname* name = context->context->getMultiname(t,context);
-				RUNTIME_STACK_POP_CREATE_ASOBJECT(context,obj,function->getSystemState());
-				bool ret = deleteProperty(obj,name);
+				RUNTIME_STACK_POP_CREATE_REF(context,obj);
+				bool ret = deletePropertyAtom(context->context->root->getSystemState(), obj,name);
 				name->resetNameIfObject();
 				RUNTIME_STACK_PUSH(context,asAtom(ret));
 				break;
@@ -1082,44 +1082,44 @@ ASObject* ABCVm::executeFunctionFast(const SyntheticFunction* function, call_con
 			case 0x73:
 			{
 				//convert_i
-				RUNTIME_STACK_POP_CREATE(context,val);
-				val.convert_i();
+				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				val->convert_i();
 				break;
 			}
 			case 0x74:
 			{
 				//convert_u
-				RUNTIME_STACK_POP_CREATE(context,val);
-				val.convert_u();
+				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				val->convert_u();
 				break;
 			}
 			case 0x75:
 			{
 				//convert_d
-				RUNTIME_STACK_POP_CREATE(context,val);
-				val.convert_d();
+				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				val->convert_d();
 				break;
 			}
 			case 0x76:
 			{
 				//convert_b
-				RUNTIME_STACK_POP_CREATE(context,val);
-				val.convert_b();
+				RUNTIME_STACK_POP_CREATE_REF(context,val);
+				val->convert_b();
 				break;
 			}
 			case 0x77:
 			{
 				//convert_o
-				RUNTIME_STACK_PEEK_CREATE(context,val);
-				if (val.type == T_NULL)
+				RUNTIME_STACK_PEEK_CREATE_REF(context,val);
+				if (val->type == T_NULL)
 				{
-					RUNTIME_STACK_POP_CREATE(context,ret);
+					RUNTIME_STACK_POP_CREATE_REF(context,ret);
 					LOG(LOG_ERROR,"trying to call convert_o on null");
 					throwError<TypeError>(kConvertNullToObjectError);
 				}
-				if (val.type == T_UNDEFINED)
+				if (val->type == T_UNDEFINED)
 				{
-					RUNTIME_STACK_POP_CREATE(context,ret);
+					RUNTIME_STACK_POP_CREATE_REF(context,ret);
 					LOG(LOG_ERROR,"trying to call convert_o on undefined");
 					throwError<TypeError>(kConvertUndefinedToObjectError);
 				}
