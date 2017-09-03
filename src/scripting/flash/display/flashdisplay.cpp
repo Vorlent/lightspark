@@ -1215,9 +1215,9 @@ ASFUNCTIONBODY_ATOM(MovieClip,addFrameScript)
 
 	for(uint32_t i=0;i<argslen;i+=2)
 	{
-		uint32_t frame=args[i]->toInt();
+		uint32_t frame=args[i].toInt();
 
-		if(args[i+1]->type !=T_FUNCTION)
+		if(args[i+1].type !=T_FUNCTION)
 		{
 			LOG(LOG_ERROR,_("Not a function"));
 			return asAtom::invalidAtom;
@@ -1255,22 +1255,22 @@ asAtom MovieClip::gotoAnd(std::vector<asAtom>& args, const unsigned int argslen,
 	assert_and_throw(argslen==1 || argslen==2);
 	if(argslen==2)
 	{
-		sceneName = args[1]->toString();
+		sceneName = args[1].toString();
 	}
-	if(args[0]->type==T_STRING)
+	if(args[0].type==T_STRING)
 	{
-		uint32_t dest=getFrameIdByLabel(args[0]->toString(), sceneName);
+		uint32_t dest=getFrameIdByLabel(args[0].toString(), sceneName);
 		if(dest==FRAME_NOT_FOUND)
 		{
-			LOG(LOG_ERROR, (stop ? "gotoAndStop: label not found:" : "gotoAndPlay: label not found:") <<args[0]->toString());
-			throwError<ArgumentError>(kInvalidArgumentError,args[0]->toString());
+			LOG(LOG_ERROR, (stop ? "gotoAndStop: label not found:" : "gotoAndPlay: label not found:") <<args[0].toString());
+			throwError<ArgumentError>(kInvalidArgumentError,args[0].toString());
 		}
 
 		next_FP = dest;
 	}
 	else
 	{
-		uint32_t inFrameNo = args[0]->toInt();
+		uint32_t inFrameNo = args[0].toInt();
 		if(inFrameNo == 0)
 			return asAtom::invalidAtom; /*this behavior was observed by testing */
 
@@ -1540,11 +1540,11 @@ void DisplayObjectContainer::insertLegacyChildAt(uint32_t depth, DisplayObject* 
 		return;
 	}
 	_addChildAt(_IMR(obj),depth-1); /* depth is 1 based in SWF */
-	if(!obj.name.empty())
+	if(!obj->name.empty())
 	{
 		multiname objName(NULL);
 		objName.name_type=multiname::NAME_STRING;
-		objName.name_s_id=getSystemState()->getUniqueStringId(obj.name);
+		objName.name_s_id=getSystemState()->getUniqueStringId(obj->name);
 		objName.ns.emplace_back(getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 		asAtom v = asAtom::fromObject(obj);
 		setVariableByMultiname(objName,v,ASObject::CONST_NOT_ALLOWED);
@@ -1609,7 +1609,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setMouseEnabled)
 {
 	InteractiveObject* th=obj.as<InteractiveObject>();
 	assert_and_throw(argslen==1);
-	th->mouseEnabled=args[0]->Boolean_concrete();
+	th->mouseEnabled=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 
@@ -1623,7 +1623,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setDoubleClickEnabled)
 {
 	InteractiveObject* th=obj.as<InteractiveObject>();
 	assert_and_throw(argslen==1);
-	th->doubleClickEnabled=args[0]->Boolean_concrete();
+	th->doubleClickEnabled=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 
@@ -1733,7 +1733,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setMouseChildren)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	th->mouseChildren=args[0]->Boolean_concrete();
+	th->mouseChildren=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 
@@ -1818,11 +1818,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,contains)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	if(!args[0]->is<DisplayObject>())
+	if(!args[0].is<DisplayObject>())
 		return asAtom::falseAtom;
 
 	//Cast to object
-	DisplayObject* d=args[0]->as<DisplayObject>();
+	DisplayObject* d=args[0].as<DisplayObject>();
 	bool ret=th->_contains(_IMR(d));
 	return asAtom(ret);
 }
@@ -1832,17 +1832,17 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==2);
-	if(args[0]->type == T_CLASS)
+	if(args[0].type == T_CLASS)
 	{
 		return asAtom::nullAtom;
 	}
 	//Validate object type
-	assert_and_throw(args[0]->is<DisplayObject>());
+	assert_and_throw(args[0].is<DisplayObject>());
 
-	int index=args[1]->toInt();
+	int index=args[1].toInt();
 
 	//Cast to object
-	_R<DisplayObject> d=_IMR(args[0]->as<DisplayObject>());
+	_R<DisplayObject> d=_IMR(args[0].as<DisplayObject>());
 	assert_and_throw(index >= 0 && (size_t)index<=th->dynamicDisplayList.size());
 	th->_addChildAt(d,index);
 
@@ -1856,15 +1856,15 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChild)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	if(args[0]->type == T_CLASS)
+	if(args[0].type == T_CLASS)
 	{
 		return asAtom::nullAtom;
 	}
 	//Validate object type
-	assert_and_throw(args[0]->is<DisplayObject>());
+	assert_and_throw(args[0].is<DisplayObject>());
 
 	//Cast to object
-	_R<DisplayObject> d=_IMR(args[0]->as<DisplayObject>());
+	_R<DisplayObject> d=_IMR(args[0].as<DisplayObject>());
 	th->_addChildAt(d,numeric_limits<unsigned int>::max());
 
 	//Notify the object
@@ -1878,12 +1878,12 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChild)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	if(!args[0]->is<DisplayObject>())
+	if(!args[0].is<DisplayObject>())
 	{
 		return asAtom::nullAtom;
 	}
 	//Cast to object
-	DisplayObject* d=args[0]->as<DisplayObject>();
+	DisplayObject* d=args[0].as<DisplayObject>();
 	if(!th->_removeChild(_IMR(d)))
 		throw Class<ArgumentError>::getInstanceS(sys,"removeChild: child not in list", 2025);
 
@@ -1897,7 +1897,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChildAt)
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
 	//Validate object type
-	int32_t index=args[0]->toInt();
+	int32_t index=args[0].toInt();
 
 	DisplayObject* child;
 	{
@@ -1938,10 +1938,10 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 	assert_and_throw(argslen==2);
 
 	//Validate object type
-	assert_and_throw(args[0]->is<DisplayObject>());
-	_R<DisplayObject> child = _IMR(args[0]->as<DisplayObject>());
+	assert_and_throw(args[0].is<DisplayObject>());
+	_R<DisplayObject> child = _IMR(args[0].as<DisplayObject>());
 
-	int index=args[1]->toInt();
+	int index=args[1].toInt();
 	int curIndex = th->getChildIndex(child);
 
 	if(curIndex == index)
@@ -1970,8 +1970,8 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildren)
 	assert_and_throw(argslen==2);
 	
 	//Validate object type
-	assert_and_throw(args[0]->is<DisplayObject>());
-	assert_and_throw(args[1]->is<DisplayObject>());
+	assert_and_throw(args[0].is<DisplayObject>());
+	assert_and_throw(args[1].is<DisplayObject>());
 
 	if (args[0].getObject() == args[1].getObject())
 	{
@@ -1981,8 +1981,8 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildren)
 	}
 
 	//Cast to object
-	_R<DisplayObject> child1=_IMR(args[0]->as<DisplayObject>());
-	_R<DisplayObject> child2=_IMR(args[0]->as<DisplayObject>());
+	_R<DisplayObject> child1=_IMR(args[0].as<DisplayObject>());
+	_R<DisplayObject> child2=_IMR(args[0].as<DisplayObject>());
 
 	{
 		Locker l(th->mutexDisplayList);
@@ -2025,7 +2025,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getChildByName)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	const tiny_string& wantedName=args[0]->toString();
+	const tiny_string& wantedName=args[0].toString();
 	std::vector<_R<DisplayObject>>::iterator it=th->dynamicDisplayList.begin();
 	ASObject* ret=NULL;
 	for(;it!=th->dynamicDisplayList.end();++it)
@@ -2046,7 +2046,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getChildAt)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
-	unsigned int index=args[0]->toInt();
+	unsigned int index=args[0].toInt();
 	if(index>=th->dynamicDisplayList.size())
 		throw Class<RangeError>::getInstanceS(sys,"getChildAt: invalid index", 2025);
 	std::vector<_R<DisplayObject>>::iterator it=th->dynamicDisplayList.begin();
@@ -2079,10 +2079,10 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_getChildIndex)
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
 	//Validate object type
-	assert_and_throw(args[0]->is<DisplayObject>());
+	assert_and_throw(args[0].is<DisplayObject>());
 
 	//Cast to object
-	_R<DisplayObject> d= _IMR(args[0]->as<DisplayObject>());
+	_R<DisplayObject> d= _IMR(args[0].as<DisplayObject>());
 	return asAtom(th->getChildIndex(d));
 }
 
@@ -2367,7 +2367,7 @@ ASFUNCTIONBODY_ATOM(Stage,_getScaleMode)
 ASFUNCTIONBODY_ATOM(Stage,_setScaleMode)
 {
 	//Stage* th=obj.as<Stage>();
-	const tiny_string& arg0=args[0]->toString();
+	const tiny_string& arg0=args[0].toString();
 	if(arg0=="exactFit")
 		sys->scaleMode=SystemState::EXACT_FIT;
 	else if(arg0=="showAll")
@@ -2891,7 +2891,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUpState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj.as<SimpleButton>();
-	th->upState = _IMNR(args[0]->as<DisplayObject>());
+	th->upState = _IMNR(args[0].as<DisplayObject>());
 	th->reflectState();
 	return asAtom::invalidAtom;
 }
@@ -2909,7 +2909,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setHitTestState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj.as<SimpleButton>();
-	th->hitTestState = _IMNR(args[0]->as<DisplayObject>());
+	th->hitTestState = _IMNR(args[0].as<DisplayObject>());
 	return asAtom::invalidAtom;
 }
 
@@ -2926,7 +2926,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setOverState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj.as<SimpleButton>();
-	th->overState = _IMNR(args[0]->as<DisplayObject>());
+	th->overState = _IMNR(args[0].as<DisplayObject>());
 	th->reflectState();
 	return asAtom::invalidAtom;
 }
@@ -2944,7 +2944,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setDownState)
 {
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj.as<SimpleButton>();
-	th->downState = _IMNR(args[0]->as<DisplayObject>());
+	th->downState = _IMNR(args[0].as<DisplayObject>());
 	th->reflectState();
 	return asAtom::invalidAtom;
 }
@@ -2953,7 +2953,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setEnabled)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	assert_and_throw(argslen==1);
-	th->enabled=args[0]->Boolean_concrete();
+	th->enabled=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 
@@ -2967,7 +2967,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUseHandCursor)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	assert_and_throw(argslen==1);
-	th->useHandCursor=args[0]->Boolean_concrete();
+	th->useHandCursor=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 

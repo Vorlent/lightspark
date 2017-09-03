@@ -105,7 +105,7 @@ ASFUNCTIONBODY_GETTER_SETTER(ElementFormat,typographicCase)
 
 ASFUNCTIONBODY_ATOM(ElementFormat, _constructor)
 {
-	ElementFormat* th=obj->as<ElementFormat>();
+	ElementFormat* th=obj.as<ElementFormat>();
 	ARG_UNPACK_ATOM(th->fontDescription, NullRef)(th->fontSize, 12.0)(th->color, 0x000000) (th->alpha, 1.0)(th->textRotation, "auto")
 			(th->dominantBaseline, "roman") (th->alignmentBaseline, "useDominantBaseline") (th->baselineShift, 0.0)(th->kerning, "on")
 			(th->trackingRight, 0.0)(th->trackingLeft, 0.0)(th->locale, "en")(th->breakOpportunity, "auto")(th->digitCase, "default")
@@ -114,7 +114,7 @@ ASFUNCTIONBODY_ATOM(ElementFormat, _constructor)
 }
 ASFUNCTIONBODY_ATOM(ElementFormat, _clone)
 {
-	ElementFormat* th=obj->as<ElementFormat>();
+	ElementFormat* th=obj.as<ElementFormat>();
 
 	ElementFormat* newformat = Class<ElementFormat>::getInstanceSRaw(sys);
 	newformat->fontDescription = th->fontDescription;
@@ -173,7 +173,7 @@ ASFUNCTIONBODY_GETTER_SETTER(FontDescription,renderingMode)
 
 ASFUNCTIONBODY_ATOM(FontDescription, _clone)
 {
-	FontDescription* th=obj->as<FontDescription>();
+	FontDescription* th=obj.as<FontDescription>();
 
 	FontDescription* newfontdescription = Class<FontDescription>::getInstanceSRaw(sys);
 	newfontdescription->cffHinting = th->cffHinting;
@@ -313,7 +313,7 @@ ASFUNCTIONBODY_GETTER_SETTER_NOT_IMPLEMENTED(TextBlock, userData);
 
 ASFUNCTIONBODY_ATOM(TextBlock, _constructor)
 {
-	TextBlock* th=obj->as<TextBlock>();
+	TextBlock* th=obj.as<TextBlock>();
 	ARG_UNPACK_ATOM (th->content, NullRef);
 	if (argslen > 1)
 		LOG(LOG_NOT_IMPLEMENTED, "TextBlock constructor ignores some parameters");
@@ -323,7 +323,7 @@ ASFUNCTIONBODY_ATOM(TextBlock, _constructor)
 
 ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 {
-	TextBlock* th=obj->as<TextBlock>();
+	TextBlock* th=obj.as<TextBlock>();
 	_NR<TextLine> previousLine;
 	int32_t width;
 	number_t lineOffset;
@@ -376,7 +376,7 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 }
 ASFUNCTIONBODY_ATOM(TextBlock, recreateTextLine)
 {
-	TextBlock* th=obj->as<TextBlock>();
+	TextBlock* th=obj.as<TextBlock>();
 	_NR<TextLine> previousLine;
 	_NR<TextLine> textLine;
 	int32_t width;
@@ -422,7 +422,7 @@ ASFUNCTIONBODY_ATOM(TextBlock, recreateTextLine)
 
 ASFUNCTIONBODY_ATOM(TextBlock, releaseLines)
 {
-	TextBlock* th=obj->as<TextBlock>();
+	TextBlock* th=obj.as<TextBlock>();
 	_NR<TextLine> firstLine;
 	_NR<TextLine> lastLine;
 	ARG_UNPACK_ATOM (firstLine) (lastLine);
@@ -476,7 +476,7 @@ ASFUNCTIONBODY_GETTER_SETTER(TextElement, text);
 
 ASFUNCTIONBODY_ATOM(TextElement, _constructor)
 {
-	TextElement* th=obj->as<TextElement>();
+	TextElement* th=obj.as<TextElement>();
 	ARG_UNPACK_ATOM (th->text, "");
 	if (argslen > 1)
 		LOG(LOG_NOT_IMPLEMENTED, "TextElement constructor ignores some parameters");
@@ -563,20 +563,20 @@ ASFUNCTIONBODY_ATOM(TextLine, getDescent)
 
 ASFUNCTIONBODY_ATOM(TextLine, getAscent)
 {
-	TextLine* th=obj->as<TextLine>();
+	TextLine* th=obj.as<TextLine>();
 	LOG(LOG_NOT_IMPLEMENTED,"TextLine.ascent");
 	return asAtom(th->textHeight);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getTextWidth)
 {
-	TextLine* th=obj->as<TextLine>();
+	TextLine* th=obj.as<TextLine>();
 	return asAtom(th->textWidth);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getTextHeight)
 {
-	TextLine* th=obj->as<TextLine>();
+	TextLine* th=obj.as<TextLine>();
 	return asAtom(th->textHeight);
 }
 

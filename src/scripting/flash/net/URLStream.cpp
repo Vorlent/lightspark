@@ -283,7 +283,7 @@ ASFUNCTIONBODY(URLStream,readMultiByte) {
 }
 
 ASFUNCTIONBODY_ATOM(URLStream,readObject) {
-	URLStream* th=obj->as<URLStream>();
+	URLStream* th=obj.as<URLStream>();
 	asAtom v = asAtom::fromObject(th->data.getPtr());
 	return ByteArray::readObject(sys,v, args, argslen);
 }

@@ -154,18 +154,18 @@ void IFunction::sinit(Class_base* c)
 ASFUNCTIONBODY_GETTER_SETTER(IFunction,prototype);
 ASFUNCTIONBODY(IFunction,_length)
 {
-	if (obj->is<IFunction>())
+	if (obj.is<IFunction>())
 	{
 		IFunction* th=static_cast<IFunction*>(obj);
-		return abstract_i(obj->getSystemState(),th->length);
+		return abstract_i(obj.getSystemState(),th->length);
 	}
-	return abstract_i(obj->getSystemState(),1);
+	return abstract_i(obj.getSystemState(),1);
 }
 
 ASFUNCTIONBODY_ATOM(IFunction,apply)
 {
 	/* This function never changes the 'this' pointer of a method closure */
-	IFunction* th=obj->as<IFunction>();
+	IFunction* th=obj.as<IFunction>();
 	assert_and_throw(argslen<=2);
 
 	asAtom newObj;
@@ -240,7 +240,7 @@ ASFUNCTIONBODY_ATOM(IFunction,_call)
 
 ASFUNCTIONBODY(IFunction,_toString)
 {
-	return abstract_s(obj->getSystemState(),"function Function() {}");
+	return abstract_s(obj.getSystemState(),"function Function() {}");
 }
 
 asAtom Class<IFunction>::generator(std::vector<asAtom>& args, const unsigned int argslen)
@@ -402,11 +402,11 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 	/* Set the current global object, each script in each DoABCTag has its own */
 	getVm(getSystemState())->currentCallContext = &cc;
 
-	if (obj->type == T_INVALID)
+	if (obj.type == T_INVALID)
 	{
 		LOG(LOG_ERROR,"obj invalid");
 	}
-	assert_and_throw(obj->type != T_INVALID);
+	assert_and_throw(obj.type != T_INVALID);
 	//ASATOM_INCREF(obj); //this is free'd in ~call_context
 	cc.locals[0]=obj;
 
@@ -500,7 +500,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 			unsigned int pos = cc.exec_pos;
 			bool no_handler = true;
 
-			LOG(LOG_TRACE, "got an " << excobj->toDebugString());
+			LOG(LOG_TRACE, "got an " << excobj.toDebugString());
 			LOG(LOG_TRACE, "pos=" << pos);
 			for (unsigned int i=0;i<mi->body->exceptions.size();i++)
 			{
@@ -561,7 +561,7 @@ asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 	 * ABCVm::limits.max_recursion is reached in SyntheticFunction::call.
 	 */
 	asAtom ret;
-	assert_and_throw(obj->type != T_INVALID);
+	assert_and_throw(obj.type != T_INVALID);
 	if (val_atom)
 	{
 		// use the asAtom based call interface
@@ -580,7 +580,7 @@ asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 		for (uint32_t i = 0; i < num_args; i++)
 		{
 			if (args[i]->type == T_FUNCTION && args[i]->getClosure())
-				LOG(LOG_NOT_IMPLEMENTED,"builtin function not converted to asAtom called with function as argument:"<<obj->toDebugString()<<"."<<getSys()->getStringFromUniqueId(functionname)<<" "<<args[i]->toDebugString() );
+				LOG(LOG_NOT_IMPLEMENTED,"builtin function not converted to asAtom called with function as argument:"<<obj.toDebugString()<<"."<<getSys()->getStringFromUniqueId(functionname)<<" "<<args[i]->toDebugString() );
 			newArgs[i] = args[i].toObject(getSystemState());
 		}
 	}
@@ -888,12 +888,12 @@ void Class_base::setSuper(Ref<Class_base> super_)
 
 ASFUNCTIONBODY(Class_base,_toString)
 {
-	Class_base* th = obj->as<Class_base>();
+	Class_base* th = obj.as<Class_base>();
 	tiny_string ret;
 	ret = "[class ";
-	ret += obj->getSystemState()->getStringFromUniqueId(th->class_name.nameId);
+	ret += obj.getSystemState()->getStringFromUniqueId(th->class_name.nameId);
 	ret += "]";
-	return abstract_s(obj->getSystemState(),ret);
+	return abstract_s(obj.getSystemState(),ret);
 }
 
 void Class_base::addConstructorGetter()
@@ -918,8 +918,8 @@ Class_base::~Class_base()
 asAtom Class_base::_getter_constructorprop(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen)
 {
 	Class_base* th = NULL;
-	if(obj->is<Class_base>())
-		th = obj->as<Class_base>();
+	if(obj.is<Class_base>())
+		th = obj.as<Class_base>();
 	else
 		th = obj.getObject()->getClass();
 	if(argslen != 0)
@@ -929,9 +929,9 @@ asAtom Class_base::_getter_constructorprop(SystemState* sys, asAtom& obj, std::v
 
 asAtom Class_base::_getter_prototype(SystemState* sys,asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen)
 {
-	if(!obj->is<Class_base>())
+	if(!obj.is<Class_base>())
 		throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object");
-	Class_base* th = obj->as<Class_base>();
+	Class_base* th = obj.as<Class_base>();
 	if(argslen != 0)
 		throw Class<ArgumentError>::getInstanceS(sys,"Arguments provided in getter");
 	return th->constructorprop;
@@ -1064,7 +1064,7 @@ const std::vector<Class_base*>& Class_base::getInterfaces(bool *alldefined) cons
 					getVariableAndTargetByMultiname(*it, target);
 			if (interface_obj)
 			{
-				assert_and_throw(interface_obj->getObjectType()==T_CLASS);
+				assert_and_throw(interface_obj.getObjectType()==T_CLASS);
 				Class_base* inter=static_cast<Class_base*>(interface_obj);
 				//Probe the interface for its interfaces
 				bool bAllDefinedSub;
@@ -1303,12 +1303,12 @@ void Class_base::describeVariables(pugi::xml_node& root, const Class_base* c, st
 				obj = it->second.setter.getPtrC().getObject();
 			if (obj)
 			{
-				if (obj->is<SyntheticFunction>())
-					node.append_attribute("type").set_value(obj->as<SyntheticFunction>()->getMethodInfo()->returnTypeName()->qualifiedString(getSystemState(),true).raw_buf());
-				else if (obj->is<Function>())
+				if (obj.is<SyntheticFunction>())
+					node.append_attribute("type").set_value(obj.as<SyntheticFunction>()->getMethodInfo()->returnTypeName()->qualifiedString(getSystemState(),true).raw_buf());
+				else if (obj.is<Function>())
 				{
-					if (obj->as<Function>()->returnType)
-						node.append_attribute("type").set_value(obj->as<Function>()->returnType->getQualifiedClassName(true).raw_buf());
+					if (obj.as<Function>()->returnType)
+						node.append_attribute("type").set_value(obj.as<Function>()->returnType->getQualifiedClassName(true).raw_buf());
 					else
 						LOG(LOG_NOT_IMPLEMENTED,"describeType: return type not known:"<<this->class_name<<"  property "<<name);
 				}
@@ -1557,7 +1557,7 @@ ASFUNCTIONBODY(ASQName,_constructor)
 	{
 		th->local_name=BUILTIN_STRINGS::EMPTY;
 		th->uri_is_null=false;
-		th->uri=obj->getSystemState()->getUniqueStringId(getVm(obj->getSystemState())->getDefaultXMLNamespace());
+		th->uri=obj.getSystemState()->getUniqueStringId(getVm(obj.getSystemState())->getDefaultXMLNamespace());
 		return NULL;
 	}
 	if(argslen==1)
@@ -1599,7 +1599,7 @@ ASFUNCTIONBODY(ASQName,_constructor)
 		}
 		else
 		{
-			th->uri=obj->getSystemState()->getUniqueStringId(getVm(obj->getSystemState())->getDefaultXMLNamespace());
+			th->uri=obj.getSystemState()->getUniqueStringId(getVm(obj.getSystemState())->getDefaultXMLNamespace());
 		}
 	}
 	else if(namespaceval->getObjectType()==T_NULL)
@@ -1701,23 +1701,23 @@ ASFUNCTIONBODY(ASQName,_getURI)
 {
 	ASQName* th=static_cast<ASQName*>(obj);
 	if(th->uri_is_null)
-		return obj->getSystemState()->getNullRef();
+		return obj.getSystemState()->getNullRef();
 	else
-		return abstract_s(obj->getSystemState(),obj->getSystemState()->getStringFromUniqueId(th->uri));
+		return abstract_s(obj.getSystemState(),obj.getSystemState()->getStringFromUniqueId(th->uri));
 }
 
 ASFUNCTIONBODY(ASQName,_getLocalName)
 {
 	ASQName* th=static_cast<ASQName*>(obj);
-	return abstract_s(obj->getSystemState(),obj->getSystemState()->getStringFromUniqueId(th->local_name));
+	return abstract_s(obj.getSystemState(),obj.getSystemState()->getStringFromUniqueId(th->local_name));
 }
 
 ASFUNCTIONBODY(ASQName,_toString)
 {
-	if(!obj->is<ASQName>())
-		throw Class<TypeError>::getInstanceS(obj->getSystemState(),"QName.toString is not generic");
+	if(!obj.is<ASQName>())
+		throw Class<TypeError>::getInstanceS(obj.getSystemState(),"QName.toString is not generic");
 	ASQName* th=static_cast<ASQName*>(obj);
-	return abstract_s(obj->getSystemState(),th->toString());
+	return abstract_s(obj.getSystemState(),th->toString());
 }
 
 bool ASQName::isEqual(ASObject* o)
@@ -1819,7 +1819,7 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 {
 	asAtom urival;
 	asAtom prefixval;
-	Namespace* th=obj->as<Namespace>();
+	Namespace* th=obj.as<Namespace>();
 	assert_and_throw(argslen<3);
 
 	if (argslen == 0)
@@ -2000,7 +2000,7 @@ ASFUNCTIONBODY(Namespace,_setURI)
 ASFUNCTIONBODY(Namespace,_getURI)
 {
 	Namespace* th=static_cast<Namespace*>(obj);
-	return abstract_s(obj->getSystemState(),th->uri);
+	return abstract_s(obj.getSystemState(),th->uri);
 }
 /*
 ASFUNCTIONBODY(Namespace,_setPrefix)
@@ -2023,30 +2023,30 @@ ASFUNCTIONBODY(Namespace,_getPrefix)
 {
 	Namespace* th=static_cast<Namespace*>(obj);
 	if(th->prefix_is_undefined)
-		return obj->getSystemState()->getUndefinedRef();
+		return obj.getSystemState()->getUndefinedRef();
 	else
-		return abstract_s(obj->getSystemState(),th->prefix);
+		return abstract_s(obj.getSystemState(),th->prefix);
 }
 
 ASFUNCTIONBODY(Namespace,_toString)
 {
-	if(!obj->is<Namespace>())
-		throw Class<TypeError>::getInstanceS(obj->getSystemState(),"Namespace.toString is not generic");
+	if(!obj.is<Namespace>())
+		throw Class<TypeError>::getInstanceS(obj.getSystemState(),"Namespace.toString is not generic");
 	Namespace* th=static_cast<Namespace*>(obj);
-	return abstract_s(obj->getSystemState(),th->uri);
+	return abstract_s(obj.getSystemState(),th->uri);
 }
 
 ASFUNCTIONBODY(Namespace,_valueOf)
 {
-	return abstract_s(obj->getSystemState(),obj->as<Namespace>()->uri);
+	return abstract_s(obj.getSystemState(),obj.as<Namespace>()->uri);
 }
 
 ASFUNCTIONBODY(Namespace,_ECMA_valueOf)
 {
-	if(!obj->is<Namespace>())
-		throw Class<TypeError>::getInstanceS(obj->getSystemState(),"Namespace.valueOf is not generic");
+	if(!obj.is<Namespace>())
+		throw Class<TypeError>::getInstanceS(obj.getSystemState(),"Namespace.valueOf is not generic");
 	Namespace* th=static_cast<Namespace*>(obj);
-	return abstract_s(obj->getSystemState(),th->uri);
+	return abstract_s(obj.getSystemState(),th->uri);
 }
 
 bool Namespace::isEqual(ASObject* o)
@@ -2110,7 +2110,7 @@ asAtom Namespace::nextValue(uint32_t index)
 
 ASObject* ASNop(ASObject* obj, ASObject* const* args, const unsigned int argslen)
 {
-	return obj->getSystemState()->getUndefinedRef();
+	return obj.getSystemState()->getUndefinedRef();
 }
 
 asAtom Class<IFunction>::getNopFunction()
@@ -2225,19 +2225,19 @@ ASFUNCTIONBODY(lightspark,parseInt)
 	ARG_UNPACK (str, "") (radix, 0);
 
 	if(radix != 0 && (radix < 2 || radix > 36))
-		return abstract_d(obj->getSystemState(),numeric_limits<double>::quiet_NaN());
+		return abstract_d(obj.getSystemState(),numeric_limits<double>::quiet_NaN());
 
 	const char* cur=str.raw_buf();
 	int64_t ret;
 	bool valid=Integer::fromStringFlashCompatible(cur,ret,radix);
 
 	if(valid==false)
-		return abstract_d(obj->getSystemState(),numeric_limits<double>::quiet_NaN());
+		return abstract_d(obj.getSystemState(),numeric_limits<double>::quiet_NaN());
 	if(ret==INT64_MAX)
-		return abstract_d(obj->getSystemState(),numeric_limits<double>::infinity());
+		return abstract_d(obj.getSystemState(),numeric_limits<double>::infinity());
 	if(ret==INT64_MIN)
-		return abstract_d(obj->getSystemState(),-numeric_limits<double>::infinity());
-	return abstract_d(obj->getSystemState(),ret);
+		return abstract_d(obj.getSystemState(),-numeric_limits<double>::infinity());
+	return abstract_d(obj.getSystemState(),ret);
 }
 
 ASFUNCTIONBODY(lightspark,parseFloat)
@@ -2245,7 +2245,7 @@ ASFUNCTIONBODY(lightspark,parseFloat)
 	tiny_string str;
 	ARG_UNPACK (str, "");
 
-	return abstract_d(obj->getSystemState(),parseNumber(str));
+	return abstract_d(obj.getSystemState(),parseNumber(str));
 }
 number_t lightspark::parseNumber(const tiny_string str)
 {
@@ -2373,16 +2373,16 @@ bool lightspark::isXMLName(SystemState* sys, asAtom& obj)
 {
 	tiny_string name;
 
-	if(obj->type==lightspark::T_QNAME)
+	if(obj.type==lightspark::T_QNAME)
 	{
-		ASQName *q=obj->as<ASQName>();
+		ASQName *q=obj.as<ASQName>();
 		name=sys->getStringFromUniqueId(q->getLocalName());
 	}
-	else if(obj->type==lightspark::T_UNDEFINED ||
-		obj->type==lightspark::T_NULL)
+	else if(obj.type==lightspark::T_UNDEFINED ||
+		obj.type==lightspark::T_NULL)
 		name="";
 	else
-		name=obj->toString();
+		name=obj.toString();
 
 	if(name.empty())
 		return false;

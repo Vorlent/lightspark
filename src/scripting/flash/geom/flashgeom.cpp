@@ -996,7 +996,7 @@ ASFUNCTIONBODY(Transform,_setMatrix)
 
 ASFUNCTIONBODY_ATOM(Transform,_getColorTransform)
 {
-	Transform* th=obj->as<Transform>();
+	Transform* th=obj.as<Transform>();
 	if (th->owner->colorTransform.isNull())
 		th->owner->colorTransform = Class<ColorTransform>::getInstanceS(sys);
 	return asAtom::fromObject(th->owner->colorTransform.getPtr());

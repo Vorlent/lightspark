@@ -38,9 +38,9 @@ using namespace lightspark;
 #define ASFUNCTIONBODY_XML_DELEGATE(name) \
 	ASObject* XMLList::name(ASObject* obj, ASObject* const* args, const unsigned int argslen) \
 	{ \
-		XMLList* th=obj->as<XMLList>(); \
+		XMLList* th=obj.as<XMLList>(); \
 		if(!th) \
-			throw Class<ArgumentError>::getInstanceS(obj->getSystemState(),"Function applied to wrong object"); \
+			throw Class<ArgumentError>::getInstanceS(obj.getSystemState(),"Function applied to wrong object"); \
 		if(th->nodes.size()==1) \
 			return XML::name(th->nodes[0].getPtr(), args, argslen); \
 		else \
@@ -51,9 +51,9 @@ using namespace lightspark;
 #define ASFUNCTIONBODY_XML_DELEGATE_ATOM(name) \
 	ASObject* XMLList::name(ASObject* obj, ASObject* const* args, const unsigned int argslen) \
 	{ \
-		XMLList* th=obj->as<XMLList>(); \
+		XMLList* th=obj.as<XMLList>(); \
 		if(!th) \
-			throw Class<ArgumentError>::getInstanceS(obj->getSystemState(),"Function applied to wrong object"); \
+			throw Class<ArgumentError>::getInstanceS(obj.getSystemState(),"Function applied to wrong object"); \
 		if(th->nodes.size()==1) {\
 			asAtom objatom = asAtom::fromObject(th->nodes[0].getPtr()); \
 			std::vector<asAtom> argsAtom; \
@@ -61,7 +61,7 @@ using namespace lightspark;
 			for(unsigned int i = 0; i < argslen; i++) { \
 				argsAtom.push_back(asAtom::fromObject(args[i])); \
 			} \
-			return XML::name(obj->getSystemState(), objatom, argsAtom, argslen).toObject(obj->getSystemState()); \
+			return XML::name(obj.getSystemState(), objatom, argsAtom, argslen).toObject(obj.getSystemState()); \
 		} \
 		else \
 			throwError<TypeError>(kXMLOnlyWorksWithOneItemLists, #name); \
@@ -323,21 +323,21 @@ ASFUNCTIONBODY(XMLList,_getLength)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 	assert_and_throw(argslen==0);
-	return abstract_i(obj->getSystemState(),th->nodes.size());
+	return abstract_i(obj.getSystemState(),th->nodes.size());
 }
 
 ASFUNCTIONBODY(XMLList,_hasSimpleContent)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 	assert_and_throw(argslen==0);
-	return abstract_b(obj->getSystemState(),th->hasSimpleContent());
+	return abstract_b(obj.getSystemState(),th->hasSimpleContent());
 }
 
 ASFUNCTIONBODY(XMLList,_hasComplexContent)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 	assert_and_throw(argslen==0);
-	return abstract_b(obj->getSystemState(),th->hasComplexContent());
+	return abstract_b(obj.getSystemState(),th->hasComplexContent());
 }
 
 ASFUNCTIONBODY_ATOM(XMLList,generator)
@@ -377,12 +377,12 @@ ASFUNCTIONBODY(XMLList,descendants)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 	_NR<ASObject> name;
-	ARG_UNPACK(name,_NR<ASObject>(abstract_s(obj->getSystemState(),"*")));
+	ARG_UNPACK(name,_NR<ASObject>(abstract_s(obj.getSystemState(),"*")));
 	XML::XMLVector ret;
 	multiname mname(NULL);
 	name->applyProxyProperty(mname);
 	th->getDescendantsByQName(name->toString(),BUILTIN_STRINGS::EMPTY,mname.isAttribute,ret);
-	return create(obj->getSystemState(),ret,th->targetobject,multiname(NULL));
+	return create(obj.getSystemState(),ret,th->targetobject,multiname(NULL));
 }
 
 ASFUNCTIONBODY(XMLList,elements)
@@ -397,7 +397,7 @@ ASFUNCTIONBODY(XMLList,elements)
 	{
 		(*it)->getElementNodes(name, elems);
 	}
-	return create(obj->getSystemState(),elems,th->targetobject,multiname(NULL));
+	return create(obj.getSystemState(),elems,th->targetobject,multiname(NULL));
 }
 
 ASFUNCTIONBODY(XMLList,parent)
@@ -405,7 +405,7 @@ ASFUNCTIONBODY(XMLList,parent)
 	XMLList* th=Class<XMLList>::cast(obj);
 
 	if(th->nodes.size()==0)
-		return obj->getSystemState()->getUndefinedRef();
+		return obj.getSystemState()->getUndefinedRef();
 
 	auto it=th->nodes.begin();
 	ASObject *parent=(*it)->getParentNode();
@@ -415,7 +415,7 @@ ASFUNCTIONBODY(XMLList,parent)
 	{
 		ASObject *otherParent=(*it)->getParentNode();
 		if(!parent->isEqual(otherParent))
-			return obj->getSystemState()->getUndefinedRef();
+			return obj.getSystemState()->getUndefinedRef();
 	}
 
 	return parent;
@@ -428,7 +428,7 @@ ASFUNCTIONBODY_ATOM(XMLList,valueOf)
 
 ASFUNCTIONBODY(XMLList,child)
 {
-	XMLList* th = obj->as<XMLList>();
+	XMLList* th = obj.as<XMLList>();
 	assert_and_throw(argslen==1);
 	XML::XMLVector ret;
 	if(args[0]->is<Number>() ||
@@ -451,12 +451,12 @@ ASFUNCTIONBODY(XMLList,child)
 			(*it)->childrenImpl(ret, arg0);
 		}
 	}
-	return create(obj->getSystemState(),ret,th->targetobject,multiname(NULL));
+	return create(obj.getSystemState(),ret,th->targetobject,multiname(NULL));
 }
 
 ASFUNCTIONBODY(XMLList,children)
 {
-	XMLList* th = obj->as<XMLList>();
+	XMLList* th = obj.as<XMLList>();
 	assert_and_throw(argslen==0);
 	XML::XMLVector ret;
 	auto it=th->nodes.begin();
@@ -464,12 +464,12 @@ ASFUNCTIONBODY(XMLList,children)
 	{
 		(*it)->childrenImpl(ret, "*");
 	}
-	return create(obj->getSystemState(),ret,th->targetobject,multiname(NULL));
+	return create(obj.getSystemState(),ret,th->targetobject,multiname(NULL));
 }
 
 ASFUNCTIONBODY(XMLList,text)
 {
-	XMLList* th = obj->as<XMLList>();
+	XMLList* th = obj.as<XMLList>();
 	ARG_UNPACK;
 	XML::XMLVector ret;
 	auto it=th->nodes.begin();
@@ -477,31 +477,31 @@ ASFUNCTIONBODY(XMLList,text)
 	{
 		(*it)->getText(ret);
 	}
-	return create(obj->getSystemState(),ret,th->targetobject,multiname(NULL));
+	return create(obj.getSystemState(),ret,th->targetobject,multiname(NULL));
 }
 
 ASFUNCTIONBODY(XMLList,contains)
 {
-	XMLList* th = obj->as<XMLList>();
+	XMLList* th = obj.as<XMLList>();
 	_NR<ASObject> value;
 	ARG_UNPACK (value);
 	if(!value->is<XML>())
-		return abstract_b(obj->getSystemState(),false);
+		return abstract_b(obj.getSystemState(),false);
 
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
 	{
 		if((*it)->isEqual(value.getPtr()))
-			return abstract_b(obj->getSystemState(),true);
+			return abstract_b(obj.getSystemState(),true);
 	}
 
-	return abstract_b(obj->getSystemState(),false);
+	return abstract_b(obj.getSystemState(),false);
 }
 
 ASFUNCTIONBODY(XMLList,copy)
 {
-	XMLList* th = obj->as<XMLList>();
-	XMLList *dest = Class<XMLList>::getInstanceSNoArgs(obj->getSystemState());
+	XMLList* th = obj.as<XMLList>();
+	XMLList *dest = Class<XMLList>::getInstanceSNoArgs(obj.getSystemState());
 	dest->targetobject = th->targetobject;
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
@@ -513,7 +513,7 @@ ASFUNCTIONBODY(XMLList,copy)
 
 ASFUNCTIONBODY(XMLList,attribute)
 {
-	XMLList *th = obj->as<XMLList>();
+	XMLList *th = obj.as<XMLList>();
 
 	if(argslen > 0 && args[0]->is<QName>())
 		LOG(LOG_NOT_IMPLEMENTED,"XMLList.attribute called with QName");
@@ -522,8 +522,8 @@ ASFUNCTIONBODY(XMLList,attribute)
 	ARG_UNPACK (attrname);
 	multiname mname(NULL);
 	mname.name_type=multiname::NAME_STRING;
-	mname.name_s_id=obj->getSystemState()->getUniqueStringId(attrname);
-	mname.ns.emplace_back(obj->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
+	mname.name_s_id=obj.getSystemState()->getUniqueStringId(attrname);
+	mname.ns.emplace_back(obj.getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 	mname.isAttribute = true;
 
 	asAtom attr=th->getVariableByMultiname(mname, NONE);
@@ -533,7 +533,7 @@ ASFUNCTIONBODY(XMLList,attribute)
 
 ASFUNCTIONBODY_ATOM(XMLList,attributes)
 {
-	XMLList *th = obj->as<XMLList>();
+	XMLList *th = obj.as<XMLList>();
 	XMLList *res = Class<XMLList>::getInstanceSNoArgs(sys);
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
@@ -548,7 +548,7 @@ ASFUNCTIONBODY(XMLList,comments)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 
-	XMLList *res = Class<XMLList>::getInstanceSNoArgs(obj->getSystemState());
+	XMLList *res = Class<XMLList>::getInstanceSNoArgs(obj.getSystemState());
 	XML::XMLVector nodecomments;
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
@@ -564,7 +564,7 @@ ASFUNCTIONBODY(XMLList,processingInstructions)
 	tiny_string name;
 	ARG_UNPACK(name,"*");
 
-	XMLList *res = Class<XMLList>::getInstanceSNoArgs(obj->getSystemState());
+	XMLList *res = Class<XMLList>::getInstanceSNoArgs(obj.getSystemState());
 	XML::XMLVector nodeprocessingInstructions;
 	auto it=th->nodes.begin();
 	for(; it!=th->nodes.end(); ++it)
@@ -580,15 +580,15 @@ ASFUNCTIONBODY(XMLList,_propertyIsEnumerable)
 	if (argslen == 1)
 	{
 		int32_t n = args[0]->toInt();
-		return abstract_b(obj->getSystemState(),n < (int32_t)th->nodes.size());
+		return abstract_b(obj.getSystemState(),n < (int32_t)th->nodes.size());
 		
 	}
-	return abstract_b(obj->getSystemState(),false);
+	return abstract_b(obj.getSystemState(),false);
 }
 
 ASFUNCTIONBODY_ATOM(XMLList,_normalize)
 {
-	XMLList *th = obj->as<XMLList>();
+	XMLList *th = obj.as<XMLList>();
 	th->normalize();
 	return asAtom::fromObject(th);
 }
@@ -1150,7 +1150,7 @@ number_t XMLList::toNumber()
 ASFUNCTIONBODY(XMLList,_toString)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
-	return abstract_s(obj->getSystemState(),th->toString_priv());
+	return abstract_s(obj.getSystemState(),th->toString_priv());
 }
 
 tiny_string XMLList::toXMLString_internal(bool pretty)
@@ -1174,7 +1174,7 @@ ASFUNCTIONBODY(XMLList,toXMLString)
 {
 	XMLList* th=Class<XMLList>::cast(obj);
 	assert_and_throw(argslen==0);
-	ASString* ret=abstract_s(obj->getSystemState(),th->toXMLString_internal());
+	ASString* ret=abstract_s(obj.getSystemState(),th->toXMLString_internal());
 	return ret;
 }
 

@@ -88,7 +88,7 @@ TRISTATE UInteger::isLess(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 {
-	UInteger* th=obj->as<UInteger>();
+	UInteger* th=obj.as<UInteger>();
 	if(argslen==0)
 	{
 		//The uint is already initialized to 0
@@ -110,10 +110,10 @@ ASFUNCTIONBODY_ATOM(UInteger,_valueOf)
 	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom((uint32_t)0);
 
-	if(!obj->is<UInteger>())
+	if(!obj.is<UInteger>())
 			throw Class<TypeError>::getInstanceS(sys,"");
 
-	return asAtom(obj->as<UInteger>()->val);
+	return asAtom(obj.as<UInteger>()->val);
 }
 
 void UInteger::sinit(Class_base* c)
@@ -141,7 +141,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toString)
 	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 
-	UInteger* th=obj->as<UInteger>();
+	UInteger* th=obj.as<UInteger>();
 	uint32_t radix;
 	ARG_UNPACK_ATOM (radix,10);
 
@@ -178,7 +178,7 @@ bool UInteger::isEqual(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toExponential)
 {
-	UInteger *th=obj->as<UInteger>();
+	UInteger *th=obj.as<UInteger>();
 	double v = (double)th->val;
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
@@ -194,7 +194,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toExponential)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toFixed)
 {
-	UInteger *th=obj->as<UInteger>();
+	UInteger *th=obj.as<UInteger>();
 	int fractiondigits;
 	ARG_UNPACK_ATOM (fractiondigits, 0);
 	return asAtom::fromObject(abstract_s(sys,Number::toFixedString(th->val, fractiondigits)));
@@ -202,7 +202,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toFixed)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toPrecision)
 {
-	UInteger *th=obj->as<UInteger>();
+	UInteger *th=obj.as<UInteger>();
 	if (argslen == 0 || args[0]->is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,th->toString()));
 	int precision;

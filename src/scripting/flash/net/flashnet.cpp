@@ -147,16 +147,16 @@ void URLRequest::validateHeaderName(const tiny_string& headerName) const
 std::list<tiny_string> URLRequest::getHeaders()
 {
 	list<tiny_string> headers;
-	Array* requestHeadersArr = requestHeaders->as<Array>();
+	Array* requestHeadersArr = requestHeaders.as<Array>();
 	int headerTotalLen = 0;
 	for (unsigned i=0; i<requestHeadersArr->size(); i++)
 	{
 		asAtom headerObject = requestHeadersArr->at(i);
 
 		// Validate
-		if (!headerObject->is<URLRequestHeader>())
+		if (!headerObject.is<URLRequestHeader>())
 			throwError<TypeError>(kCheckTypeFailedError, headerObject.toObject(getSystemState())->getClassName(), "URLRequestHeader");
-		URLRequestHeader *header = headerObject->as<URLRequestHeader>();
+		URLRequestHeader *header = headerObject.as<URLRequestHeader>();
 		tiny_string headerName = header->name;
 		validateHeaderName(headerName);
 		if ((header->value.strchr('\r') != NULL) ||
@@ -267,7 +267,7 @@ ASFUNCTIONBODY(URLRequest,_getMethod)
 
 ASFUNCTIONBODY_ATOM(URLRequest,_getData)
 {
-	URLRequest* th=obj->as<URLRequest>();
+	URLRequest* th=obj.as<URLRequest>();
 	if(th->data.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
 
@@ -485,7 +485,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,_constructor)
 {
 	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
-	if(argslen==1 && args[0]->is<URLRequest>())
+	if(argslen==1 && args[0].is<URLRequest>())
 	{
 		//URLRequest* urlRequest=Class<URLRequest>::dyncast(args[0]);
 		load(sys, obj, args, argslen);
@@ -495,7 +495,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,_constructor)
 
 ASFUNCTIONBODY_ATOM(URLLoader,load)
 {
-	URLLoader* th=obj->as<URLLoader>();
+	URLLoader* th=obj.as<URLLoader>();
 	ASObject* arg=args[0].getObject();
 	URLRequest* urlRequest=Class<URLRequest>::dyncast(arg);
 	assert_and_throw(urlRequest);
@@ -558,7 +558,7 @@ ASFUNCTIONBODY(URLLoader,_getDataFormat)
 
 ASFUNCTIONBODY_ATOM(URLLoader,_getData)
 {
-	URLLoader* th=obj->as<URLLoader>();
+	URLLoader* th=obj.as<URLLoader>();
 	SpinlockLocker l(th->spinlock);
 	if(th->data.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
@@ -1248,7 +1248,7 @@ ASFUNCTIONBODY(NetStream,_getInfo)
 
 ASFUNCTIONBODY_ATOM(NetStream,_getClient)
 {
-	NetStream* th=obj->as<NetStream>();
+	NetStream* th=obj.as<NetStream>();
 	if(th->client.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
 	return asAtom::fromObject(th->client.getPtr());
@@ -1287,7 +1287,7 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 {
 	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
-	NetStream* th=obj->as<NetStream>();
+	NetStream* th=obj.as<NetStream>();
 
 	LOG(LOG_CALLS,_("NetStream constructor"));
 	tiny_string value;
@@ -1979,7 +1979,7 @@ void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtom
 	callbackName.name_s_id=getSys()->getUniqueStringId(name);
 	callbackName.ns.push_back(nsNameAndKind(getSystemState(),"",NAMESPACE));
 	asAtom callback = client->getVariableByMultiname(callbackName);
-	if(callback->type == T_FUNCTION)
+	if(callback.type == T_FUNCTION)
 	{
 		std::vector<asAtom> callbackArgs;
 		callbackArgs.reserve(arglist.size());
@@ -2136,11 +2136,11 @@ void URLVariables::decode(const tiny_string& s)
 			propName.name_s_id=getSys()->getUniqueStringId(tiny_string(name,true));
 			propName.ns.push_back(nsNameAndKind(getSystemState(),"",NAMESPACE));
 			asAtom curValue=getVariableByMultiname(propName);
-			if(curValue->type != T_INVALID)
+			if(curValue.type != T_INVALID)
 			{
 				//If the variable already exists we have to create an Array of values
 				Array* arr=NULL;
-				if(curValue->type!=T_ARRAY)
+				if(curValue.type!=T_ARRAY)
 				{
 					arr=Class<Array>::getInstanceSNoArgs(getSystemState());
 					arr->push(curValue);
@@ -2218,7 +2218,7 @@ tiny_string URLVariables::toString_priv()
 		//TODO: check if the allow_unicode flag should be true or false in g_uri_escape_string
 
 		asAtom val=getValueAt(i);
-		if(val->type==T_ARRAY)
+		if(val.type==T_ARRAY)
 		{
 			//Print using multiple properties
 			//Ex. ["foo","bar"] -> prop1=foo&prop1=bar
@@ -2232,7 +2232,7 @@ tiny_string URLVariables::toString_priv()
 				tmp+="=";
 
 				//Escape the value
-				const tiny_string& value=arr->at(j)->toString();
+				const tiny_string& value=arr->at(j).toString();
 				char* escapedValue=g_uri_escape_string(value.raw_buf(),NULL, false);
 				tmp+=escapedValue;
 				g_free(escapedValue);
@@ -2250,7 +2250,7 @@ tiny_string URLVariables::toString_priv()
 			tmp+="=";
 
 			//Escape the value
-			const tiny_string& value=val->toString();
+			const tiny_string& value=val.toString();
 			char* escapedValue=g_uri_escape_string(value.raw_buf(),NULL, false);
 			tmp+=escapedValue;
 			g_free(escapedValue);
@@ -2355,9 +2355,9 @@ ASFUNCTIONBODY_ATOM(Responder, _constructor)
 {
 	Responder* th=Class<Responder>::cast(obj.getObject());
 	assert_and_throw(argslen==1 || argslen==2);
-	assert_and_throw(args[0]->type==T_FUNCTION);
+	assert_and_throw(args[0].type==T_FUNCTION);
 	th->result = args[0];
-	if(argslen==2 && args[1]->type==T_FUNCTION)
+	if(argslen==2 && args[1].type==T_FUNCTION)
 	{
 		th->status = args[1];
 	}
@@ -2527,7 +2527,7 @@ ASFUNCTIONBODY(lightspark,registerClassAlias)
 ASFUNCTIONBODY_ATOM(lightspark,getClassByAlias)
 {
 	assert_and_throw(argslen==1 && args[0].getObject()->getObjectType()==T_STRING);
-	const tiny_string& arg0 = args[0]->toString();
+	const tiny_string& arg0 = args[0].toString();
 	auto it=getSys()->aliasMap.find(arg0);
 	if(it==getSys()->aliasMap.end())
 		throwError<ReferenceError>(kClassNotFoundError, arg0);

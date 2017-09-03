@@ -232,7 +232,7 @@ void ApplicationDomain::finalize()
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_constructor)
 {
-	ApplicationDomain* th = obj->as<ApplicationDomain>();
+	ApplicationDomain* th = obj.as<ApplicationDomain>();
 	_NR<ApplicationDomain> parentDomain;
 	ARG_UNPACK_ATOM (parentDomain, NullRef);
 	if(!th->parentDomain.isNull())
@@ -259,9 +259,9 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_getCurrentDomain)
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,hasDefinition)
 {
-	ApplicationDomain* th = obj->as<ApplicationDomain>();
+	ApplicationDomain* th = obj.as<ApplicationDomain>();
 	assert(argslen==1);
-	const tiny_string& tmp=args[0]->toString();
+	const tiny_string& tmp=args[0].toString();
 
 	multiname name(NULL);
 	name.name_type=multiname::NAME_STRING;
@@ -290,9 +290,9 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,hasDefinition)
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,getDefinition)
 {
-	ApplicationDomain* th = obj->as<ApplicationDomain>();
+	ApplicationDomain* th = obj.as<ApplicationDomain>();
 	assert(argslen==1);
-	const tiny_string& tmp=args[0]->toString();
+	const tiny_string& tmp=args[0].toString();
 
 	multiname name(NULL);
 	name.name_type=multiname::NAME_STRING;
@@ -375,7 +375,7 @@ ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& na
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
 		asAtom o=globalScopes[i]->getVariableByMultiname(name);
-		if(o->type != T_INVALID)
+		if(o.type != T_INVALID)
 		{
 			target=globalScopes[i];
 			// No incRef, return a reference borrowed from globalScopes
@@ -398,7 +398,7 @@ ASObject* ApplicationDomain::getVariableByMultinameOpportunistic(const multiname
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
 		asAtom o=globalScopes[i]->getVariableByMultinameOpportunistic(name);
-		if(o->type != T_INVALID)
+		if(o.type != T_INVALID)
 		{
 			// No incRef, return a reference borrowed from globalScopes
 			return o.toObject(getSystemState());

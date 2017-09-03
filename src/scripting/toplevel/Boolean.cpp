@@ -72,7 +72,7 @@ bool lightspark::Boolean_concrete(const ASObject* o)
 ASFUNCTIONBODY_ATOM(Boolean,generator)
 {
 	if(argslen==1)
-		return asAtom(args[0]->Boolean_concrete());
+		return asAtom(args[0].Boolean_concrete());
 	else
 		return asAtom::falseAtom;
 }
@@ -94,7 +94,7 @@ ASFUNCTIONBODY_ATOM(Boolean,_constructor)
 		//No need to handle default argument. The object is initialized to false anyway
 		return asAtom::invalidAtom;
 	}
-	th->val=args[0]->Boolean_concrete();
+	th->val=args[0].Boolean_concrete();
 	return asAtom::invalidAtom;
 }
 

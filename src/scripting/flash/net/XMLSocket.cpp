@@ -212,8 +212,8 @@ ASFUNCTIONBODY_ATOM(XMLSocket, _constructor)
 	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
 
-	XMLSocket* th=obj->as<XMLSocket>();
-	host_is_null = argslen > 0 && args[0]->is<Null>();
+	XMLSocket* th=obj.as<XMLSocket>();
+	host_is_null = argslen > 0 && args[0].is<Null>();
 	if (port != 0)
 	{
 		if (host_is_null)

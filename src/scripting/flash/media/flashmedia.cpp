@@ -286,7 +286,7 @@ ASFUNCTIONBODY_ATOM(Sound,_constructor)
 
 ASFUNCTIONBODY_ATOM(Sound,load)
 {
-	Sound* th=obj->as<Sound>();
+	Sound* th=obj.as<Sound>();
 	_NR<URLRequest> urlRequest;
 	_NR<SoundLoaderContext> context;
 	

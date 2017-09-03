@@ -975,7 +975,7 @@ ASFUNCTIONBODY(ByteArray,readMultiByte)
 
 ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 {
-	ByteArray* th=obj->as<ByteArray>();
+	ByteArray* th=obj.as<ByteArray>();
 	assert_and_throw(argslen==0);
 	th->lock();
 	if(th->bytes==NULL)
@@ -1000,7 +1000,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 		//TODO: throw AS exception
 	}
 
-	if(ret->type == T_INVALID)
+	if(ret.type == T_INVALID)
 	{
 		LOG(LOG_ERROR,"No objects in the AMF3 data. Returning Undefined");
 		return asAtom::undefinedAtom;
@@ -1086,7 +1086,7 @@ void ByteArray::setVariableByMultiname(const multiname& name, asAtom& o, CONST_A
 	}
 
 	// Fill the byte pointed to by index with the truncated uint value of the object.
-	uint8_t value = static_cast<uint8_t>(o->toUInt() & 0xff);
+	uint8_t value = static_cast<uint8_t>(o.toUInt() & 0xff);
 	bytes[index] = value;
 }
 
@@ -1374,7 +1374,7 @@ ASFUNCTIONBODY(ByteArray,clear)
 // this seems to be how AS3 handles generic pop calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,pop)
 {
-	ByteArray* th=obj->as<ByteArray>();
+	ByteArray* th=obj.as<ByteArray>();
 	uint8_t res = 0;
 	th->lock();
 	if (th->readByte(res))
@@ -1395,7 +1395,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,push)
 	th->getBuffer(th->len+argslen,true);
 	for (unsigned int i = 0; i < argslen; i++)
 	{
-		th->bytes[th->len+i] = (uint8_t)args[i]->toInt();
+		th->bytes[th->len+i] = (uint8_t)args[i].toInt();
 	}
 	uint32_t res = th->getLength();
 	th->unlock();
@@ -1405,7 +1405,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,push)
 // this seems to be how AS3 handles generic shift calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,shift)
 {
-	ByteArray* th=obj->as<ByteArray>();
+	ByteArray* th=obj.as<ByteArray>();
 	uint8_t res = 0;
 	th->lock();
 	if (th->readByte(res))
@@ -1420,13 +1420,13 @@ ASFUNCTIONBODY_ATOM(ByteArray,shift)
 // this seems to be how AS3 handles generic unshift calls in Array class
 ASFUNCTIONBODY_ATOM(ByteArray,unshift)
 {
-	ByteArray* th=obj->as<ByteArray>();
+	ByteArray* th=obj.as<ByteArray>();
 	th->lock();
 	th->getBuffer(th->len+argslen,true);
 	for (unsigned int i = 0; i < argslen; i++)
 	{
 		memmove((th->bytes+argslen),(th->bytes),th->len);
-		th->bytes[i] = (uint8_t)args[i]->toInt();
+		th->bytes[i] = (uint8_t)args[i].toInt();
 	}
 	uint32_t res = th->getLength();
 	th->unlock();

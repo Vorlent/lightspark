@@ -181,41 +181,41 @@ ASFUNCTIONBODY_ATOM(Number,_toString)
 {
 	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
-	if(!obj->isNumeric())
+	if(!obj.isNumeric())
 		throwError<TypeError>(kInvokeOnIncompatibleObjectError, "Number.toString");
 	int radix=10;
 	ARG_UNPACK_ATOM (radix,10);
 
-	if((radix==10) || (obj->is<Number>() &&
-					   ((obj->as<Number>()->isfloat && std::isnan(obj->as<Number>()->dval)) ||
-					   (obj->as<Number>()->isfloat && std::isinf(obj->as<Number>()->dval)))))
+	if((radix==10) || (obj.is<Number>() &&
+					   ((obj.as<Number>()->isfloat && std::isnan(obj.as<Number>()->dval)) ||
+					   (obj.as<Number>()->isfloat && std::isinf(obj.as<Number>()->dval)))))
 	{
 		//see e 15.7.4.2
-		return asAtom::fromObject(abstract_s(sys,obj->toString()));
+		return asAtom::fromObject(abstract_s(sys,obj.toString()));
 	}
 	else
 	{
-		return asAtom::fromObject(abstract_s(sys,Number::toStringRadix(obj->toNumber(), radix)));
+		return asAtom::fromObject(abstract_s(sys,Number::toStringRadix(obj.toNumber(), radix)));
 	}
 }
 ASFUNCTIONBODY_ATOM(Number,_toLocaleString)
 {
 	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
-	if(!obj->isNumeric())
+	if(!obj.isNumeric())
 		return asAtom::fromString(sys,"0");
 	int radix=10;
 
-	if((radix==10) || (obj->is<Number>() &&
-					   ((obj->as<Number>()->isfloat && std::isnan(obj->as<Number>()->dval)) ||
-					   (obj->as<Number>()->isfloat && std::isinf(obj->as<Number>()->dval)))))
+	if((radix==10) || (obj.is<Number>() &&
+					   ((obj.as<Number>()->isfloat && std::isnan(obj.as<Number>()->dval)) ||
+					   (obj.as<Number>()->isfloat && std::isinf(obj.as<Number>()->dval)))))
 	{
 		//see e 15.7.4.2
-		return asAtom::fromObject(abstract_s(sys,obj->toString()));
+		return asAtom::fromObject(abstract_s(sys,obj.toString()));
 	}
 	else
 	{
-		return asAtom::fromObject(abstract_s(sys,Number::toStringRadix(obj->toNumber(), radix)));
+		return asAtom::fromObject(abstract_s(sys,Number::toStringRadix(obj.toNumber(), radix)));
 	}
 }
 
@@ -353,7 +353,7 @@ void Number::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(Number,_constructor)
 {
-	Number* th=obj->as<Number>();
+	Number* th=obj.as<Number>();
 	if(argslen==0)
 	{
 		// not constructed Numbers are set to NaN, so we have to set it to the default value during dynamic construction
@@ -382,7 +382,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 
 ASFUNCTIONBODY_ATOM(Number,toFixed)
 {
-	number_t val = obj->toNumber();
+	number_t val = obj.toNumber();
 	int fractiondigits;
 	ARG_UNPACK_ATOM (fractiondigits,0);
 	return asAtom::fromObject(abstract_s(sys,toFixedString(val, fractiondigits)));
@@ -424,7 +424,7 @@ tiny_string Number::toFixedString(double v, int32_t fractiondigits)
 
 ASFUNCTIONBODY_ATOM(Number,toExponential)
 {
-	Number* th=obj->as<Number>();
+	Number* th=obj.as<Number>();
 	double v = th->toNumber();
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
@@ -531,7 +531,7 @@ int32_t Number::countSignificantDigits(double v) {
 
 ASFUNCTIONBODY_ATOM(Number,toPrecision)
 {
-	Number* th=obj->as<Number>();
+	Number* th=obj.as<Number>();
 	double v = th->toNumber();
 	if (argslen == 0 || args[0]->is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,toString(v)));
@@ -574,7 +574,7 @@ ASFUNCTIONBODY_ATOM(Number,_valueOf)
 	if(Class<Number>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom(0);
 
-	if(!obj->isNumeric())
+	if(!obj.isNumeric())
 		throwError<TypeError>(kInvokeOnIncompatibleObjectError);
 
 	return obj;

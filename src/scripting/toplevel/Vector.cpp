@@ -170,7 +170,7 @@ ASFUNCTIONBODY_ATOM(Vector,_constructor)
 	ARG_UNPACK_ATOM (len, 0) (fixed, false);
 	assert_and_throw(argslen <= 2);
 
-	Vector* th=obj->as< Vector>();
+	Vector* th=obj.as< Vector>();
 	assert(th->vec_type);
 	th->fixed = fixed;
 	th->vec.resize(len, asAtom::invalidAtom);
@@ -180,7 +180,7 @@ ASFUNCTIONBODY_ATOM(Vector,_constructor)
 
 ASFUNCTIONBODY_ATOM(Vector,_concat)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	std::vector<asAtom> empty;
 	Vector* ret= th->getClass()->getInstance(true,empty,0)->as<Vector>();
 	// copy values into new Vector
@@ -226,7 +226,7 @@ ASFUNCTIONBODY_ATOM(Vector,filter)
 		throwError<ArgumentError>(kWrongArgumentCountError, "Vector.filter", "1", Integer::toString(argslen));
 	if (!args[0]->is<IFunction>())
 		throwError<TypeError>(kCheckTypeFailedError, args[0].toObject(sys)->getClassName(), "Function");
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	  
 	asAtom f = args[0];
 	std::vector<asAtom> params(3);
@@ -394,7 +394,7 @@ ASFUNCTIONBODY_ATOM(Vector,push)
 
 ASFUNCTIONBODY_ATOM(Vector,_pop)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kVectorFixedError);
 	uint32_t size =th->size();
@@ -410,12 +410,12 @@ ASFUNCTIONBODY_ATOM(Vector,_pop)
 
 ASFUNCTIONBODY_ATOM(Vector,getLength)
 {
-	return asAtom((uint32_t)obj->as<Vector>()->vec.size());
+	return asAtom((uint32_t)obj.as<Vector>()->vec.size());
 }
 
 ASFUNCTIONBODY_ATOM(Vector,setLength)
 {
-	Vector* th = obj->as<Vector>();
+	Vector* th = obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kVectorFixedError);
 	uint32_t len;
@@ -431,12 +431,12 @@ ASFUNCTIONBODY_ATOM(Vector,setLength)
 
 ASFUNCTIONBODY_ATOM(Vector,getFixed)
 {
-	return asAtom(obj->as<Vector>()->fixed);
+	return asAtom(obj.as<Vector>()->fixed);
 }
 
 ASFUNCTIONBODY_ATOM(Vector,setFixed)
 {
-	Vector* th = obj->as<Vector>();
+	Vector* th = obj.as<Vector>();
 	bool fixed;
 	ARG_UNPACK_ATOM (fixed);
 	th->fixed = fixed;
@@ -445,7 +445,7 @@ ASFUNCTIONBODY_ATOM(Vector,setFixed)
 
 ASFUNCTIONBODY_ATOM(Vector,forEach)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (argslen < 1)
 		throwError<ArgumentError>(kWrongArgumentCountError, "Vector.forEach", "1", Integer::toString(argslen));
 	if (!args[0]->is<IFunction>())
@@ -478,7 +478,7 @@ ASFUNCTIONBODY_ATOM(Vector,forEach)
 
 ASFUNCTIONBODY_ATOM(Vector, _reverse)
 {
-	Vector* th = obj->as<Vector>();
+	Vector* th = obj.as<Vector>();
 
 	std::vector<asAtom> tmp = std::vector<asAtom>(th->vec.begin(),th->vec.end());
 	uint32_t size = th->size();
@@ -496,7 +496,7 @@ ASFUNCTIONBODY_ATOM(Vector, _reverse)
 
 ASFUNCTIONBODY_ATOM(Vector,lastIndexOf)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	assert_and_throw(argslen==1 || argslen==2);
 	int32_t ret=-1;
 	asAtom arg0=args[0];
@@ -544,7 +544,7 @@ ASFUNCTIONBODY_ATOM(Vector,lastIndexOf)
 
 ASFUNCTIONBODY_ATOM(Vector,shift)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kVectorFixedError);
 	asAtom natom = asAtom(T_NULL);
@@ -584,7 +584,7 @@ int Vector::capIndex(int i) const
 
 ASFUNCTIONBODY_ATOM(Vector,slice)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 
 	int startIndex=0;
 	int endIndex=16777215;
@@ -612,7 +612,7 @@ ASFUNCTIONBODY_ATOM(Vector,slice)
 
 ASFUNCTIONBODY_ATOM(Vector,splice)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kVectorFixedError);
 	int startIndex=args[0]->toInt();
@@ -674,7 +674,7 @@ ASFUNCTIONBODY_ATOM(Vector,splice)
 
 ASFUNCTIONBODY_ATOM(Vector,join)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	
 	tiny_string del = ",";
 	if (argslen == 1)
@@ -692,7 +692,7 @@ ASFUNCTIONBODY_ATOM(Vector,join)
 
 ASFUNCTIONBODY_ATOM(Vector,indexOf)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	assert_and_throw(argslen==1 || argslen==2);
 	int32_t ret=-1;
 	asAtom arg0=args[0];
@@ -824,7 +824,7 @@ ASFUNCTIONBODY_ATOM(Vector,_sort)
 
 ASFUNCTIONBODY_ATOM(Vector,unshift)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kVectorFixedError);
 	if (argslen > 0)
@@ -847,7 +847,7 @@ ASFUNCTIONBODY_ATOM(Vector,unshift)
 
 ASFUNCTIONBODY_ATOM(Vector,_map)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	asAtom func = asAtom(T_FUNCTION);
 	asAtom thisObject;
 	
@@ -874,7 +874,7 @@ ASFUNCTIONBODY_ATOM(Vector,_map)
 ASFUNCTIONBODY_ATOM(Vector,_toString)
 {
 	tiny_string ret;
-	Vector* th = obj->as<Vector>();
+	Vector* th = obj.as<Vector>();
 	asAtom natom = asAtom(T_NULL);
 	for(size_t i=0; i < th->vec.size(); ++i)
 	{
@@ -892,7 +892,7 @@ ASFUNCTIONBODY_ATOM(Vector,_toString)
 
 ASFUNCTIONBODY_ATOM(Vector,insertAt)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kOutOfRangeError);
 	int32_t index;
@@ -916,7 +916,7 @@ ASFUNCTIONBODY_ATOM(Vector,insertAt)
 
 ASFUNCTIONBODY_ATOM(Vector,removeAt)
 {
-	Vector* th=obj->as<Vector>();
+	Vector* th=obj.as<Vector>();
 	if (th->fixed)
 		throwError<RangeError>(kOutOfRangeError);
 	int32_t index;

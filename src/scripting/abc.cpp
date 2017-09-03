@@ -2322,7 +2322,7 @@ void ABCContext::buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed
 #ifdef PROFILING_SUPPORT
 			if(!m->validProfName)
 			{
-				m->profName=obj->getClassName()+"::"+mname->qualifiedString(obj->getSystemState());
+				m->profName=obj.getClassName()+"::"+mname->qualifiedString(obj.getSystemState());
 				m->validProfName=true;
 			}
 #endif

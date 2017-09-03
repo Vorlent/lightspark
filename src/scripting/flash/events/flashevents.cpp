@@ -167,8 +167,8 @@ ASFUNCTIONBODY(Event,formatToString)
 		propName.name_s_id=obj->getSystemState()->getUniqueStringId(prop);
 		propName.ns.push_back(nsNameAndKind(obj->getSystemState(),"",NAMESPACE));
 		asAtom value=th->getVariableByMultiname(propName);
-		if (value->type != T_INVALID)
-			msg += value->toString();
+		if (value.type != T_INVALID)
+			msg += value.toString();
 	}
 	msg += "]";
 
@@ -394,11 +394,11 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localX)
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
 	if(argslen != 1) 
 		throw Class<ArgumentError>::getInstanceSRaw(sys,"Wrong number of arguments in setter");
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	th->localX = val;
 	//Change StageXY if target!=NULL else don't do anything
 	//At this point, the target should be an InteractiveObject but check anyway
-	if(th->target->type != T_INVALID &&(th->target.toObject(sys)->getClass()->isSubClass(Class<InteractiveObject>::getClass(sys))))
+	if(th->target.type != T_INVALID &&(th->target.toObject(sys)->getClass()->isSubClass(Class<InteractiveObject>::getClass(sys))))
 	{		
 		InteractiveObject* tar = static_cast<InteractiveObject*>((th->target).getObject());
 		tar->localToGlobal(th->localX, th->localY, th->stageX, th->stageY);
@@ -411,11 +411,11 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localY)
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
 	if(argslen != 1) 
 		throw Class<ArgumentError>::getInstanceSRaw(sys,"Wrong number of arguments in setter");
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	th->localY = val;
 	//Change StageXY if target!=NULL else don't do anything	
 	//At this point, the target should be an InteractiveObject but check anyway
-	if(th->target->type != T_INVALID &&(th->target.toObject(sys)->getClass()->isSubClass(Class<InteractiveObject>::getClass(sys))))
+	if(th->target.type != T_INVALID &&(th->target.toObject(sys)->getClass()->isSubClass(Class<InteractiveObject>::getClass(sys))))
 	{		
 		InteractiveObject* tar = static_cast<InteractiveObject*>((th->target).getObject());
 		tar->localToGlobal(th->localX, th->localY, th->stageX, th->stageY);
@@ -491,7 +491,7 @@ void MouseEvent::setTarget(asAtom& t)
 {
 	target = t;
 	//If t is NULL, it means MouseEvent is being reset
-	if(t->type == T_INVALID)
+	if(t.type == T_INVALID)
 	{
 		localX = 0;
 		localY = 0;
@@ -585,7 +585,7 @@ void EventDispatcher::dumpHandlers()
 ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
-	if(args[0]->type !=T_STRING || args[1]->type !=T_FUNCTION)
+	if(args[0].type !=T_STRING || args[1].type !=T_FUNCTION)
 		//throw RunTimeException("Type mismatch in EventDispatcher::addEventListener");
 		return asAtom::invalidAtom;
 
@@ -593,11 +593,11 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,addEventListener)
 	int32_t priority=0;
 
 	if(argslen>=3)
-		useCapture=args[2]->Boolean_concrete();
+		useCapture=args[2].Boolean_concrete();
 	if(argslen>=4)
-		priority=args[3]->toInt();
+		priority=args[3].toInt();
 
-	const tiny_string& eventName=args[0]->toString();
+	const tiny_string& eventName=args[0].toString();
 
 	if(th->is<DisplayObject>() && (eventName=="enterFrame"
 				|| eventName=="exitFrame"
@@ -632,16 +632,16 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
 	
-	if (args[1]->type == T_NULL) // it seems that null is allowed as function
+	if (args[1].type == T_NULL) // it seems that null is allowed as function
 		return asAtom::invalidAtom;
-	if(args[0]->type !=T_STRING || args[1]->type !=T_FUNCTION)
+	if(args[0].type !=T_STRING || args[1].type !=T_FUNCTION)
 		throw RunTimeException("Type mismatch in EventDispatcher::removeEventListener");
 
-	const tiny_string& eventName=args[0]->toString();
+	const tiny_string& eventName=args[0].toString();
 
 	bool useCapture=false;
 	if(argslen>=3)
-		useCapture=args[2]->Boolean_concrete();
+		useCapture=args[2].Boolean_concrete();
 
 	{
 		Locker l(th->handlersMutex);
@@ -677,7 +677,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,removeEventListener)
 ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
-	if(!args[0]->is<Event>())
+	if(!args[0].is<Event>())
 		return asAtom::falseAtom;
 
 	_R<Event> e=_IMR(Class<Event>::cast(args[0].getObject()));
@@ -685,7 +685,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 	// Must call the AS getter, because the getter may have been
 	// overridden
 	asAtom target = e->getVariableByMultiname("target", {""});
-	if(target->type != T_INVALID && target->type != T_NULL && target->type != T_UNDEFINED)
+	if(target.type != T_INVALID && target.type != T_NULL && target.type != T_UNDEFINED)
 	{
 		//Object must be cloned, cloning is implemented with the clone AS method
 		std::vector<asAtom> empty;
@@ -696,7 +696,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 
 		e = _IMR(cloned.getObject()->as<Event>());
 	}
-	if(th->forcedTarget->type != T_INVALID)
+	if(th->forcedTarget.type != T_INVALID)
 		e->setTarget(th->forcedTarget);
 	ABCVm::publicHandleEvent(_IMR(th), e);
 	return asAtom::trueAtom;
@@ -707,9 +707,9 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,_constructor)
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
 	asAtom forcedTarget;
 	ARG_UNPACK_ATOM(forcedTarget, asAtom::nullAtom);
-	if(forcedTarget->type != T_INVALID)
+	if(forcedTarget.type != T_INVALID)
 	{
-		if(forcedTarget->type==T_NULL || forcedTarget->type==T_UNDEFINED)
+		if(forcedTarget.type==T_NULL || forcedTarget.type==T_UNDEFINED)
 			forcedTarget=asAtom::invalidAtom;
 		else if(!forcedTarget.toObject(th->getSystemState())->getClass()->isSubClass(InterfaceClass<IEventDispatcher>::getClass(th->getSystemState())))
 			throw Class<ArgumentError>::getInstanceSRaw(th->getSystemState(),"Wrong argument for EventDispatcher");

@@ -147,7 +147,7 @@ ASFUNCTIONBODY(lightspark,getQualifiedSuperclassName)
 ASFUNCTIONBODY_ATOM(lightspark,getDefinitionByName)
 {
 	assert_and_throw(argslen==1);
-	const tiny_string& tmp=args[0]->toString();
+	const tiny_string& tmp=args[0].toString();
 	multiname name(NULL);
 	name.name_type=multiname::NAME_STRING;
 
@@ -188,7 +188,7 @@ ASFUNCTIONBODY(lightspark,getTimer)
 
 ASFUNCTIONBODY_ATOM(lightspark,setInterval)
 {
-	assert_and_throw(argslen >= 2 && args[0]->type==T_FUNCTION);
+	assert_and_throw(argslen >= 2 && args[0].type==T_FUNCTION);
 
 	//Build arguments array
 	std::vector<asAtom> callbackArgs(argslen-2);
@@ -201,7 +201,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setInterval)
 
 	//Add interval through manager
 	uint32_t id = sys->intervalManager->setInterval(args[0], callbackArgs, argslen-2,
-			asAtom::nullAtom, args[1]->toInt());
+			asAtom::nullAtom, args[1].toInt());
 	return asAtom((int32_t)id);
 }
 
@@ -221,7 +221,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setTimeout)
 	//incRef the function
 	//Add timeout through manager
 	uint32_t id = sys->intervalManager->setTimeout(args[0], callbackArgs, argslen-2,
-			asAtom::nullAtom, args[1]->toInt());
+			asAtom::nullAtom, args[1].toInt());
 	return asAtom((int32_t)id);
 }
 
