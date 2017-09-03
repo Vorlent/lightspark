@@ -248,7 +248,7 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_constructor)
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getMinDomainMemoryLength)
 {
-	return _MAR(asAtom((uint32_t)MIN_DOMAIN_MEMORY_LIMIT));
+	return asAtom((uint32_t)MIN_DOMAIN_MEMORY_LIMIT);
 }
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getCurrentDomain)
@@ -277,14 +277,14 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,hasDefinition)
 	ASObject* target;
 	ASObject* o=th->getVariableAndTargetByMultiname(name,target);
 	if(o==NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 	else
 	{
 		if(o->getObjectType()!=T_CLASS)
-			return _MAR(asAtom::falseAtom);
+			return asAtom::falseAtom;
 
 		LOG(LOG_CALLS,_("Found definition for ") << name);
-		return _MAR(asAtom::trueAtom);
+		return asAtom::trueAtom;
 	}
 }
 

@@ -37,7 +37,7 @@ void ExternalInterface::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getAvailable)
 {
-	return _MAR(asAtom(sys->extScriptObject != NULL));
+	return asAtom(sys->extScriptObject != NULL);
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
@@ -57,9 +57,9 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
 ASFUNCTIONBODY_ATOM(ExternalInterface, _getMarshallExceptions)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 	else
-		return _MAR(asAtom(sys->extScriptObject->getMarshallExceptions()));
+		return asAtom(sys->extScriptObject->getMarshallExceptions());
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface, _setMarshallExceptions)
@@ -73,7 +73,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface, _setMarshallExceptions)
 ASFUNCTIONBODY_ATOM(ExternalInterface,addCallback)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen == 2);
@@ -84,13 +84,13 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,addCallback)
 	{
 		sys->extScriptObject->setMethod(args[0]->toString().raw_buf(), new ExtASCallback(args[1]));
 	}
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen >= 1);
@@ -119,7 +119,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 		assert(asobjResult==NULL);
 		LOG(LOG_INFO, "External function failed, returning null: " << arg0);
 		// If the call fails, return null
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	}
 
 	return asAtom::fromObject(asobjResult);

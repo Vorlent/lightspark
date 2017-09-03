@@ -189,7 +189,7 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 {
 	Array* th=obj->as<Array>();
 	Array* ret=Class<Array>::getInstanceSNoArgs(sys);
-	asAtom f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =asAtom(T_FUNCTION);
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
 		return asAtom::fromObject(ret);
@@ -216,7 +216,7 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 			params[0] = it->second;
 		}
 
-		params[1] = _MAR(asAtom(index-1));
+		params[1] = asAtom(index-1);
 		params[2] = asAtom::fromObject(th);
 
 		// ensure that return values are the original values
@@ -244,10 +244,10 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 ASFUNCTIONBODY_ATOM(Array, some)
 {
 	Array* th=obj->as<Array>();
-	asAtom f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =asAtom(T_FUNCTION);
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	std::vector<asAtom> params(3);
 	asAtom funcRet;
@@ -270,7 +270,7 @@ ASFUNCTIONBODY_ATOM(Array, some)
 				continue;
 			params[0] = it->second;
 		}
-		params[1] = _MAR(asAtom(index-1));
+		params[1] = asAtom(index-1);
 		params[2] = asAtom::fromObject(th);
 
 		if(argslen==1)
@@ -289,16 +289,16 @@ ASFUNCTIONBODY_ATOM(Array, some)
 			}
 		}
 	}
-	return _MAR(asAtom::falseAtom);
+	return asAtom::falseAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array, every)
 {
 	Array* th=obj->as<Array>();
-	asAtom f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =asAtom(T_FUNCTION);
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
-		return _MAR(asAtom::trueAtom);
+		return asAtom::trueAtom;
 
 	std::vector<asAtom> params(3);
 	asAtom funcRet;
@@ -321,7 +321,7 @@ ASFUNCTIONBODY_ATOM(Array, every)
 				continue;
 			params[0] = it->second;
 		}
-		params[1] = _MAR(asAtom(index-1));
+		params[1] = asAtom(index-1);
 		params[2] = asAtom::fromObject(th);
 
 		if(argslen==1)
@@ -340,13 +340,13 @@ ASFUNCTIONBODY_ATOM(Array, every)
 			}
 		}
 	}
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Array,_getLength)
 {
 	Array* th=obj->as<Array>();
-	return _MAR(asAtom((uint32_t)th->currentsize));
+	return asAtom((uint32_t)th->currentsize);
 }
 
 ASFUNCTIONBODY_ATOM(Array,_setLength)
@@ -366,7 +366,7 @@ ASFUNCTIONBODY_ATOM(Array,_setLength)
 ASFUNCTIONBODY_ATOM(Array,forEach)
 {
 	Array* th=obj->as<Array>();
-	asAtom f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =asAtom(T_FUNCTION);
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
 		return asAtom::invalidAtom;
@@ -393,7 +393,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 			else
 				params[0]=it->second;
 		}
-		params[1] = _MAR(asAtom(index-1));
+		params[1] = asAtom(index-1);
 		params[2] = asAtom::fromObject(th);
 
 		asAtom funcret;
@@ -444,18 +444,18 @@ ASFUNCTIONBODY_ATOM(Array,lastIndexOf)
 	int32_t ret=-1;
 
 	if(argslen == 1 && th->currentsize == 0)
-		return _MAR(asAtom((int32_t)-1));
+		return asAtom((int32_t)-1);
 
 	size_t i = th->size()-1;
 
 	if(std::isnan(index))
-		return _MAR(asAtom((int32_t)0));
+		return asAtom((int32_t)0);
 
 	int j = index; //Preserve sign
 	if(j < 0) //Negative offset, use it as offset from the end of the array
 	{
 		if((size_t)-j > th->size())
-			return _MAR(asAtom((int32_t)-1));
+			return asAtom((int32_t)-1);
 		else
 			i = th->size()+j;
 	}
@@ -490,7 +490,7 @@ ASFUNCTIONBODY_ATOM(Array,lastIndexOf)
 	}
 	while(i--);
 
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 
 ASFUNCTIONBODY_ATOM(Array,shift)
@@ -511,19 +511,19 @@ ASFUNCTIONBODY_ATOM(Array,shift)
 		lengthName.isAttribute = true;
 		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtom v = _MAR(asAtom(res-1));
+		asAtom v = asAtom(res-1);
 		if (res > 0)
 			obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	Array* th=obj->as<Array>();
 	if(!th->size())
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	asAtom ret;
 	if (th->data_first.size() > 0)
 		ret = th->data_first[0];
 	if (ret->type == T_INVALID)
-		ret = _MAR(asAtom::undefinedAtom);
+		ret = asAtom::undefinedAtom;
 	if (th->data_first.size() > 0)
 		th->data_first.erase(th->data_first.begin());
 
@@ -723,7 +723,7 @@ ASFUNCTIONBODY_ATOM(Array,indexOf)
 			}
 		}
 	}
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 
 
@@ -745,16 +745,16 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 		lengthName.isAttribute = true;
 		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtom v = _MAR(asAtom(res-1));
+		asAtom v = asAtom(res-1);
 		if (res > 0)
 			obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	Array* th=obj->as<Array>();
 	uint32_t size =th->size();
 	if (size == 0)
-		return _MAR(asAtom::undefinedAtom);
-	asAtom ret = _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
+	asAtom ret = asAtom::undefinedAtom;
 	
 	if (size <= ARRAY_SIZE_THRESHOLD)
 	{
@@ -763,7 +763,7 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 			ret = *th->data_first.rbegin();
 			th->data_first.pop_back();
 			if (ret->type == T_INVALID)
-				ret = _MAR(asAtom::undefinedAtom);
+				ret = asAtom::undefinedAtom;
 		}
 	}
 	else
@@ -775,7 +775,7 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 			th->data_second.erase(it);
 		}
 		else
-			ret = _MAR(asAtom::undefinedAtom);
+			ret = asAtom::undefinedAtom;
 	}
 	th->currentsize--;
 	return ret;
@@ -1066,9 +1066,9 @@ ASFUNCTIONBODY_ATOM(Array,unshift)
 		lengthName.isAttribute = true;
 		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtom v = _MAR(asAtom(res+argslen));
+		asAtom v = asAtom(res+argslen);
 		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	Array* th=obj->as<Array>();
 	// Derived classes may be sealed!
@@ -1098,7 +1098,7 @@ ASFUNCTIONBODY_ATOM(Array,unshift)
 			th->set(it->first,it->second,false);
 		}
 	}
-	return _MAR(asAtom((int32_t)th->size()));
+	return asAtom((int32_t)th->size());
 }
 
 ASFUNCTIONBODY_ATOM(Array,_push)
@@ -1119,9 +1119,9 @@ ASFUNCTIONBODY_ATOM(Array,_push)
 		lengthName.isAttribute = true;
 		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtom v = _MAR(asAtom(res+argslen));
+		asAtom v = asAtom(res+argslen);
 		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	Array* th=obj->as<Array>();
 	uint64_t s = th->currentsize;
@@ -1131,7 +1131,7 @@ ASFUNCTIONBODY_ATOM(Array,_push)
 	}
 	// currentsize is set even if push fails
 	th->currentsize = s+argslen;
-	return _MAR(asAtom((int32_t)th->size()));
+	return asAtom((int32_t)th->size());
 }
 // AS3 handles push on uint.MAX_VALUE differently than ECMA, so we need to push methods
 ASFUNCTIONBODY_ATOM(Array,_push_as3)
@@ -1152,9 +1152,9 @@ ASFUNCTIONBODY_ATOM(Array,_push_as3)
 		lengthName.isAttribute = true;
 		asAtom o=obj.getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtom v = _MAR(asAtom(res+argslen));
+		asAtom v = asAtom(res+argslen);
 		obj.getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	Array* th=obj->as<Array>();
 	for(unsigned int i=0;i<argslen;i++)
@@ -1163,7 +1163,7 @@ ASFUNCTIONBODY_ATOM(Array,_push_as3)
 			break;
 		th->push(args[i]);
 	}
-	return _MAR(asAtom((int32_t)th->size()));
+	return asAtom((int32_t)th->size());
 }
 
 ASFUNCTIONBODY_ATOM(Array,_map)
@@ -1192,7 +1192,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 			if(a->type!=T_INVALID)
 				params[0] = a;
 			else
-				params[0]=_MAR(asAtom::undefinedAtom);
+				params[0]=asAtom::undefinedAtom;
 		}
 		else
 		{
@@ -1200,9 +1200,9 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 			if(it->second->type!=T_INVALID)
 				params[0]=it->second;
 			else
-				params[0]=_MAR(asAtom::undefinedAtom);
+				params[0]=asAtom::undefinedAtom;
 		}
-		params[1] = _MAR(asAtom(index-1));
+		params[1] = asAtom(index-1);
 		params[2] = asAtom::fromObject(th);
 		asAtom funcRet;
 		if (func->type != T_INVALID)
@@ -1397,7 +1397,7 @@ asAtom Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION 
 		}
 	}
 	if(index<size())
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	return asAtom::invalidAtom;
 }
 
@@ -1414,7 +1414,7 @@ void Array::setVariableByMultiname_i(const multiname& name, int32_t value)
 		return;
 	if(index>=size())
 		resize(index+1);
-	asAtom v = _MAR(asAtom(value));
+	asAtom v = asAtom(value);
 	set(index,v,false);
 }
 
@@ -1602,11 +1602,11 @@ asAtom Array::nextValue(uint32_t index)
 		{
 			auto it = data_second.find(index);
 			if(it == data_second.end() || it->first != index)
-				return _MAR(asAtom::undefinedAtom);
+				return asAtom::undefinedAtom;
 			sl = it->second;
 		}
 		if(sl->type == T_INVALID)
-			return _MAR(asAtom::undefinedAtom);
+			return asAtom::undefinedAtom;
 		else
 		{
 			return sl;
@@ -1653,7 +1653,7 @@ asAtom Array::nextName(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	if(index<=size())
-		return _MAR(asAtom(index-1));
+		return asAtom(index-1);
 	else
 	{
 		//Fall back on object properties
@@ -1682,7 +1682,7 @@ asAtom Array::at(unsigned int index)
 	{
 		return ret;
 	}
-	return _MAR(asAtom::undefinedAtom);
+	return asAtom::undefinedAtom;
 }
 
 void Array::outofbounds(unsigned int index) const
@@ -1802,7 +1802,7 @@ tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtom& replacer, const
 		{
 			std::vector<asAtom> params(2);
 			
-			params[0] = _MAR(asAtom(i));
+			params[0] = asAtom(i);
 			params[1] = a;
 			asAtom funcret=replacer.callFunction(asAtom::nullAtom, params, 2,false);
 			if (funcret->type != T_INVALID)

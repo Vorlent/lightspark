@@ -214,7 +214,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 				params[1] = (*parent)->getVariableByMultiname(key);
 			}
 			else
-				params[1] = _MAR(asAtom::nullAtom);
+				params[1] = asAtom::nullAtom;
 		}
 		else
 		{
@@ -257,7 +257,7 @@ int JSON::parseTrue(const tiny_string &jsonstring, int pos,ASObject** parent,con
 				*parent = abstract_b(getSys(),true);
 			else
 			{
-				asAtom v = _MAR(asAtom(true));
+				asAtom v = asAtom(true);
 				(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 			}
 		}
@@ -284,7 +284,7 @@ int JSON::parseFalse(const tiny_string &jsonstring, int pos,ASObject** parent,co
 				*parent = abstract_b(getSys(),false);
 			else 
 			{
-				asAtom v = _MAR(asAtom(false));
+				asAtom v = asAtom(false);
 				(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 			}
 		}
@@ -481,7 +481,7 @@ int JSON::parseNumber(const tiny_string &jsonstring, int pos, ASObject** parent,
 		*parent = abstract_d(getSys(),num);
 	else 
 	{
-		asAtom v = _MAR(asAtom(num));
+		asAtom v = asAtom(num);
 		(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 	}
 	return pos;

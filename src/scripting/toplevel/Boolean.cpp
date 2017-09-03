@@ -72,9 +72,9 @@ bool lightspark::Boolean_concrete(const ASObject* o)
 ASFUNCTIONBODY_ATOM(Boolean,generator)
 {
 	if(argslen==1)
-		return _MAR(asAtom(args[0]->Boolean_concrete()));
+		return asAtom(args[0]->Boolean_concrete());
 	else
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 }
 
 void Boolean::sinit(Class_base* c)

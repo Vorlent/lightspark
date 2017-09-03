@@ -73,7 +73,7 @@ Dictionary::dictType::iterator Dictionary::findKey(ASObject *o)
 void Dictionary::setVariableByMultiname_i(const multiname& name, int32_t value)
 {
 	assert_and_throw(implEnable);
-	asAtom v = _MAR(asAtom(value));
+	asAtom v = asAtom(value);
 	Dictionary::setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 }
 

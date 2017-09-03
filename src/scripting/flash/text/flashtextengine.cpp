@@ -61,7 +61,7 @@ ElementFormat::ElementFormat(Class_base *c): ASObject(c,T_OBJECT,SUBTYPE_ELEMENT
 void ElementFormat::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_FINAL | CLASS_SEALED);
-	asAtom graphicElement = _MAR(asAtom((uint32_t)0xFDEF));
+	asAtom graphicElement = asAtom((uint32_t)0xFDEF);
 	c->setVariableAtomByQName("GRAPHIC_ELEMENT",nsNameAndKind(),graphicElement,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("clone","",Class<IFunction>::getFunction(c->getSystemState(),_clone),NORMAL_METHOD,true);
 
@@ -510,7 +510,7 @@ TextLine::TextLine(Class_base* c, tiny_string linetext, _NR<TextBlock> owner)
 void TextLine::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, DisplayObjectContainer, _constructor, CLASS_FINAL | CLASS_SEALED);
-	asAtom max_line_width = _MAR(asAtom((uint32_t)MAX_LINE_WIDTH));
+	asAtom max_line_width = asAtom((uint32_t)MAX_LINE_WIDTH);
 	c->setVariableAtomByQName("MAX_LINE_WIDTH",nsNameAndKind(),max_line_width,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("getBaselinePosition","",Class<IFunction>::getFunction(c->getSystemState(),getBaselinePosition),NORMAL_METHOD,true);
 	c->setDeclaredMethodByQName("descent","",Class<IFunction>::getFunction(c->getSystemState(),getDescent),GETTER_METHOD,true);
@@ -552,32 +552,32 @@ ASFUNCTIONBODY_ATOM(TextLine, _constructor)
 ASFUNCTIONBODY_ATOM(TextLine, getBaselinePosition)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"TextLine.getBaselinePosition");
-	return _MAR(asAtom(0));
+	return asAtom(0);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getDescent)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"TextLine.descent");
-	return _MAR(asAtom(0));
+	return asAtom(0);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getAscent)
 {
 	TextLine* th=obj->as<TextLine>();
 	LOG(LOG_NOT_IMPLEMENTED,"TextLine.ascent");
-	return _MAR(asAtom(th->textHeight));
+	return asAtom(th->textHeight);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getTextWidth)
 {
 	TextLine* th=obj->as<TextLine>();
-	return _MAR(asAtom(th->textWidth));
+	return asAtom(th->textWidth);
 }
 
 ASFUNCTIONBODY_ATOM(TextLine, getTextHeight)
 {
 	TextLine* th=obj->as<TextLine>();
-	return _MAR(asAtom(th->textHeight));
+	return asAtom(th->textHeight);
 }
 
 

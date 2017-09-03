@@ -76,9 +76,9 @@ ASFUNCTIONBODY_ATOM(ASString,_getLength)
 	if (obj->type == T_STRING)
 	{
 		ASString* th = obj.getObject()->as<ASString>();
-		return _MAR(asAtom((int32_t)th->getData().numChars()));
+		return asAtom((int32_t)th->getData().numChars());
 	}
-	return _MAR(asAtom((int32_t)obj->toString().numChars()));
+	return asAtom((int32_t)obj->toString().numChars());
 }
 
 void ASString::sinit(Class_base* c)
@@ -141,7 +141,7 @@ ASFUNCTIONBODY_ATOM(ASString,search)
 	tiny_string data = obj->toString();
 	int ret = -1;
 	if(argslen == 0 || args[0]->type == T_UNDEFINED)
-		return _MAR(asAtom(ret));
+		return asAtom(ret);
 
 	int options=PCRE_UTF8|PCRE_NEWLINE_ANY;//|PCRE_JAVASCRIPT_COMPAT;
 	tiny_string restr;
@@ -167,13 +167,13 @@ ASFUNCTIONBODY_ATOM(ASString,search)
 	int errorOffset;
 	pcre* pcreRE=pcre_compile(restr.raw_buf(), options, &error, &errorOffset,NULL);
 	if(error)
-		return _MAR(asAtom(ret));
+		return asAtom(ret);
 	int capturingGroups;
 	int infoOk=pcre_fullinfo(pcreRE, NULL, PCRE_INFO_CAPTURECOUNT, &capturingGroups);
 	if(infoOk!=0)
 	{
 		pcre_free(pcreRE);
-		return _MAR(asAtom(ret));
+		return asAtom(ret);
 	}
 	pcre_extra extra;
 	extra.match_limit_recursion=200;
@@ -186,21 +186,21 @@ ASFUNCTIONBODY_ATOM(ASString,search)
 	{
 		//No matches or error
 		pcre_free(pcreRE);
-		return _MAR(asAtom(ret));
+		return asAtom(ret);
 	}
 	ret=ovector[0];
 	// pcre_exec returns byte position, so we have to convert it to character position 
 	tiny_string tmp = data.substr_bytes(0, ret);
 	ret = tmp.numChars();
 	pcre_free(pcreRE);
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 
 ASFUNCTIONBODY_ATOM(ASString,match)
 {
 	tiny_string data = obj->toString();
 	if(argslen == 0 || args[0]->type==T_NULL || args[0]->type==T_UNDEFINED)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	ASObject* ret=NULL;
 	_NR<RegExp> re;
 
@@ -673,23 +673,23 @@ ASFUNCTIONBODY_ATOM(ASString,charCodeAt)
 	if (obj->type == T_STRING)
 	{
 		if(index<0 || index>=(int64_t)obj.getObject()->as<ASString>()->getData().numChars())
-			return _MAR(asAtom(Number::NaN));
-		return _MAR(asAtom((int32_t)obj.getObject()->as<ASString>()->getData().charAt(index)));
+			return asAtom(Number::NaN);
+		return asAtom((int32_t)obj.getObject()->as<ASString>()->getData().charAt(index));
 	}
 	tiny_string data = obj->toString();
 	if(index<0 || index>=(int64_t)data.numChars())
-		return _MAR(asAtom(Number::NaN));
+		return asAtom(Number::NaN);
 	else
 	{
 		//Character codes are expected to be positive
-		return _MAR(asAtom((int32_t)data.charAt(index)));
+		return asAtom((int32_t)data.charAt(index));
 	}
 }
 
 ASFUNCTIONBODY_ATOM(ASString,indexOf)
 {
 	if (argslen == 0)
-		return _MAR(asAtom(-1));
+		return asAtom(-1);
 	tiny_string data = obj->toString();
 	tiny_string arg0=args[0]->toString();
 	int startIndex=0;
@@ -699,9 +699,9 @@ ASFUNCTIONBODY_ATOM(ASString,indexOf)
 
 	size_t pos = data.find(arg0.raw_buf(), startIndex);
 	if(pos == data.npos)
-		return _MAR(asAtom(-1));
+		return asAtom(-1);
 	else
-		return _MAR(asAtom((int32_t)pos));
+		return asAtom((int32_t)pos);
 }
 
 ASFUNCTIONBODY_ATOM(ASString,lastIndexOf)
@@ -714,7 +714,7 @@ ASFUNCTIONBODY_ATOM(ASString,lastIndexOf)
 	{
 		int32_t i = args[1]->toInt();
 		if(i<0)
-			return _MAR(asAtom(-1));
+			return asAtom(-1);
 		startIndex = i;
 	}
 
@@ -722,9 +722,9 @@ ASFUNCTIONBODY_ATOM(ASString,lastIndexOf)
 
 	size_t pos=data.rfind(val.raw_buf(), startIndex);
 	if(pos==data.npos)
-		return _MAR(asAtom(-1));
+		return asAtom(-1);
 	else
-		return _MAR(asAtom((int32_t)pos));
+		return asAtom((int32_t)pos);
 }
 
 ASFUNCTIONBODY_ATOM(ASString,toLowerCase)
@@ -746,7 +746,7 @@ ASFUNCTIONBODY_ATOM(ASString,localeCompare)
 	if (argslen > 1)
 		LOG(LOG_NOT_IMPLEMENTED,"localeCompare with more than one parameter not implemented");
 	int ret = data.compare(other);
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 ASFUNCTIONBODY_ATOM(ASString,localeCompare_prototype)
 {
@@ -757,7 +757,7 @@ ASFUNCTIONBODY_ATOM(ASString,localeCompare_prototype)
 		throwError<ArgumentError>(kWrongArgumentCountError, "localeCompare", "1",Integer::toString(argslen));
 
 	int ret = data.compare(other);
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 
 ASFUNCTIONBODY_ATOM(ASString,fromCharCode)
@@ -836,7 +836,7 @@ ASFUNCTIONBODY_ATOM(ASString,replace)
 				subargs[0]=asAtom::fromObject(abstract_s(sys,ret->data.substr_bytes(ovector[0],ovector[1]-ovector[0])));
 				for(int i=0;i<capturingGroups;i++)
 					subargs[i+1]=asAtom::fromObject(abstract_s(sys,ret->data.substr_bytes(ovector[i*2+2],ovector[i*2+3]-ovector[i*2+2])));
-				subargs[capturingGroups+1]=_MAR(asAtom((int32_t)(ovector[0]-retDiff)));
+				subargs[capturingGroups+1]=asAtom((int32_t)(ovector[0]-retDiff));
 				
 				subargs[capturingGroups+2]=asAtom::fromObject(abstract_s(sys,data));
 				asAtom ret=args[1].callFunction(asAtom::nullAtom, subargs, 3+capturingGroups,true);

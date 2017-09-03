@@ -91,7 +91,7 @@ ASFUNCTIONBODY_ATOM(ASFont,registerFont)
 ASFUNCTIONBODY_ATOM(ASFont,hasGlyphs)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"Font.hasGlyphs always returns true");
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 TextField::TextField(Class_base* c, const TextData& textData, bool _selectable, bool readOnly)
 	: InteractiveObject(c), TextData(textData), TokenContainer(this), type(ET_READ_ONLY),
@@ -242,7 +242,7 @@ _NR<DisplayObject> TextField::hitTestImpl(_NR<DisplayObject> last, number_t x, n
 ASFUNCTIONBODY_ATOM(TextField,_getWordWrap)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->wordWrap));
+	return asAtom(th->wordWrap);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setWordWrap)
@@ -333,7 +333,7 @@ void TextField::setSizeAndPositionFromAutoSize()
 ASFUNCTIONBODY_ATOM(TextField,_getWidth)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->width));
+	return asAtom(th->width);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setWidth)
@@ -357,7 +357,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setWidth)
 ASFUNCTIONBODY_ATOM(TextField,_getHeight)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->height));
+	return asAtom(th->height);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setHeight)
@@ -381,13 +381,13 @@ ASFUNCTIONBODY_ATOM(TextField,_setHeight)
 ASFUNCTIONBODY_ATOM(TextField,_getTextWidth)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->textWidth));
+	return asAtom(th->textWidth);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextHeight)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->textHeight));
+	return asAtom(th->textHeight);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getHtmlText)
@@ -432,7 +432,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getTextFormat)
 	TextField* th=obj->as<TextField>();
 	TextFormat *format=Class<TextFormat>::getInstanceSRaw(sys);
 
-	format->color= _MAR(asAtom(th->textColor.toUInt()));
+	format->color= asAtom(th->textColor.toUInt());
 	format->font = th->font;
 	format->size = th->fontSize;
 
@@ -529,10 +529,10 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineIndexAtPoint)
 	{
 		if (x > it->extents.Xmin && x <= it->extents.Xmax &&
 		    y > it->extents.Ymin && y <= it->extents.Ymax)
-			return _MAR(asAtom(i));
+			return asAtom(i);
 	}
 
-	return _MAR(asAtom(-1));
+	return asAtom(-1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineIndexOfChar)
@@ -542,7 +542,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineIndexOfChar)
 	ARG_UNPACK_ATOM(charIndex);
 
 	if (charIndex < 0)
-		return _MAR(asAtom(-1));
+		return asAtom(-1);
 
 	std::vector<LineData> lines = CairoPangoRenderer::getLineData(*th);
 	std::vector<LineData>::const_iterator it;
@@ -551,12 +551,12 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineIndexOfChar)
 	{
 		if (charIndex >= it->firstCharOffset &&
 		    charIndex < it->firstCharOffset + it->length)
-			return _MAR(asAtom(i));
+			return asAtom(i);
 	}
 
 	// testing shows that returns -1 on invalid index instead of
 	// throwing RangeError
-	return _MAR(asAtom(-1));
+	return asAtom(-1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineLength)
@@ -569,7 +569,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineLength)
 	if (lineIndex < 0 || lineIndex >= (int32_t)lines.size())
 		throwError<RangeError>(kParamRangeError);
 
-	return _MAR(asAtom(lines[lineIndex].length));
+	return asAtom(lines[lineIndex].length);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineMetrics)
@@ -601,7 +601,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineOffset)
 	if (lineIndex < 0 || lineIndex >= (int32_t)lines.size())
 		throwError<RangeError>(kParamRangeError);
 
-	return _MAR(asAtom(lines[lineIndex].firstCharOffset));
+	return asAtom(lines[lineIndex].firstCharOffset);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineText)
@@ -678,25 +678,25 @@ ASFUNCTIONBODY_ATOM(TextField,_setGridFitType)
 ASFUNCTIONBODY_ATOM(TextField,_getLength)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->text.numChars()));
+	return asAtom(th->text.numChars());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getNumLines)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom((int32_t)CairoPangoRenderer::getLineData(*th).size()));
+	return asAtom((int32_t)CairoPangoRenderer::getLineData(*th).size());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getMaxScrollH)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->getMaxScrollH()));
+	return asAtom(th->getMaxScrollH());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getMaxScrollV)
 {
 	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->getMaxScrollV()));
+	return asAtom(th->getMaxScrollV());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getBottomScrollV)
@@ -706,10 +706,10 @@ ASFUNCTIONBODY_ATOM(TextField,_getBottomScrollV)
 	for (unsigned int k=0; k<lines.size()-1; k++)
 	{
 		if (lines[k+1].extents.Ymin >= (int)th->height)
-			return _MAR(asAtom((int32_t)k + 1));
+			return asAtom((int32_t)k + 1);
 	}
 
-	return _MAR(asAtom((int32_t)lines.size() + 1));
+	return asAtom((int32_t)lines.size() + 1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getRestrict)
@@ -1210,19 +1210,19 @@ void TextFormat::sinit(Class_base* c)
 void TextFormat::finalize()
 {
 	ASObject::finalize();
-	blockIndent = _MAR(asAtom::nullAtom);
-	bold = _MAR(asAtom::nullAtom);
-	bullet = _MAR(asAtom::nullAtom);
-	color = _MAR(asAtom::nullAtom);
-	indent = _MAR(asAtom::nullAtom);
-	italic = _MAR(asAtom::nullAtom);
-	kerning = _MAR(asAtom::nullAtom);
-	leading = _MAR(asAtom::nullAtom);
-	leftMargin = _MAR(asAtom::nullAtom);
-	letterSpacing = _MAR(asAtom::nullAtom);
-	rightMargin = _MAR(asAtom::nullAtom);
+	blockIndent = asAtom::nullAtom;
+	bold = asAtom::nullAtom;
+	bullet = asAtom::nullAtom;
+	color = asAtom::nullAtom;
+	indent = asAtom::nullAtom;
+	italic = asAtom::nullAtom;
+	kerning = asAtom::nullAtom;
+	leading = asAtom::nullAtom;
+	leftMargin = asAtom::nullAtom;
+	letterSpacing = asAtom::nullAtom;
+	rightMargin = asAtom::nullAtom;
 	tabStops.reset();
-	underline = _MAR(asAtom::nullAtom);
+	underline = asAtom::nullAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextFormat,_constructor)
@@ -1240,7 +1240,7 @@ ASFUNCTIONBODY_ATOM(TextFormat,_constructor)
 		(th->leftMargin,_MAR(asAtom::nullAtom))
 		(th->rightMargin,_MAR(asAtom::nullAtom))
 		(th->indent,_MAR(asAtom::nullAtom))
-		(th->leading,_MAR(asAtom::nullAtom));
+		(th->leading,asAtom::nullAtom);
 	return asAtom::invalidAtom;
 }
 

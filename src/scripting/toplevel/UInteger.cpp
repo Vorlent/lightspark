@@ -101,27 +101,27 @@ ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 ASFUNCTIONBODY_ATOM(UInteger,generator)
 {
 	if (argslen == 0)
-		return _MAR(asAtom((uint32_t)0));
-	return _MAR(asAtom(args[0]->toUInt()));
+		return asAtom((uint32_t)0);
+	return asAtom(args[0]->toUInt());
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,_valueOf)
 {
 	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
-		return _MAR(asAtom((uint32_t)0));
+		return asAtom((uint32_t)0);
 
 	if(!obj->is<UInteger>())
 			throw Class<TypeError>::getInstanceS(sys,"");
 
-	return _MAR(asAtom(obj->as<UInteger>()->val));
+	return asAtom(obj->as<UInteger>()->val);
 }
 
 void UInteger::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtom max_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
-	asAtom min_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
+	asAtom max_value = asAtom((uint32_t)0xFFFFFFFF);
+	asAtom min_value = asAtom((uint32_t)0xFFFFFFFF);
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(), max_value,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(), min_value,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);

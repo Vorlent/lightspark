@@ -217,7 +217,7 @@ uint32_t Proxy::nextNameIndex(uint32_t cur_index)
 	nextNameIndexName.ns.emplace_back(getSystemState(),flash_proxy,NAMESPACE);
 	asAtom o=getVariableByMultiname(nextNameIndexName,ASObject::SKIP_IMPL);
 	assert_and_throw(o->type==T_FUNCTION);
-	asAtom arg=_MAR(asAtom(cur_index));
+	asAtom arg=asAtom(cur_index);
 	std::vector<asAtom> args;
 	args.reserve(1);
 	args.push_back(arg);
@@ -238,7 +238,7 @@ asAtom Proxy::nextName(uint32_t index)
 	nextNameName.ns.emplace_back(getSystemState(),flash_proxy,NAMESPACE);
 	asAtom o=getVariableByMultiname(nextNameName,ASObject::SKIP_IMPL);
 	assert_and_throw(o->type==T_FUNCTION);
-	asAtom arg=_MAR(asAtom(index));
+	asAtom arg=asAtom(index);
 	std::vector<asAtom> args;
 	args.reserve(1);
 	args.push_back(arg);
@@ -257,7 +257,7 @@ asAtom Proxy::nextValue(uint32_t index)
 	nextValueName.ns.emplace_back(getSystemState(),flash_proxy,NAMESPACE);
 	asAtom o=getVariableByMultiname(nextValueName,ASObject::SKIP_IMPL);
 	assert_and_throw(o->type==T_FUNCTION);
-	asAtom arg=_MAR(asAtom(index));
+	asAtom arg=asAtom(index);
 	std::vector<asAtom> args;
 	args.reserve(1);
 	args.push_back(arg);

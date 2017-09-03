@@ -325,7 +325,7 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getHeight)
 
 	_NR<Loader> l = th->loader;
 	if(l.isNull())
-		return _MAR(asAtom(0));
+		return asAtom(0);
 	_NR<DisplayObject> o=l->getContent();
 	if (o.isNull())
 		return asAtom(0);
@@ -964,7 +964,7 @@ void FrameLabel::buildTraits(ASObject* o)
 ASFUNCTIONBODY_ATOM(FrameLabel,_getFrame)
 {
 	FrameLabel* th=obj.as<FrameLabel>();
-	return _MAR(asAtom(th->frame));
+	return asAtom(th->frame);
 }
 
 ASFUNCTIONBODY_ATOM(FrameLabel,_getName)
@@ -1037,7 +1037,7 @@ ASFUNCTIONBODY_ATOM(Scene,_getName)
 ASFUNCTIONBODY_ATOM(Scene,_getNumFrames)
 {
 	Scene* th=obj.as<Scene>();
-	return _MAR(asAtom(th->numFrames));
+	return asAtom(th->numFrames);
 }
 
 void Frame::destroyTags()
@@ -1333,13 +1333,13 @@ ASFUNCTIONBODY_ATOM(MovieClip,prevFrame)
 ASFUNCTIONBODY_ATOM(MovieClip,_getFramesLoaded)
 {
 	MovieClip* th=obj.as<MovieClip>();
-	return _MAR(asAtom(th->getFramesLoaded()));
+	return asAtom(th->getFramesLoaded());
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getTotalFrames)
 {
 	MovieClip* th=obj.as<MovieClip>();
-	return _MAR(asAtom(th->totalFrames_unreliable));
+	return asAtom(th->totalFrames_unreliable);
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getScenes)
@@ -1389,8 +1389,8 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentFrame)
 	//currentFrame is 1-based and relative to current scene
 	if (th->state.explicit_FP)
 		// if frame is set explicitly, the currentframe property should be set to next_FP, even if it is not displayed yet
-		return _MAR(asAtom(th->state.next_FP+1 - th->scenes[th->getCurrentScene()].startframe));
-	return _MAR(asAtom(th->state.FP+1 - th->scenes[th->getCurrentScene()].startframe));
+		return asAtom(th->state.next_FP+1 - th->scenes[th->getCurrentScene()].startframe);
+	return asAtom(th->state.FP+1 - th->scenes[th->getCurrentScene()].startframe);
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentFrameLabel)
@@ -1402,7 +1402,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentFrameLabel)
 			if(th->scenes[i].labels[j].frame == th->state.FP)
 				return asAtom::fromObject(abstract_s(sys,th->scenes[i].labels[j].name));
 	}
-	return _MAR(asAtom::nullAtom);
+	return asAtom::nullAtom;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentLabel)
@@ -1423,7 +1423,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentLabel)
 	}
 
 	if(label.empty())
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	else
 		return asAtom::fromObject(abstract_s(sys,label));
 }
@@ -1616,7 +1616,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setMouseEnabled)
 ASFUNCTIONBODY_ATOM(InteractiveObject,_getMouseEnabled)
 {
 	InteractiveObject* th=obj.as<InteractiveObject>();
-	return _MAR(asAtom(th->mouseEnabled));
+	return asAtom(th->mouseEnabled);
 }
 
 ASFUNCTIONBODY_ATOM(InteractiveObject,_setDoubleClickEnabled)
@@ -1630,7 +1630,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setDoubleClickEnabled)
 ASFUNCTIONBODY_ATOM(InteractiveObject,_getDoubleClickEnabled)
 {
 	InteractiveObject* th=obj.as<InteractiveObject>();
-	return _MAR(asAtom(th->doubleClickEnabled));
+	return asAtom(th->doubleClickEnabled);
 }
 
 bool InteractiveObject::destruct()
@@ -1720,13 +1720,13 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_constructor)
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_getNumChildren)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
-	return _MAR(asAtom((int32_t)th->dynamicDisplayList.size()));
+	return asAtom((int32_t)th->dynamicDisplayList.size());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_getMouseChildren)
 {
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
-	return _MAR(asAtom(th->mouseChildren));
+	return asAtom(th->mouseChildren);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setMouseChildren)
@@ -1819,12 +1819,12 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,contains)
 	DisplayObjectContainer* th=obj.as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
 	if(!args[0]->is<DisplayObject>())
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	//Cast to object
 	DisplayObject* d=args[0]->as<DisplayObject>();
 	bool ret=th->_contains(_IMR(d));
-	return _MAR(asAtom(ret));
+	return asAtom(ret);
 }
 
 //Only from VM context
@@ -1834,7 +1834,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 	assert_and_throw(argslen==2);
 	if(args[0]->type == T_CLASS)
 	{
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	}
 	//Validate object type
 	assert_and_throw(args[0]->is<DisplayObject>());
@@ -1858,7 +1858,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChild)
 	assert_and_throw(argslen==1);
 	if(args[0]->type == T_CLASS)
 	{
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	}
 	//Validate object type
 	assert_and_throw(args[0]->is<DisplayObject>());
@@ -1880,7 +1880,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChild)
 	assert_and_throw(argslen==1);
 	if(!args[0]->is<DisplayObject>())
 	{
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	}
 	//Cast to object
 	DisplayObject* d=args[0]->as<DisplayObject>();
@@ -2083,7 +2083,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_getChildIndex)
 
 	//Cast to object
 	_R<DisplayObject> d= _IMR(args[0]->as<DisplayObject>());
-	return _MAR(asAtom(th->getChildIndex(d)));
+	return asAtom(th->getChildIndex(d));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getObjectsUnderPoint)
@@ -2331,13 +2331,13 @@ uint32_t Stage::internalGetHeight() const
 ASFUNCTIONBODY_ATOM(Stage,_getStageWidth)
 {
 	Stage* th=obj.as<Stage>();
-	return _MAR(asAtom(th->internalGetWidth()));
+	return asAtom(th->internalGetWidth());
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getStageHeight)
 {
 	Stage* th=obj.as<Stage>();
-	return _MAR(asAtom(th->internalGetHeight()));
+	return asAtom(th->internalGetHeight());
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getLoaderInfo)
@@ -2443,9 +2443,9 @@ ASFUNCTIONBODY_ATOM(Stage,_getFrameRate)
 	Stage* th=obj.as<Stage>();
 	_NR<RootMovieClip> root = th->getRoot();
 	if (root.isNull())
-		return _MAR(asAtom(sys->mainClip->getFrameRate()));
+		return asAtom(sys->mainClip->getFrameRate());
 	else
-		return _MAR(asAtom(root->getFrameRate()));
+		return asAtom(root->getFrameRate());
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_setFrameRate)
@@ -2461,22 +2461,22 @@ ASFUNCTIONBODY_ATOM(Stage,_setFrameRate)
 
 ASFUNCTIONBODY_ATOM(Stage,_getAllowFullScreen)
 {
-	return _MAR(asAtom::falseAtom); // until fullscreen support is implemented
+	return asAtom::falseAtom; // until fullscreen support is implemented
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getAllowFullScreenInteractive)
 {
-	return _MAR(asAtom::falseAtom);
+	return asAtom::falseAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getColorCorrectionSupport)
 {
-	return _MAR(asAtom::falseAtom); // until color correction is implemented
+	return asAtom::falseAtom; // until color correction is implemented
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getWmodeGPU)
 {
-	return _MAR(asAtom::falseAtom);
+	return asAtom::falseAtom;
 }
 ASFUNCTIONBODY_ATOM(Stage,_invalidate)
 {
@@ -2494,7 +2494,7 @@ ASFUNCTIONBODY_ATOM(Stage,_getColor)
 	_NR<RootMovieClip> root = th->getRoot();
 	if (!root.isNull())
 		rgb = root->getBackground();
-	return _MAR(asAtom(rgb.toUInt()));
+	return asAtom(rgb.toUInt());
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_setColor)
@@ -2882,7 +2882,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getUpState)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	if(!th->upState)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(th->upState.getPtr());
 }
@@ -2900,7 +2900,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getHitTestState)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	if(!th->hitTestState)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(th->hitTestState.getPtr());
 }
@@ -2917,7 +2917,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getOverState)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	if(!th->overState)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(th->overState.getPtr());
 }
@@ -2935,7 +2935,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getDownState)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
 	if(!th->downState)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(th->downState.getPtr());
 }
@@ -2960,7 +2960,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setEnabled)
 ASFUNCTIONBODY_ATOM(SimpleButton,_getEnabled)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
-	return _MAR(asAtom(th->enabled));
+	return asAtom(th->enabled);
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_setUseHandCursor)
@@ -2974,7 +2974,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUseHandCursor)
 ASFUNCTIONBODY_ATOM(SimpleButton,_getUseHandCursor)
 {
 	SimpleButton* th=obj.as<SimpleButton>();
-	return _MAR(asAtom(th->useHandCursor));
+	return asAtom(th->useHandCursor);
 }
 
 void GradientType::sinit(Class_base* c)
@@ -3043,13 +3043,13 @@ void InterpolationMethod::sinit(Class_base* c)
 void GraphicsPathCommand::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtom cubic_curve_to = _MAR(asAtom(6));
-	asAtom curve_to = _MAR(asAtom(3));
-	asAtom line_to = _MAR(asAtom(2));
-	asAtom move_to = _MAR(asAtom(1));
-	asAtom no_op = _MAR(asAtom(0));
-	asAtom wide_line_to = _MAR(asAtom(5));
-	asAtom wide_move_to = _MAR(asAtom(4));
+	asAtom cubic_curve_to = asAtom(6);
+	asAtom curve_to = asAtom(3);
+	asAtom line_to = asAtom(2);
+	asAtom move_to = asAtom(1);
+	asAtom no_op = asAtom(0);
+	asAtom wide_line_to = asAtom(5);
+	asAtom wide_move_to = asAtom(4);
 
 	c->setVariableAtomByQName("CUBIC_CURVE_TO",nsNameAndKind(), cubic_curve_to,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("CURVE_TO",nsNameAndKind(), curve_to,CONSTANT_TRAIT);
@@ -3259,10 +3259,10 @@ ASFUNCTIONBODY_ATOM(Shader,_constructor)
 void BitmapDataChannel::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtom alpha = _MAR(asAtom((uint32_t)8));
-	asAtom blue = _MAR(asAtom((uint32_t)4));
-	asAtom green = _MAR(asAtom((uint32_t)2));
-	asAtom red = _MAR(asAtom((uint32_t)1));
+	asAtom alpha = asAtom((uint32_t)8);
+	asAtom blue = asAtom((uint32_t)4);
+	asAtom green = asAtom((uint32_t)2);
+	asAtom red = asAtom((uint32_t)1);
 	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),alpha,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("BLUE",nsNameAndKind(),blue,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("GREEN",nsNameAndKind(),green,CONSTANT_TRAIT);

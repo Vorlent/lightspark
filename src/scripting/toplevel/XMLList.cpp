@@ -730,7 +730,7 @@ asAtom XMLList::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 			return asAtom::fromObject(nodes[index].getPtr());
 		}
 		else
-			return _MAR(asAtom::undefinedAtom);
+			return asAtom::undefinedAtom;
 	}
 	else
 	{
@@ -1216,7 +1216,7 @@ uint32_t XMLList::nextNameIndex(uint32_t cur_index)
 asAtom XMLList::nextName(uint32_t index)
 {
 	if(index<=nodes.size())
-		return _MAR(asAtom(index-1));
+		return asAtom(index-1);
 	else
 		throw RunTimeException("XMLList::nextName out of bounds");
 }

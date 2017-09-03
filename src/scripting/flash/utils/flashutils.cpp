@@ -202,7 +202,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setInterval)
 	//Add interval through manager
 	uint32_t id = sys->intervalManager->setInterval(args[0], callbackArgs, argslen-2,
 			asAtom::nullAtom, args[1]->toInt());
-	return _MAR(asAtom((int32_t)id));
+	return asAtom((int32_t)id);
 }
 
 ASFUNCTIONBODY_ATOM(lightspark,setTimeout)
@@ -222,7 +222,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setTimeout)
 	//Add timeout through manager
 	uint32_t id = sys->intervalManager->setTimeout(args[0], callbackArgs, argslen-2,
 			asAtom::nullAtom, args[1]->toInt());
-	return _MAR(asAtom((int32_t)id));
+	return asAtom((int32_t)id);
 }
 
 ASFUNCTIONBODY(lightspark,clearInterval)

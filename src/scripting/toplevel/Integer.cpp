@@ -52,7 +52,7 @@ ASFUNCTIONBODY_ATOM(Integer,_toString)
 ASFUNCTIONBODY_ATOM(Integer,_valueOf)
 {
 	if(Class<Integer>::getClass(sys)->prototype->getObj() == obj.getObject())
-		return _MAR(asAtom(0));
+		return asAtom(0);
 
 	if(!obj->is<Integer>())
 			throw Class<TypeError>::getInstanceS(sys,"");
@@ -75,8 +75,8 @@ ASFUNCTIONBODY_ATOM(Integer,_constructor)
 ASFUNCTIONBODY_ATOM(Integer,generator)
 {
 	if (argslen == 0)
-		return _MAR(asAtom((int32_t)0));
-	return _MAR(asAtom(args[0]->toInt()));
+		return asAtom((int32_t)0);
+	return asAtom(args[0]->toInt());
 }
 
 TRISTATE Integer::isLess(ASObject* o)
@@ -196,8 +196,8 @@ void Integer::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtom max = _MAR(asAtom(numeric_limits<int32_t>::max()));
-	asAtom min = _MAR(asAtom(numeric_limits<int32_t>::min()));
+	asAtom max = asAtom(numeric_limits<int32_t>::max());
+	asAtom min = asAtom(numeric_limits<int32_t>::min());
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),max,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),min,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);

@@ -1917,19 +1917,19 @@ ASFUNCTIONBODY(XML,_getSettings)
 
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreComments");
 	asAtom v;
-	v = _MAR(asAtom(ignoreComments));
+	v = asAtom(ignoreComments);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreProcessingInstructions");
-	v = _MAR(asAtom(ignoreProcessingInstructions));
+	v = asAtom(ignoreProcessingInstructions);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreWhitespace");
-	v = _MAR(asAtom(ignoreWhitespace));
+	v = asAtom(ignoreWhitespace);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyIndent");
-	v = _MAR(asAtom(prettyIndent));
+	v = asAtom(prettyIndent);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyPrinting");
-	v = _MAR(asAtom(prettyPrinting));
+	v = asAtom(prettyPrinting);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	return res;
 }
@@ -2006,7 +2006,7 @@ ASFUNCTIONBODY(XML,_getDefaultSettings)
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("ignoreWhitespace");
 	res->setVariableByMultiname(mn,asAtom::trueAtomR,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyIndent");
-	asAtom v = _MAR(asAtom((int32_t)2));
+	asAtom v = asAtom((int32_t)2);
 	res->setVariableByMultiname(mn,v,CONST_NOT_ALLOWED);
 	mn.name_s_id=res->getSystemState()->getUniqueStringId("prettyPrinting");
 	res->setVariableByMultiname(mn,asAtom::trueAtomR,CONST_NOT_ALLOWED);
@@ -2484,7 +2484,7 @@ uint32_t XML::nextNameIndex(uint32_t cur_index)
 asAtom XML::nextName(uint32_t index)
 {
 	if(index<=1)
-		return _MAR(asAtom(index-1));
+		return asAtom(index-1);
 	else
 		throw RunTimeException("XML::nextName out of bounds");
 }

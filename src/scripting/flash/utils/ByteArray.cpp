@@ -982,7 +982,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 	{
 		th->unlock();
 		// it seems that contrary to the specs Adobe returns Undefined when reading from an empty ByteArray
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 		//throwError<EOFError>(kEOFError);
 	}
 	//assert_and_throw(th->objectEncoding==ObjectEncoding::AMF3);
@@ -1003,7 +1003,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,readObject)
 	if(ret->type == T_INVALID)
 	{
 		LOG(LOG_ERROR,"No objects in the AMF3 data. Returning Undefined");
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	}
 	return ret;
 }
@@ -1046,10 +1046,10 @@ asAtom ByteArray::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPT
 	if(index<len)
 	{
 		uint8_t value = bytes[index];
-		return _MAR(asAtom(static_cast<uint32_t>(value)));
+		return asAtom(static_cast<uint32_t>(value));
 	}
 	else
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 }
 
 int32_t ByteArray::getVariableByMultiname_i(const multiname& name)
@@ -1092,7 +1092,7 @@ void ByteArray::setVariableByMultiname(const multiname& name, asAtom& o, CONST_A
 
 void ByteArray::setVariableByMultiname_i(const multiname& name, int32_t value)
 {
-	asAtom v = _MAR(asAtom(value));
+	asAtom v = asAtom(value);
 	setVariableByMultiname(name, v,ASObject::CONST_NOT_ALLOWED);
 }
 
@@ -1383,7 +1383,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,pop)
 		th->len--;
 	}
 	th->unlock();
-	return _MAR(asAtom((uint32_t)res));
+	return asAtom((uint32_t)res);
 	
 }
 
@@ -1399,7 +1399,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,push)
 	}
 	uint32_t res = th->getLength();
 	th->unlock();
-	return _MAR(asAtom(res));
+	return asAtom(res);
 }
 
 // this seems to be how AS3 handles generic shift calls in Array class
@@ -1414,7 +1414,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,shift)
 		th->len--;
 	}
 	th->unlock();
-	return _MAR(asAtom((uint32_t)res));
+	return asAtom((uint32_t)res);
 }
 
 // this seems to be how AS3 handles generic unshift calls in Array class
@@ -1430,7 +1430,7 @@ ASFUNCTIONBODY_ATOM(ByteArray,unshift)
 	}
 	uint32_t res = th->getLength();
 	th->unlock();
-	return _MAR(asAtom(res));
+	return asAtom(res);
 }
 ASFUNCTIONBODY_GETTER_SETTER(ByteArray,shareable);
 

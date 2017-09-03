@@ -426,7 +426,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_localY)
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_altKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_ALT)));
+	return asAtom((bool)(th->modifiers & KMOD_ALT));
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_setter_altKey)
@@ -439,7 +439,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_altKey)
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_controlKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_CTRL)));
+	return asAtom((bool)(th->modifiers & KMOD_CTRL));
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_setter_controlKey)
@@ -452,7 +452,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_controlKey)
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_ctrlKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_CTRL)));
+	return asAtom((bool)(th->modifiers & KMOD_CTRL));
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_setter_ctrlKey)
@@ -465,7 +465,7 @@ ASFUNCTIONBODY_ATOM(MouseEvent,_setter_ctrlKey)
 ASFUNCTIONBODY_ATOM(MouseEvent,_getter_shiftKey)
 {
 	MouseEvent* th=static_cast<MouseEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_SHIFT)));
+	return asAtom((bool)(th->modifiers & KMOD_SHIFT));
 }
 
 ASFUNCTIONBODY_ATOM(MouseEvent,_setter_shiftKey)
@@ -678,7 +678,7 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
 	if(!args[0]->is<Event>())
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	_R<Event> e=_IMR(Class<Event>::cast(args[0].getObject()));
 
@@ -692,21 +692,21 @@ ASFUNCTIONBODY_ATOM(EventDispatcher,dispatchEvent)
 		asAtom cloned = e->executeASMethod("clone", {""}, empty, 0);
 		//Clone always exists since it's implemented in Event itself
 		if(!cloned.getObject() || !cloned.getObject()->is<Event>())
-			return _MAR(asAtom::falseAtom);
+			return asAtom::falseAtom;
 
 		e = _IMR(cloned.getObject()->as<Event>());
 	}
 	if(th->forcedTarget->type != T_INVALID)
 		e->setTarget(th->forcedTarget);
 	ABCVm::publicHandleEvent(_IMR(th), e);
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 
 ASFUNCTIONBODY_ATOM(EventDispatcher,_constructor)
 {
 	EventDispatcher* th=Class<EventDispatcher>::cast(obj.getObject());
 	asAtom forcedTarget;
-	ARG_UNPACK_ATOM(forcedTarget, _MAR(asAtom::nullAtom));
+	ARG_UNPACK_ATOM(forcedTarget, asAtom::nullAtom);
 	if(forcedTarget->type != T_INVALID)
 	{
 		if(forcedTarget->type==T_NULL || forcedTarget->type==T_UNDEFINED)
@@ -914,7 +914,7 @@ ASFUNCTIONBODY_GETTER_SETTER(KeyboardEvent, keyLocation);
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_altKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_ALT)));
+	return asAtom((bool)(th->modifiers & KMOD_ALT));
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_altKey)
@@ -927,7 +927,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_altKey)
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_commandKey)
 {
 	// Supported only on OSX
-	return _MAR(asAtom::falseAtom);
+	return asAtom::falseAtom;
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_commandKey)
@@ -939,7 +939,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_commandKey)
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_controlKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_CTRL)));
+	return asAtom((bool)(th->modifiers & KMOD_CTRL));
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_controlKey)
@@ -952,7 +952,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_controlKey)
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_ctrlKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_CTRL)));
+	return asAtom((bool)(th->modifiers & KMOD_CTRL));
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_ctrlKey)
@@ -965,7 +965,7 @@ ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_ctrlKey)
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _getter_shiftKey)
 {
 	KeyboardEvent* th=static_cast<KeyboardEvent*>(obj.getObject());
-	return _MAR(asAtom((bool)(th->modifiers & KMOD_SHIFT)));
+	return asAtom((bool)(th->modifiers & KMOD_SHIFT));
 }
 
 ASFUNCTIONBODY_ATOM(KeyboardEvent, _setter_shiftKey)

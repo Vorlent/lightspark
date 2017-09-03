@@ -287,7 +287,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 	const uint32_t opt_hit_threshold=1;
 	const uint32_t jit_hit_threshold=20;
 	if (!mi->body)
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 
 	const uint16_t hit_count = mi->body->hit_count;
 	const method_body_info::CODE_STATUS& codeStatus = mi->body->codeStatus;
@@ -428,7 +428,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 			cc.locals[i+1]=mi->paramTypes[i]->coerce(getSystemState(),v);
 		} else {
 			assert(mi->paramTypes[i] == Type::anyType);
-			cc.locals[i+1]=_MAR(asAtom::undefinedAtom);
+			cc.locals[i+1]=asAtom::undefinedAtom;
 		}
 	}
 	cc.argarrayposition = -1;
@@ -543,7 +543,7 @@ asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t 
 	getVm(getSystemState())->currentCallContext = saved_cc;
 
 	if(ret->type == T_INVALID)
-		ret=_MAR(asAtom::undefinedAtom);
+		ret=asAtom::undefinedAtom;
 	return mi->returnType->coerce(getSystemState(),ret);
 }
 
@@ -567,7 +567,7 @@ asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 		// use the asAtom based call interface
 		ret=val_atom(getSystemState(),obj,args,num_args);
 		if(ret->type == T_INVALID)
-			ret=_MAR(asAtom::undefinedAtom);
+			ret=asAtom::undefinedAtom;
 		return ret;
 	}
 	
@@ -588,7 +588,7 @@ asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 	ret=asAtom::fromObject(val(obj.toObject(getSystemState()),newArgs,num_args));
 
 	if(ret->type == T_INVALID)
-		ret=_MAR(asAtom::undefinedAtom);
+		ret=asAtom::undefinedAtom;
 	return ret;
 }
 bool Function::isEqual(ASObject* r)
@@ -1780,7 +1780,7 @@ asAtom ASQName::nextValue(uint32_t index)
 	{
 		case 1:
 			if (uri_is_null)
-				return _MAR(asAtom::nullAtom);
+				return asAtom::nullAtom;
 			else
 				return asAtom::fromStringID(this->uri);
 		case 2:
@@ -2100,7 +2100,7 @@ asAtom Namespace::nextValue(uint32_t index)
 			return asAtom::fromStringID(this->uri);
 		case 2:
 			if(prefix_is_undefined)
-				return _MAR(asAtom::undefinedAtom);
+				return asAtom::undefinedAtom;
 			else
 				return asAtom::fromStringID(this->prefix);
 		default:
@@ -2566,9 +2566,9 @@ ASFUNCTIONBODY_ATOM(lightspark,_isXMLName)
 {
 	assert_and_throw(argslen <= 1);
 	if(argslen==0)
-		return _MAR(asAtom(false));
+		return asAtom(false);
 
-	return _MAR(asAtom(isXMLName(sys,args[0])));
+	return asAtom(isXMLName(sys,args[0]));
 }
 
 ObjectPrototype::ObjectPrototype(Class_base* c) : ASObject(c)
@@ -2615,7 +2615,7 @@ asAtom ObjectConstructor::getVariableByMultiname(const multiname& name, GET_VARI
 	}
 	if (name.normalizedName(getSystemState()) == "length")
 	{
-		return _MAR(asAtom(_length));
+		return asAtom(_length);
 	}
 	return getClass()->getVariableByMultiname(name, opt);
 }
