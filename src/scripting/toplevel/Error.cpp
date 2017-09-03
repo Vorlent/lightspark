@@ -155,7 +155,7 @@ ASFUNCTIONBODY_ATOM(ASError,generator)
 	return asAtom::fromObject(th);
 }
 
-void ASError::errorGenerator(ASError* obj, std::vector<asAtomR>& args, const unsigned int argslen)
+void ASError::errorGenerator(ASError* obj, std::vector<asAtom>& args, const unsigned int argslen)
 {
 	assert_and_throw(argslen <= 2);
 	if(argslen >= 1)

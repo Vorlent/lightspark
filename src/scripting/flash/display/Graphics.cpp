@@ -75,7 +75,7 @@ void Graphics::checkAndSetScaling()
 
 ASFUNCTIONBODY_ATOM(Graphics,_constructor)
 {
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,clear)
@@ -85,7 +85,7 @@ ASFUNCTIONBODY_ATOM(Graphics,clear)
 	th->owner->tokens.clear();
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,moveTo)
@@ -98,7 +98,7 @@ ASFUNCTIONBODY_ATOM(Graphics,moveTo)
 	int32_t y=args[1]->toInt();
 
 	th->owner->tokens.emplace_back(GeomToken(MOVE, Vector2(x, y)));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,lineTo)
@@ -114,7 +114,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineTo)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,curveTo)
@@ -134,7 +134,7 @@ ASFUNCTIONBODY_ATOM(Graphics,curveTo)
 	                        Vector2(anchorX, anchorY)));
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,cubicCurveTo)
@@ -159,7 +159,7 @@ ASFUNCTIONBODY_ATOM(Graphics,cubicCurveTo)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 /* KAPPA = 4 * (sqrt2 - 1) / 3
@@ -249,7 +249,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawRoundRect)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 	
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,drawRoundRectComplex)
@@ -277,7 +277,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawRoundRectComplex)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 	
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,drawCircle)
@@ -322,7 +322,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawCircle)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 	
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,drawEllipse)
@@ -369,7 +369,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawEllipse)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,drawRect)
@@ -396,7 +396,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawRect)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 	
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,drawPath)
@@ -417,7 +417,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawPath)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void Graphics::pathToTokens(_NR<Vector> commands, _NR<Vector> data,
@@ -429,7 +429,7 @@ void Graphics::pathToTokens(_NR<Vector> commands, _NR<Vector> data,
 	if (winding != "evenOdd")
 		LOG(LOG_NOT_IMPLEMENTED, "Only event-odd winding implemented in Graphics.drawPath");
 
-	asAtomR zero =_MAR(asAtom((number_t)0));
+	asAtom zero =_MAR(asAtom((number_t)0));
 
 	int k = 0;
 	for (unsigned int i=0; i<commands->size(); i++)
@@ -558,7 +558,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawTriangles)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void Graphics::drawTrianglesToTokens(_NR<Vector> vertices, _NR<Vector> indices, _NR<Vector> uvtData, tiny_string culling, tokensVector& tokens)
@@ -695,7 +695,7 @@ ASFUNCTIONBODY_ATOM(Graphics,drawGraphicsData)
 	th->owner->owner->hasChanged=true;
 	th->owner->owner->requestInvalidation(sys);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,lineStyle)
@@ -706,7 +706,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineStyle)
 	if (argslen == 0)
 	{
 		th->owner->tokens.emplace_back(CLEAR_STROKE);
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	uint32_t color = 0;
 	uint8_t alpha = 255;
@@ -722,7 +722,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineStyle)
 	style.Color = RGBA(color, alpha);
 	style.Width = thickness;
 	th->owner->tokens.emplace_back(GeomToken(SET_STROKE, style));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,lineBitmapStyle)
@@ -736,7 +736,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineBitmapStyle)
 	ARG_UNPACK_ATOM (bitmap) (matrix, NullRef) (repeat, true) (smooth, false);
 
 	if (bitmap.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	LINESTYLE2 style(0xff);
 	style.Width = th->owner->getCurrentLineWidth();
@@ -745,7 +745,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineBitmapStyle)
 	
 	th->owner->tokens.emplace_back(GeomToken(SET_STROKE, style));
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,lineGradientStyle)
@@ -773,7 +773,7 @@ ASFUNCTIONBODY_ATOM(Graphics,lineGradientStyle)
 
 	th->owner->tokens.emplace_back(GeomToken(SET_STROKE, style));
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,beginGradientFill)
@@ -794,9 +794,9 @@ ASFUNCTIONBODY_ATOM(Graphics,beginGradientFill)
 
 	//Work around for bug in YouTube player of July 13 2011
 	if (!ratiosParam->is<Array>())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	if (ratiosParam.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	_NR<Array> ratios = _IMNR(ratiosParam->as<Array>());
 
@@ -805,7 +805,7 @@ ASFUNCTIONBODY_ATOM(Graphics,beginGradientFill)
 					     focalPointRatio);
 	th->owner->tokens.emplace_back(GeomToken(SET_FILL, style));
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 FILLSTYLE Graphics::createGradientFill(const tiny_string& type,
@@ -914,13 +914,13 @@ ASFUNCTIONBODY_ATOM(Graphics,beginBitmapFill)
 	ARG_UNPACK_ATOM (bitmap) (matrix, NullRef) (repeat, true) (smooth, false);
 
 	if(bitmap.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	th->checkAndSetScaling();
 
 	FILLSTYLE style = createBitmapFill(bitmap, matrix, repeat, smooth);
 	th->owner->tokens.emplace_back(GeomToken(SET_FILL, style));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,beginFill)
@@ -935,7 +935,7 @@ ASFUNCTIONBODY_ATOM(Graphics,beginFill)
 		alpha=(uint8_t(args[1]->toNumber()*0xff));
 	FILLSTYLE style = Graphics::createSolidFill(color, alpha);
 	th->owner->tokens.emplace_back(GeomToken(SET_FILL, style));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,endFill)
@@ -943,7 +943,7 @@ ASFUNCTIONBODY_ATOM(Graphics,endFill)
 	Graphics* th=obj->as<Graphics>();
 	th->checkAndSetScaling();
 	th->owner->tokens.emplace_back(CLEAR_FILL);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Graphics,copyFrom)
@@ -952,9 +952,9 @@ ASFUNCTIONBODY_ATOM(Graphics,copyFrom)
 	_NR<Graphics> source;
 	ARG_UNPACK_ATOM(source);
 	if (source.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	th->owner->tokens.assign(source->owner->tokens.begin(),
 				 source->owner->tokens.end());
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }

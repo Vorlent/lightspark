@@ -45,7 +45,7 @@ public:
 class Class_inherit:public Class_base
 {
 private:
-	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass);
+	asAtom getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass);
 	DictionaryTag const* tag;
 	bool bindedToRoot;
 	void recursiveBuild(ASObject* target) const;
@@ -126,12 +126,12 @@ class Class: public Class_base
 protected:
 	Class(const QName& name, MemoryAccount* m):Class_base(name, m){}
 	//This function is instantiated always because of inheritance
-	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass=NULL)
+	asAtom getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass=NULL)
 	{
 		if(realClass==NULL)
 			realClass=this;
-		asAtomR ret = asAtom::fromObject(realClass->freelist[0].getObjectFromFreeList());
-		if (ret->type == T_INVALID)
+		asAtom ret = asAtom::fromObject(realClass->freelist[0].getObjectFromFreeList());
+		if (ret.type == T_INVALID)
 			ret=asAtom::fromObject(new (realClass->memoryAccount) T(realClass));
 		if(construct)
 			handleConstruction(ret,args,argslen,true);
@@ -229,24 +229,24 @@ public:
 	{
 		T::buildTraits(o);
 	}
-	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
+	asAtom generator(std::vector<asAtom>& args, const unsigned int argslen)
 	{
-		asAtomR ret=T::generator(getSystemState(), asAtomR::invalidAtomR, args, argslen);
+		asAtom ret=T::generator(getSystemState(), asAtom::invalidAtom, args, argslen);
 		return ret;
 	}
-	asAtomR coerce(SystemState* sys, asAtomR& o) const
+	asAtom coerce(SystemState* sys, asAtom& o) const
 	{
 		return Class_base::coerce(sys,o);
 	}
 };
 
 template<>
-asAtomR Class<Global>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass);
+asAtom Class<Global>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass);
 
 template<>
-inline asAtomR Class<Number>::coerce(SystemState* sys, asAtomR& o) const
+inline asAtom Class<Number>::coerce(SystemState* sys, asAtom& o) const
 {
-	switch (o->type)
+	switch (o.type)
 	{
 		case T_NUMBER:
 		case T_INTEGER:
@@ -254,37 +254,37 @@ inline asAtomR Class<Number>::coerce(SystemState* sys, asAtomR& o) const
 			return o;
 		default:
 		{
-			number_t n = o->toNumber();
-			return _MAR(asAtom(n));
+			number_t n = o.toNumber();
+			return asAtom(n);
 		}
 	}
 }
 
 template<>
-inline asAtomR Class<UInteger>::coerce(SystemState* sys, asAtomR& o) const
+inline asAtom Class<UInteger>::coerce(SystemState* sys, asAtom& o) const
 {
-	if (o->type == T_UINTEGER)
+	if (o.type == T_UINTEGER)
 		return o;
-	uint32_t n = o->toUInt();
-	return _MAR(asAtom(n));
+	uint32_t n = o.toUInt();
+	return asAtom(n);
 }
 
 template<>
-inline asAtomR Class<Integer>::coerce(SystemState* sys, asAtomR& o) const
+inline asAtom Class<Integer>::coerce(SystemState* sys, asAtom& o) const
 {
-	if (o->type == T_INTEGER)
+	if (o.type == T_INTEGER)
 		return o;
-	int32_t n = o->toInt();
-	return _MAR(asAtom(n));
+	int32_t n = o.toInt();
+	return asAtom(n);
 }
 
 template<>
-inline asAtomR Class<Boolean>::coerce(SystemState* sys,asAtomR& o) const
+inline asAtom Class<Boolean>::coerce(SystemState* sys,asAtom& o) const
 {
-	if (o->type == T_BOOLEAN)
+	if (o.type == T_BOOLEAN)
 		return o;
-	bool n = o->Boolean_concrete();
-	return _MAR(asAtom(n));
+	bool n = o.Boolean_concrete();
+	return asAtom(n);
 }
 
 template<>
@@ -293,7 +293,7 @@ class Class<ASObject>: public Class_base
 private:
 	Class<ASObject>(const QName& name, MemoryAccount* m):Class_base(name, m){}
 	//This function is instantiated always because of inheritance
-	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass=NULL);
+	asAtom getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass=NULL);
 public:
 	static ASObject* getInstanceS(SystemState* sys)
 	{
@@ -322,16 +322,15 @@ public:
 	{
 		ASObject::buildTraits(o);
 	}
-	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
+	asAtom generator(std::vector<asAtom>& args, const unsigned int argslen)
 	{
-		asAtomR ret;
-		if(argslen==0 || args[0]->is<Null>() || args[0]->is<Undefined>())
-			ret=asAtom::fromObject(Class<ASObject>::getInstanceS(getSys()));
+		if(argslen==0 || args[0].is<Null>() || args[0].is<Undefined>()) {
+			return asAtom::fromObject(Class<ASObject>::getInstanceS(getSys()));
+		}
 		else
 		{
-			ret=args[0];
+			return args[0];
 		}
-		return ret;
 	}
 };
 
@@ -349,12 +348,12 @@ class InterfaceClass: public Class_base
 {
 	virtual ~InterfaceClass() { }
 	void buildInstanceTraits(ASObject*) const {}
-	asAtomR getInstance(bool, std::vector<asAtomR>&, unsigned int, Class_base* realClass)
+	asAtom getInstance(bool, std::vector<asAtom>&, unsigned int, Class_base* realClass)
 	{
 		assert(false);
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
-	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
+	asAtom generator(std::vector<asAtom>& args, const unsigned int argslen)
 	{
 		assert(argslen == 1);
 		return args[0];
@@ -405,12 +404,12 @@ public:
 	{
 	}
 
-	asAtomR getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass=NULL)
+	asAtom getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass=NULL)
 	{
 		if(realClass==NULL)
 			realClass=this;
-		asAtomR ret=asAtom::fromObject(new (realClass->memoryAccount) T(realClass));
-		ret->as<T>()->setTypes(types);
+		asAtom ret=asAtom::fromObject(new (realClass->memoryAccount) T(realClass));
+		ret.as<T>()->setTypes(types);
 		if(construct)
 			this->handleConstruction(ret,args,argslen,true);
 		return ret;
@@ -419,10 +418,10 @@ public:
 	/* This function is called for as3 code like v = Vector.<String>(["Hello", "World"])
 	 * this->types will be Class<ASString> on entry of this function.
 	 */
-	asAtomR generator(std::vector<asAtomR>& args, const unsigned int argslen)
+	asAtom generator(std::vector<asAtom>& args, const unsigned int argslen)
 	{
-		asAtomR th = asAtom::fromObject(this);
-		asAtomR ret = T::generator(this->getSystemState(),th,args,argslen);
+		asAtom th = asAtom::fromObject(this);
+		asAtom ret = T::generator(this->getSystemState(),th,args,argslen);
 		return ret;
 	}
 
@@ -440,14 +439,14 @@ public:
 		types.push_back(type);
 	}
 
-	asAtomR coerce(SystemState* sys,asAtomR& o) const
+	asAtom coerce(SystemState* sys,asAtom& o) const
 	{
-		if (o->type == T_UNDEFINED)
+		if (o.type == T_UNDEFINED)
 		{;
-			return asAtomR::nullAtomR;
+			return asAtom::nullAtom;
 		}
-		else if ((o->getObject() && o->getObject()->is<T>() && o->getObject()->as<T>()->sameType(this)) ||
-				 o->type ==T_NULL)
+		else if ((o.getObject() && o.getObject()->is<T>() && o.as<T>()->sameType(this)) ||
+				 o.type ==T_NULL)
 		{
 			// Vector.<x> can be coerced to Vector.<y>
 			// only if x and y are the same type
@@ -455,10 +454,10 @@ public:
 		}
 		else
 		{
-			tiny_string clsname = o->getObject() ? o->getObject()->getClassName() : "";
+			tiny_string clsname = o.getObject() ? o.getObject()->getClassName() : "";
 			throwError<TypeError>(kCheckTypeFailedError, clsname,
 								  Class<T>::getQualifiedClassName());
-			return asAtomR::invalidAtomR; // not reached
+			return asAtom::invalidAtom; // not reached
 		}
 	}
 };
@@ -553,9 +552,9 @@ public:
 		ret->context = context;
 		return ret;
 	}
-	static asAtomR getInstanceS(SystemState* sys,const Type* type,_NR<ApplicationDomain> appdomain)
+	static asAtom getInstanceS(SystemState* sys,const Type* type,_NR<ApplicationDomain> appdomain)
 	{
-		std::vector<asAtomR> empty;
+		std::vector<asAtom> empty;
 		return getTemplateInstance(sys,type,appdomain).getPtr()->getInstance(true,empty,0);
 	}
 

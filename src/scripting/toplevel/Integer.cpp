@@ -66,10 +66,10 @@ ASFUNCTIONBODY_ATOM(Integer,_constructor)
 	if(argslen==0)
 	{
 		//The int is already initialized to 0
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	th->val=args[0]->toInt();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Integer,generator)
@@ -196,8 +196,8 @@ void Integer::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtomR max = _MAR(asAtom(numeric_limits<int32_t>::max()));
-	asAtomR min = _MAR(asAtom(numeric_limits<int32_t>::min()));
+	asAtom max = _MAR(asAtom(numeric_limits<int32_t>::max()));
+	asAtom min = _MAR(asAtom(numeric_limits<int32_t>::min()));
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),max,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(),min,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);

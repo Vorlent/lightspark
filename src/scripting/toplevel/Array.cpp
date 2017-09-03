@@ -104,7 +104,7 @@ ASFUNCTIONBODY_ATOM(Array,_constructor)
 {
 	Array* th=obj->as<Array>();
 	th->constructorImpl(args, argslen);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,generator)
@@ -114,7 +114,7 @@ ASFUNCTIONBODY_ATOM(Array,generator)
 	return asAtom::fromObject(th);
 }
 
-void Array::constructorImpl(std::vector<asAtomR>& args, const unsigned int argslen)
+void Array::constructorImpl(std::vector<asAtom>& args, const unsigned int argslen)
 {
 	if(argslen==1 && (args[0]->is<Integer>() || args[0]->is<UInteger>() || args[0]->is<Number>()))
 	{
@@ -170,7 +170,7 @@ ASFUNCTIONBODY_ATOM(Array,_concat)
 			auto itother2=otherArray->data_second.begin();
 			for(;itother2!=otherArray->data_second.end(); ++itother2)
 			{
-				asAtomR a = itother2->second;
+				asAtom a = itother2->second;
 				ret->set(newSize+itother2->first, a,false);
 			}
 			ret->resize(oldSize+otherArray->size());
@@ -189,13 +189,13 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 {
 	Array* th=obj->as<Array>();
 	Array* ret=Class<Array>::getInstanceSNoArgs(sys);
-	asAtomR f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
 		return asAtom::fromObject(ret);
 
-	std::vector<asAtomR> params(3);
-	asAtomR funcRet;
+	std::vector<asAtom> params(3);
+	asAtom funcRet;
 
 	uint32_t index = 0;
 	while (index < th->currentsize)
@@ -203,7 +203,7 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 		index++;
 		if (index <= ARRAY_SIZE_THRESHOLD)
 		{
-			asAtomR a =th->data_first[index-1];
+			asAtom a =th->data_first[index-1];
 			if (a->type == T_INVALID)
 				continue;
 			params[0] = a;
@@ -220,10 +220,10 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 		params[2] = asAtom::fromObject(th);
 
 		// ensure that return values are the original values
-		asAtomR origval = params[0];
+		asAtom origval = params[0];
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
+			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -244,13 +244,13 @@ ASFUNCTIONBODY_ATOM(Array,filter)
 ASFUNCTIONBODY_ATOM(Array, some)
 {
 	Array* th=obj->as<Array>();
-	asAtomR f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
 		return _MAR(asAtom::falseAtom);
 
-	std::vector<asAtomR> params(3);
-	asAtomR funcRet;
+	std::vector<asAtom> params(3);
+	asAtom funcRet;
 
 	uint32_t index = 0;
 	while (index < th->currentsize)
@@ -258,7 +258,7 @@ ASFUNCTIONBODY_ATOM(Array, some)
 		index++;
 		if (index <= ARRAY_SIZE_THRESHOLD)
 		{
-			asAtomR a =th->data_first[index-1];
+			asAtom a =th->data_first[index-1];
 			if (a->type == T_INVALID)
 				continue;
 			params[0] = a;
@@ -275,7 +275,7 @@ ASFUNCTIONBODY_ATOM(Array, some)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
+			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -295,13 +295,13 @@ ASFUNCTIONBODY_ATOM(Array, some)
 ASFUNCTIONBODY_ATOM(Array, every)
 {
 	Array* th=obj->as<Array>();
-	asAtomR f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
 		return _MAR(asAtom::trueAtom);
 
-	std::vector<asAtomR> params(3);
-	asAtomR funcRet;
+	std::vector<asAtom> params(3);
+	asAtom funcRet;
 
 	uint32_t index = 0;
 	while (index < th->currentsize)
@@ -309,7 +309,7 @@ ASFUNCTIONBODY_ATOM(Array, every)
 		index++;
 		if (index <= ARRAY_SIZE_THRESHOLD)
 		{
-			asAtomR a =th->data_first[index-1];
+			asAtom a =th->data_first[index-1];
 			if (a->type == T_INVALID)
 				continue;
 			params[0] = a;
@@ -326,7 +326,7 @@ ASFUNCTIONBODY_ATOM(Array, every)
 
 		if(argslen==1)
 		{
-			funcRet=f->callFunction(asAtomR::nullAtomR, params, 3,false);
+			funcRet=f->callFunction(asAtom::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -355,22 +355,22 @@ ASFUNCTIONBODY_ATOM(Array,_setLength)
 	ARG_UNPACK_ATOM(newLen);
 	Array* th=obj->as<Array>();
 	if (th->getClass() && th->getClass()->isSealed)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	//If newLen is equal to size do nothing
 	if(newLen==th->size())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	th->resize(newLen);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,forEach)
 {
 	Array* th=obj->as<Array>();
-	asAtomR f =_MAR(asAtom(T_FUNCTION));
+	asAtom f =_MAR(asAtom(T_FUNCTION));
 	ARG_UNPACK_ATOM(f);
 	if (f->type == T_NULL)
-		return asAtomR::invalidAtomR;
-	std::vector<asAtomR> params(3);
+		return asAtom::invalidAtomR;
+	std::vector<asAtom> params(3);
 
 	uint32_t index = 0;
 	uint32_t s = th->size(); // remember current size, as it may change inside the called function
@@ -379,7 +379,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 		index++;
 		if (index <= ARRAY_SIZE_THRESHOLD)
 		{
-			asAtomR a =th->data_first[index-1];
+			asAtom a =th->data_first[index-1];
 			if (a->type == T_INVALID)
 				continue;
 			else
@@ -396,10 +396,10 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 		params[1] = _MAR(asAtom(index-1));
 		params[2] = asAtom::fromObject(th);
 
-		asAtomR funcret;
+		asAtom funcret;
 		if( argslen == 1 )
 		{
-			funcret=f->callFunction(asAtomR::nullAtomR, params, 3,false);
+			funcret=f->callFunction(asAtom::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -407,7 +407,7 @@ ASFUNCTIONBODY_ATOM(Array,forEach)
 		}
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array, _reverse)
@@ -418,7 +418,7 @@ ASFUNCTIONBODY_ATOM(Array, _reverse)
 		std::reverse(th->data_first.begin(),th->data_first.end());
 	else
 	{
-		std::unordered_map<uint32_t, asAtomR> tmp = std::unordered_map<uint32_t, asAtomR>(th->data_second.begin(),th->data_second.end());
+		std::unordered_map<uint32_t, asAtom> tmp = std::unordered_map<uint32_t, asAtom>(th->data_second.begin(),th->data_second.end());
 		for (uint32_t i = 0; i < th->data_first.size(); i++)
 		{
 			tmp[i] = th->data_first[i];
@@ -439,7 +439,7 @@ ASFUNCTIONBODY_ATOM(Array,lastIndexOf)
 {
 	Array* th=obj->as<Array>();
 	number_t index;
-	asAtomR arg0;
+	asAtom arg0;
 	ARG_UNPACK_ATOM(arg0) (index, 0x7fffffff);
 	int32_t ret=-1;
 
@@ -468,7 +468,7 @@ ASFUNCTIONBODY_ATOM(Array,lastIndexOf)
 	}
 	do
 	{
-		asAtomR a;
+		asAtom a;
 		if ( i >= ARRAY_SIZE_THRESHOLD)
 		{
 			auto it = th->data_second.find(i);
@@ -509,9 +509,9 @@ ASFUNCTIONBODY_ATOM(Array,shift)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtomR o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtomR v = _MAR(asAtom(res-1));
+		asAtom v = _MAR(asAtom(res-1));
 		if (res > 0)
 			obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
@@ -519,7 +519,7 @@ ASFUNCTIONBODY_ATOM(Array,shift)
 	Array* th=obj->as<Array>();
 	if(!th->size())
 		return _MAR(asAtom::undefinedAtom);
-	asAtomR ret;
+	asAtom ret;
 	if (th->data_first.size() > 0)
 		ret = th->data_first[0];
 	if (ret->type == T_INVALID)
@@ -527,7 +527,7 @@ ASFUNCTIONBODY_ATOM(Array,shift)
 	if (th->data_first.size() > 0)
 		th->data_first.erase(th->data_first.begin());
 
-	std::unordered_map<uint32_t,asAtomR> tmp;
+	std::unordered_map<uint32_t,asAtom> tmp;
 	auto it=th->data_second.begin();
 	for (; it != th->data_second.end(); ++it )
 	{
@@ -578,7 +578,7 @@ ASFUNCTIONBODY_ATOM(Array,slice)
 	uint32_t j = 0;
 	for(uint32_t i=startIndex; i<endIndex && i< th->currentsize; i++) 
 	{
-		asAtomR a = th->at((uint32_t)i);
+		asAtom a = th->at((uint32_t)i);
 		if (a->type != T_INVALID)
 			ret->push(a);
 		j++;
@@ -609,7 +609,7 @@ ASFUNCTIONBODY_ATOM(Array,splice)
 		// write deleted items to return array
 		for(int i=0;i<deleteCount;i++)
 		{
-			asAtomR a = th->at((uint32_t)startIndex+i);
+			asAtom a = th->at((uint32_t)startIndex+i);
 			if (a->type != T_INVALID)
 				ret->set(i,a,false);
 		}
@@ -632,7 +632,7 @@ ASFUNCTIONBODY_ATOM(Array,splice)
 		}
 	}
 	// remember items in current array that have to be moved to new position
-	vector<asAtomR> tmp = vector<asAtomR>(totalSize- (startIndex+deleteCount));
+	vector<asAtom> tmp = vector<asAtom>(totalSize- (startIndex+deleteCount));
 	for (uint32_t i = (uint32_t)startIndex+deleteCount; i < totalSize ; i++)
 	{
 		if (i < ARRAY_SIZE_THRESHOLD)
@@ -680,7 +680,7 @@ ASFUNCTIONBODY_ATOM(Array,join)
 
 	for(uint32_t i=0;i<th->size();i++)
 	{
-		asAtomR o = th->at(i);
+		asAtom o = th->at(i);
 		if (!o->is<Undefined>() && !o->is<Null>())
 			ret+= o->toString().raw_buf();
 		if(i!=th->size()-1)
@@ -694,7 +694,7 @@ ASFUNCTIONBODY_ATOM(Array,indexOf)
 	Array* th=obj->as<Array>();
 	int32_t ret=-1;
 	int32_t index;
-	asAtomR arg0;
+	asAtom arg0;
 	ARG_UNPACK_ATOM(arg0) (index, 0);
 	if (index < 0) index = th->size()+ index;
 	if (index < 0) index = 0;
@@ -743,9 +743,9 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtomR o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtomR v = _MAR(asAtom(res-1));
+		asAtom v = _MAR(asAtom(res-1));
 		if (res > 0)
 			obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
@@ -754,7 +754,7 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 	uint32_t size =th->size();
 	if (size == 0)
 		return _MAR(asAtom::undefinedAtom);
-	asAtomR ret = _MAR(asAtom::undefinedAtom);
+	asAtom ret = _MAR(asAtom::undefinedAtom);
 	
 	if (size <= ARRAY_SIZE_THRESHOLD)
 	{
@@ -781,10 +781,10 @@ ASFUNCTIONBODY_ATOM(Array,_pop)
 	return ret;
 }
 
-bool Array::sortComparatorDefault::operator()(asAtomR& d1, asAtomR& d2)
+bool Array::sortComparatorDefault::operator()(asAtom& d1, asAtom& d2)
 {
-	asAtomR o1 = d1;
-	asAtomR o2 = d2;
+	asAtom o1 = d1;
+	asAtom o2 = d2;
 	if(isNumeric)
 	{
 		number_t a=numeric_limits<double>::quiet_NaN();
@@ -826,14 +826,14 @@ bool Array::sortComparatorDefault::operator()(asAtomR& d1, asAtomR& d2)
 	}
 }
 
-bool Array::sortComparatorWrapper::operator()(asAtomR& d1, asAtomR& d2)
+bool Array::sortComparatorWrapper::operator()(asAtom& d1, asAtom& d2)
 {
-	std::vector<asAtomR> objs(2);
+	std::vector<asAtom> objs(2);
 	objs[0]=d1;
 	objs[1]=d2;
 
 	assert(comparator->type == T_FUNCTION);
-	asAtomR ret=comparator->callFunction(asAtomR::nullAtomR, objs, 2,false);
+	asAtom ret=comparator->callFunction(asAtom::nullAtomR, objs, 2,false);
 	assert_and_throw(ret->type != T_INVALID);
 	return (ret->toNumber()<0); //Less
 }
@@ -841,7 +841,7 @@ bool Array::sortComparatorWrapper::operator()(asAtomR& d1, asAtomR& d2)
 ASFUNCTIONBODY_ATOM(Array,_sort)
 {
 	Array* th=obj->as<Array>();
-	asAtomR comp;
+	asAtom comp;
 	bool isNumeric=false;
 	bool isCaseInsensitive=false;
 	bool isDescending=false;
@@ -865,7 +865,7 @@ ASFUNCTIONBODY_ATOM(Array,_sort)
 				throw UnsupportedException("Array::sort not completely implemented");
 		}
 	}
-	std::vector<asAtomR> tmp;
+	std::vector<asAtom> tmp;
 	auto it1=th->data_first.begin();
 	for(;it1 != th->data_first.end();++it1)
 	{
@@ -892,7 +892,7 @@ ASFUNCTIONBODY_ATOM(Array,_sort)
 
 	th->data_first.clear();
 	th->data_second.clear();
-	std::vector<asAtomR>::iterator ittmp=tmp.begin();
+	std::vector<asAtom>::iterator ittmp=tmp.begin();
 	int i = 0;
 	for(;ittmp != tmp.end();++ittmp)
 	{
@@ -901,13 +901,13 @@ ASFUNCTIONBODY_ATOM(Array,_sort)
 	return obj;
 }
 
-bool Array::sortOnComparator::operator()(asAtomR& d1, asAtomR& d2)
+bool Array::sortOnComparator::operator()(asAtom& d1, asAtom& d2)
 {
 	std::vector<sorton_field>::iterator it=fields.begin();
 	for(;it != fields.end();++it)
 	{
-		asAtomR obj1 = d1->getObject()->getVariableByMultiname(it->fieldname);
-		asAtomR obj2 = d2->getObject()->getVariableByMultiname(it->fieldname);
+		asAtom obj1 = d1->getObject()->getVariableByMultiname(it->fieldname);
+		asAtom obj2 = d2->getObject()->getVariableByMultiname(it->fieldname);
 		if(it->isNumeric)
 		{
 			number_t a=numeric_limits<double>::quiet_NaN();
@@ -967,7 +967,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 		{
 			multiname sortfieldname(NULL);
 			sortfieldname.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
-			asAtomR atom = obj->at(i);
+			asAtom atom = obj->at(i);
 			sortfieldname.setName(atom,sys);
 			sorton_field sf(sortfieldname);
 			sortfields.push_back(sf);
@@ -996,7 +996,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 	else
 	{
 		multiname sortfieldname(NULL);
-		asAtomR atom = args[0];
+		asAtom atom = args[0];
 		sortfieldname.setName(atom,th->getSystemState());
 		sortfieldname.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		sorton_field sf(sortfieldname);
@@ -1015,7 +1015,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 		sortfields.push_back(sf);
 	}
 	
-	std::vector<asAtomR> tmp;
+	std::vector<asAtom> tmp;
 	auto it1=th->data_first.begin();
 	for(;it1 != th->data_first.end();++it1)
 	{
@@ -1039,7 +1039,7 @@ ASFUNCTIONBODY_ATOM(Array,sortOn)
 
 	th->data_first.clear();
 	th->data_second.clear();
-	std::vector<asAtomR>::iterator ittmp=tmp.begin();
+	std::vector<asAtom>::iterator ittmp=tmp.begin();
 	uint32_t i = 0;
 	for(;ittmp != tmp.end();++ittmp)
 	{
@@ -1064,9 +1064,9 @@ ASFUNCTIONBODY_ATOM(Array,unshift)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtomR o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtomR v = _MAR(asAtom(res+argslen));
+		asAtom v = _MAR(asAtom(res+argslen));
 		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
@@ -1077,7 +1077,7 @@ ASFUNCTIONBODY_ATOM(Array,unshift)
 	if (argslen > 0)
 	{
 		th->resize(th->size()+argslen);
-		std::map<uint32_t,asAtomR> tmp;
+		std::map<uint32_t,asAtom> tmp;
 		for (uint32_t i = 0; i< th->data_first.size(); i++)
 		{
 			tmp[i+argslen]=th->data_first[i];
@@ -1117,9 +1117,9 @@ ASFUNCTIONBODY_ATOM(Array,_push)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtomR o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtomR v = _MAR(asAtom(res+argslen));
+		asAtom v = _MAR(asAtom(res+argslen));
 		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
@@ -1150,9 +1150,9 @@ ASFUNCTIONBODY_ATOM(Array,_push_as3)
 		lengthName.ns.push_back(nsNameAndKind(sys,"",NAMESPACE));
 		lengthName.ns.push_back(nsNameAndKind(sys,AS3,NAMESPACE));
 		lengthName.isAttribute = true;
-		asAtomR o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
+		asAtom o=obj->getObject()->getVariableByMultiname(lengthName,SKIP_IMPL);
 		uint32_t res = o->toUInt();
-		asAtomR v = _MAR(asAtom(res+argslen));
+		asAtom v = _MAR(asAtom(res+argslen));
 		obj->getObject()->setVariableByMultiname(lengthName,v,CONST_NOT_ALLOWED);
 		return _MAR(asAtom::undefinedAtom);
 	}
@@ -1172,7 +1172,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 
 	if(argslen < 1)
 		throwError<ArgumentError>(kWrongArgumentCountError, "Array.map", "1", Integer::toString(argslen));
-	asAtomR func;
+	asAtom func;
 	if (!args[0]->is<RegExp>())
 	{
 		assert_and_throw(args[0]->type==T_FUNCTION);
@@ -1180,7 +1180,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 	}
 	Array* arrayRet=Class<Array>::getInstanceSNoArgs(th->getSystemState());
 
-	std::vector<asAtomR> params(3);
+	std::vector<asAtom> params(3);
 	uint32_t index = 0;
 	uint32_t s = th->size(); // remember current size, as it may change inside the called function
 	while (index < s)
@@ -1188,7 +1188,7 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 		index++;
 		if (index <= ARRAY_SIZE_THRESHOLD)
 		{
-			asAtomR a = th->data_first[index-1];
+			asAtom a = th->data_first[index-1];
 			if(a->type!=T_INVALID)
 				params[0] = a;
 			else
@@ -1204,10 +1204,10 @@ ASFUNCTIONBODY_ATOM(Array,_map)
 		}
 		params[1] = _MAR(asAtom(index-1));
 		params[2] = asAtom::fromObject(th);
-		asAtomR funcRet;
+		asAtom funcRet;
 		if (func->type != T_INVALID)
 		{
-			funcRet = func->callFunction(argslen > 1? args[1] : asAtomR::nullAtomR, params, 3,false);
+			funcRet = func->callFunction(argslen > 1? args[1] : asAtom::nullAtomR, params, 3,false);
 		}
 		else
 		{
@@ -1252,7 +1252,7 @@ ASFUNCTIONBODY_ATOM(Array,insertAt)
 {
 	Array* th=obj->as<Array>();
 	int32_t index;
-	asAtomR o;
+	asAtom o;
 	ARG_UNPACK_ATOM(index)(o);
 	if (index < 0 && th->currentsize >= (uint32_t)(-index))
 		index = th->currentsize+(index);
@@ -1265,7 +1265,7 @@ ASFUNCTIONBODY_ATOM(Array,insertAt)
 	}
 	else
 	{
-		std::map<uint32_t,asAtomR> tmp;
+		std::map<uint32_t,asAtom> tmp;
 		if (index < ARRAY_SIZE_THRESHOLD)
 			th->data_first.insert(th->data_first.begin()+index,o);
 		auto it=th->data_second.begin();
@@ -1289,7 +1289,7 @@ ASFUNCTIONBODY_ATOM(Array,insertAt)
 		th->set(index,o,false);
 	}
 	LOG(LOG_ERROR,"insertat:"<<index<<" "<<th->toString_priv());
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Array,removeAt)
@@ -1301,7 +1301,7 @@ ASFUNCTIONBODY_ATOM(Array,removeAt)
 		index = th->currentsize+index;
 	if (index < 0)
 		index = 0;
-	asAtomR o;
+	asAtom o;
 	if (index < ARRAY_SIZE_THRESHOLD)
 	{
 		if ((uint32_t)index < th->data_first.size())
@@ -1321,7 +1321,7 @@ ASFUNCTIONBODY_ATOM(Array,removeAt)
 	}
 	if ((uint32_t)index < th->currentsize)
 		th->currentsize--;
-	std::map<uint32_t,asAtomR> tmp;
+	std::map<uint32_t,asAtom> tmp;
 	auto it=th->data_second.begin();
 	for (; it != th->data_second.end(); ++it )
 	{
@@ -1356,7 +1356,7 @@ int32_t Array::getVariableByMultiname_i(const multiname& name)
 	return ASObject::getVariableByMultiname_i(name);
 }
 
-asAtomR Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	if((opt & SKIP_IMPL)!=0 || !implEnable)
 		return ASObject::getVariableByMultiname(name,opt);
@@ -1373,7 +1373,7 @@ asAtomR Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION
 	{
 		if (data_first.size() > index)
 		{
-			asAtomR a = data_first[index];
+			asAtom a = data_first[index];
 			if (a->type != T_INVALID)
 				return a;
 		}
@@ -1385,7 +1385,7 @@ asAtomR Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION
 	}
 	if (name.hasEmptyNS)
 	{
-		asAtomR ret;
+		asAtom ret;
 		//Check prototype chain
 		Prototype* proto = this->getClass()->prototype.getPtr();
 		while(proto)
@@ -1398,7 +1398,7 @@ asAtomR Array::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION
 	}
 	if(index<size())
 		return _MAR(asAtom::undefinedAtom);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void Array::setVariableByMultiname_i(const multiname& name, int32_t value)
@@ -1414,7 +1414,7 @@ void Array::setVariableByMultiname_i(const multiname& name, int32_t value)
 		return;
 	if(index>=size())
 		resize(index+1);
-	asAtomR v = _MAR(asAtom(value));
+	asAtom v = _MAR(asAtom(value));
 	set(index,v,false);
 }
 
@@ -1487,7 +1487,7 @@ bool Array::isIntegerWithoutLeadingZeros(const tiny_string& value)
 	return true;
 }
 
-void Array::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
+void Array::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
 {
 	assert_and_throw(implEnable);
 	uint32_t index=0;
@@ -1523,7 +1523,7 @@ bool Array::deleteVariableByMultiname(const multiname& name)
 		return true;
 	if (index < data_first.size())
 	{
-		data_first[index]=asAtomR::invalidAtomR;
+		data_first[index]=asAtom::invalidAtomR;
 		return true;
 	}
 	
@@ -1564,7 +1564,7 @@ tiny_string Array::toString_priv(bool localized)
 	string ret;
 	for(uint32_t i=0;i<size();i++)
 	{
-		asAtomR sl;
+		asAtom sl;
 		if (i < ARRAY_SIZE_THRESHOLD)
 		{
 			if (i < data_first.size())
@@ -1589,13 +1589,13 @@ tiny_string Array::toString_priv(bool localized)
 	return ret;
 }
 
-asAtomR Array::nextValue(uint32_t index)
+asAtom Array::nextValue(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	if(index<=size())
 	{
 		--index;
-		asAtomR sl;
+		asAtom sl;
 		if (index < ARRAY_SIZE_THRESHOLD)
 			sl = data_first[index];
 		else
@@ -1649,7 +1649,7 @@ uint32_t Array::nextNameIndex(uint32_t cur_index)
 	
 }
 
-asAtomR Array::nextName(uint32_t index)
+asAtom Array::nextName(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	if(index<=size())
@@ -1661,12 +1661,12 @@ asAtomR Array::nextName(uint32_t index)
 	}
 }
 
-asAtomR Array::at(unsigned int index)
+asAtom Array::at(unsigned int index)
 {
 	if(size()<=index)
 		outofbounds(index);
 	
-	asAtomR ret;
+	asAtom ret;
 	if (index < ARRAY_SIZE_THRESHOLD)
 	{
 		if (index < data_first.size())
@@ -1771,7 +1771,7 @@ void Array::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap
 	}
 }
 
-tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtomR& replacer, const tiny_string& spaces,const tiny_string& filter)
+tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtom& replacer, const tiny_string& spaces,const tiny_string& filter)
 {
 	bool ok;
 	tiny_string res = call_toJSON(ok,path,replacer,spaces,filter);
@@ -1788,7 +1788,7 @@ tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtomR& replacer, cons
 	uint32_t denseCount = currentsize;
 	for (uint32_t i=0 ; i < denseCount; i++)
 	{
-		asAtomR a;
+		asAtom a;
 		if ( i < ARRAY_SIZE_THRESHOLD)
 			a = data_first[i];
 		else
@@ -1800,13 +1800,13 @@ tiny_string Array::toJSON(std::vector<ASObject *> &path, asAtomR& replacer, cons
 		tiny_string subres;
 		if (replacer->type != T_INVALID && a->type != T_INVALID)
 		{
-			std::vector<asAtomR> params(2);
+			std::vector<asAtom> params(2);
 			
 			params[0] = _MAR(asAtom(i));
 			params[1] = a;
-			asAtomR funcret=replacer->callFunction(asAtomR::nullAtomR, params, 2,false);
+			asAtom funcret=replacer->callFunction(asAtom::nullAtomR, params, 2,false);
 			if (funcret->type != T_INVALID)
-				subres = funcret->toObject(getSystemState())->toJSON(path,asAtomR::invalidAtomR,spaces,filter);
+				subres = funcret->toObject(getSystemState())->toJSON(path,asAtom::invalidAtomR,spaces,filter);
 		}
 		else
 		{
@@ -1838,7 +1838,7 @@ Array::~Array()
 {
 }
 
-void Array::set(unsigned int index, asAtomR& o, bool checkbounds)
+void Array::set(unsigned int index, asAtom& o, bool checkbounds)
 {
 	if(index<currentsize)
 	{
@@ -1873,14 +1873,14 @@ uint64_t Array::size()
 		lengthName.isAttribute = false;
 		if (hasPropertyByMultiname(lengthName, true, true))
 		{
-			asAtomR o=getVariableByMultiname(lengthName,SKIP_IMPL);
+			asAtom o=getVariableByMultiname(lengthName,SKIP_IMPL);
 			return o->toUInt();
 		}
 	}
 	return currentsize;
 }
 
-void Array::push(asAtomR& o)
+void Array::push(asAtom& o)
 {
 	if (currentsize == UINT32_MAX)
 		return;

@@ -37,14 +37,14 @@ private:
 	~IntervalRunner();
 	INTERVALTYPE type;
 	uint32_t id;
-	asAtomR callback;
-	std::vector<asAtomR> args;
-	asAtomR obj;
+	asAtom callback;
+	std::vector<asAtom> args;
+	asAtom obj;
 	const unsigned int argslen;
 	uint32_t interval;
 public:
-	IntervalRunner(INTERVALTYPE _type, uint32_t _id, asAtomR& _callback, std::vector<asAtomR> args,
-			const unsigned int _argslen, asAtomR& _obj, const uint32_t _interval);
+	IntervalRunner(INTERVALTYPE _type, uint32_t _id, asAtom& _callback, std::vector<asAtom> args,
+			const unsigned int _argslen, asAtom& _obj, const uint32_t _interval);
 	void tick();
 	void tickFence();
 	INTERVALTYPE getType() { return type; }

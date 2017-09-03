@@ -754,7 +754,7 @@ ASFUNCTIONBODY(Date,setTime)
 		name.ns.emplace_back(obj->getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
 		name.ns.emplace_back(obj->getSystemState(),BUILTIN_STRINGS::STRING_AS3NS,NAMESPACE);
 		name.isAttribute = true;
-		asAtomR v = _MAR(asAtom(ms));
+		asAtom v = _MAR(asAtom(ms));
 		obj->setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 		return abstract_d(obj->getSystemState(),ms);
 	}

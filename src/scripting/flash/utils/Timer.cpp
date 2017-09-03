@@ -69,7 +69,7 @@ void Timer::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(Timer,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
 	Timer* th=obj->as<Timer>();
 
@@ -77,7 +77,7 @@ ASFUNCTIONBODY_ATOM(Timer,_constructor)
 	if(argslen>=2)
 		th->repeatCount=args[1]->toInt();
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY(Timer,_getCurrentCount)

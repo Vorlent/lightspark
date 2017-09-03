@@ -474,7 +474,7 @@ private:
 	const Scene_data *getScene(const tiny_string &sceneName) const;
 	uint32_t getFrameIdByNumber(uint32_t i, const tiny_string& sceneName) const;
 	uint32_t getFrameIdByLabel(const tiny_string& l, const tiny_string& sceneName) const;
-	std::map<uint32_t,asAtomR > frameScripts;
+	std::map<uint32_t,asAtom > frameScripts;
 	bool fromDefineSpriteTag;
 protected:
 	/* This is read from the SWF header. It's only purpose is for flash.display.MovieClip.totalFrames */
@@ -486,7 +486,7 @@ public:
 	MovieClip(Class_base* c);
 	MovieClip(Class_base* c, const FrameContainer& f, bool defineSpriteTag);
 	bool destruct();
-	asAtomR gotoAnd(std::vector<asAtomR> &args, const unsigned int argslen, bool stop);
+	asAtom gotoAnd(std::vector<asAtom> &args, const unsigned int argslen, bool stop);
 	static void sinit(Class_base* c);
 	static void buildTraits(ASObject* o);
 	/*

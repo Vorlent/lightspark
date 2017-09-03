@@ -238,12 +238,12 @@ ASFUNCTIONBODY_ATOM(ApplicationDomain,_constructor)
 	if(!th->parentDomain.isNull())
 		// Don't override parentDomain if it was set in the
 		// C++ constructor
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	else if(parentDomain.isNull())
 		th->parentDomain =  sys->systemDomain;
 	else
 		th->parentDomain = parentDomain;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(ApplicationDomain,_getMinDomainMemoryLength)
@@ -374,7 +374,7 @@ ASObject* ApplicationDomain::getVariableAndTargetByMultiname(const multiname& na
 
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
-		asAtomR o=globalScopes[i]->getVariableByMultiname(name);
+		asAtom o=globalScopes[i]->getVariableByMultiname(name);
 		if(o->type != T_INVALID)
 		{
 			target=globalScopes[i];
@@ -397,7 +397,7 @@ ASObject* ApplicationDomain::getVariableByMultinameOpportunistic(const multiname
 
 	for(uint32_t i=0;i<globalScopes.size();i++)
 	{
-		asAtomR o=globalScopes[i]->getVariableByMultinameOpportunistic(name);
+		asAtom o=globalScopes[i]->getVariableByMultinameOpportunistic(name);
 		if(o->type != T_INVALID)
 		{
 			// No incRef, return a reference borrowed from globalScopes

@@ -111,7 +111,7 @@ public:
 	bool hasOptional() { return info.hasOptional(); }
 	bool hasDXNS() { return info.hasDXNS(); }
 	bool hasParamNames() { return info.hasParamNames(); }
-	asAtomR getOptional(unsigned int i);
+	asAtom getOptional(unsigned int i);
 	uint32_t numOptions() { return info.option_count; }
 	uint32_t numArgs() { return info.param_count; }
 	const multiname* paramTypeName(uint32_t i) const;
@@ -159,10 +159,10 @@ public:
 	method_info* get_method(unsigned int m);
 	uint32_t getString(unsigned int s) const;
 	//Qname getQname(unsigned int m, call_context* th=NULL) const;
-	static multiname* s_getMultiname(ABCContext*, asAtomR& rt1, asAtomR& rt2, int m);
+	static multiname* s_getMultiname(ABCContext*, asAtom& rt1, asAtom& rt2, int m);
 	static multiname* s_getMultiname_i(call_context*, uint32_t i , int m);
 	static multiname* s_getMultiname_d(call_context*, number_t i , int m);
-	asAtomR getConstant(int kind, int index);
+	asAtom getConstant(int kind, int index);
 	u16 minor;
 	u16 major;
 	cpool_info constant_pool;
@@ -189,7 +189,7 @@ public:
 		@param deferred_initialization A pointer to a function that can be used to build the given trait later
 	*/
 	void buildTrait(ASObject* obj, const traits_info* t, bool isBorrowed, int scriptid=-1, bool checkExisting=true);
-	void runScriptInit(unsigned int scriptid, asAtomR& g);
+	void runScriptInit(unsigned int scriptid, asAtom& g);
 
 	void linkTrait(Class_base* obj, const traits_info* t);
 	void getOptionalConstant(const option_detail& opt);
@@ -226,7 +226,7 @@ public:
 	}
 	
 	multiname* getMultiname(unsigned int m, call_context* th);
-	multiname* getMultinameImpl(asAtomR& rt1, asAtomR& rt2, unsigned int m);
+	multiname* getMultinameImpl(asAtom& rt1, asAtom& rt2, unsigned int m);
 	void buildInstanceTraits(ASObject* obj, int class_index);
 	ABCContext(_R<RootMovieClip> r, std::istream& in, ABCVm* vm) DLL_PUBLIC;
 	void exec(bool lazy);
@@ -266,7 +266,7 @@ private:
 	static void loadIntN(call_context* th)
 	{
 		RUNTIME_STACK_POP_CREATE_REF(th,arg1);
-		uint32_t addr=arg1->toUInt();
+		uint32_t addr=arg1.toUInt();
 		_R<ApplicationDomain> appDomain = getCurrentApplicationDomain(th);
 		T ret=appDomain->readFromDomainMemory<T>(addr);
 		RUNTIME_STACK_PUSH(th,asAtom(ret));
@@ -276,8 +276,8 @@ private:
 	{
 		RUNTIME_STACK_POP_CREATE_REF(th,arg1);
 		RUNTIME_STACK_POP_CREATE_REF(th,arg2);
-		uint32_t addr=arg1->toUInt();
-		int32_t val=arg2->toInt();
+		uint32_t addr=arg1.toUInt();
+		int32_t val=arg2.toInt();
 		_R<ApplicationDomain> appDomain = getCurrentApplicationDomain(th);
 		appDomain->writeToDomainMemory<T>(addr, val);
 	}
@@ -290,7 +290,7 @@ private:
 	static void callSuper(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callProperty(call_context* th, int n, int m, method_info** called_mi, bool keepReturn);
 	static void callMethod(call_context* th, int n, int m);
-	static void callImpl(call_context* th, asAtomR& f, asAtomR& obj, std::vector<asAtomR> &args, int m, bool keepReturn);
+	static void callImpl(call_context* th, asAtom& f, asAtom& obj, std::vector<asAtom> &args, int m, bool keepReturn);
 	static void constructProp(call_context* th, int n, int m); 
 	static void setLocal(int n); 
 	static void setLocal_int(int n,int v); 
@@ -302,7 +302,7 @@ private:
 	static void getDescendants(call_context* th, int n); 
 	static ASObject* newCatch(call_context* th, int n); 
 	static void jump(int offset); 
-	static bool ifEqAtom(SystemState* sys, asAtomR& obj1, asAtomR& obj2);
+	static bool ifEqAtom(SystemState* sys, asAtom& obj1, asAtom& obj2);
 	static bool ifEq(ASObject*, ASObject*); 
 	static bool ifStrictEq(ASObject*, ASObject*); 
 	static bool ifNE(ASObject*, ASObject*); 
@@ -312,14 +312,14 @@ private:
 	static bool ifLE(ASObject*, ASObject*); 
 	static bool ifLT_oi(ASObject*, int32_t);
 	static bool ifLT_io(int32_t, ASObject*);
-	static bool ifNLTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
+	static bool ifNLTAtom(SystemState* sys, asAtom &obj2, asAtom &obj1);
 	static bool ifNLT(ASObject*, ASObject*); 
-	static bool ifNGTAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
+	static bool ifNGTAtom(SystemState* sys, asAtom &obj2, asAtom &obj1);
 	static bool ifNGT(ASObject*, ASObject*); 
-	static bool ifNGEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
+	static bool ifNGEAtom(SystemState* sys, asAtom &obj2, asAtom &obj1);
 	static bool ifNGE(ASObject*, ASObject*); 
 	static bool ifGE(ASObject*, ASObject*); 
-	static bool ifNLEAtom(SystemState* sys, asAtomR& obj2, asAtomR& obj1);
+	static bool ifNLEAtom(SystemState* sys, asAtom &obj2, asAtom &obj1);
 	static bool ifNLE(ASObject*, ASObject*); 
 	static bool ifStrictNE(ASObject*, ASObject*); 
 	static bool ifFalse(ASObject*); 
@@ -331,15 +331,15 @@ private:
 	static bool getLex(call_context* th, int n); 
 	static ASObject* getScopeObject(call_context* th, int n);
 	static bool deleteProperty(ASObject* objPtr, multiname* name);
-	static bool deletePropertyAtom(SystemState* th, asAtomR &obj, multiname* name);
+	static bool deletePropertyAtom(SystemState* th, asAtom &obj, multiname* name);
 	static void initProperty(ASObject* obj, ASObject* val, multiname* name);
 	static void newClass(call_context* th, int n);
 	static void newArray(call_context* th, int n); 
 	static ASObject* findPropStrict(call_context* th, multiname* name);
-	static asAtomR findPropStrictAtom(call_context* th, multiname* name);
-	static asAtomR findPropStrictCache(call_context* th, memorystream& code);
+	static asAtom findPropStrictAtom(call_context* th, multiname* name);
+	static asAtom findPropStrictCache(call_context* th, memorystream& code);
 	static ASObject* findProperty(call_context* th, multiname* name);
-	static asAtomR findPropertyAtom(call_context* th, multiname* name);
+	static asAtom findPropertyAtom(call_context* th, multiname* name);
 	static int32_t pushByte(intptr_t n);
 	static int32_t pushShort(intptr_t n);
 	static void pushInt(call_context* th, int32_t val);
@@ -352,7 +352,7 @@ private:
 	static void coerce(call_context* th, int n);
 	static void checkDeclaredTraits(ASObject *obj);
 	static ASObject* getProperty(ASObject* obj, multiname* name);
-	static asAtomR getPropertyAtom(ASObject* objPtr, multiname* name);
+	static asAtom getPropertyAtom(ASObject* objPtr, multiname* name);
 	static int32_t getProperty_i(ASObject* obj, multiname* name);
 	static void setProperty(ASObject* value,ASObject* obj, multiname* name);
 	static void setProperty_i(int32_t value,ASObject* obj, multiname* name);
@@ -361,7 +361,7 @@ private:
 	static void construct(call_context* th, int n);
 	static void constructGenericType(call_context* th, int n);
 	static ASObject* newFunction(call_context* th, int n);
-	static asAtomR newFunctionAtom(call_context* th, int n);
+	static asAtom newFunctionAtom(call_context* th, int n);
 	static void setSuper(call_context* th, int n);
 	static void getSuper(call_context* th, int n);
 	static void pushScope(call_context* obj);
@@ -427,8 +427,8 @@ private:
 	static bool greaterEquals(ASObject*,ASObject*);
 	static bool lessEquals(ASObject*,ASObject*);
 	static bool lessThan(ASObject*,ASObject*);
-	static asAtomR nextName(ASObject* index, ASObject* obj);
-	static asAtomR nextValue(ASObject* index, ASObject* obj);
+	static asAtom nextName(ASObject* index, ASObject* obj);
+	static asAtom nextValue(ASObject* index, ASObject* obj);
 	static uint32_t increment_i(ASObject*);
 	static uint64_t increment_di(ASObject*);
 	static number_t increment(ASObject*);
@@ -442,7 +442,7 @@ private:
 	static Namespace* pushNamespace(call_context* th, int n);
 	static void dxns(call_context* th, int n);
 	static void dxnslate(call_context* th, ASObject* o);
-	static void dxnslateAtom(call_context* th, asAtomR &o);
+	static void dxnslateAtom(call_context* th, asAtom &o);
 	//Utility
 	static void not_impl(int p);
 	static void wrong_exec_pos();
@@ -453,7 +453,7 @@ private:
 	static void SetAllClassLinks();
 	static void AddClassLinks(Class_base* target);
 	static bool newClassRecursiveLink(Class_base* target, Class_base* c);
-	static asAtomR constructFunction(call_context* th, asAtomR& f, std::vector<asAtomR> args, int argslen);
+	static asAtom constructFunction(call_context* th, asAtom& f, std::vector<asAtom> args, int argslen);
 	void parseRPCMessage(_R<ByteArray> message, _NR<ASObject> client, _NR<Responder> responder);
 
 	//Opcode tables
@@ -721,7 +721,7 @@ public:
 	bool hasEverStarted() const { return status!=CREATED; }
 
 	static Global* getGlobalScope(call_context* th);
-	static asAtomR getGlobalScopeAtom(call_context* th);
+	static asAtom getGlobalScopeAtom(call_context* th);
 	static bool strictEqualImpl(ASObject*, ASObject*);
 	static void publicHandleEvent(_R<EventDispatcher> dispatcher, _R<Event> event);
 	static _R<ApplicationDomain> getCurrentApplicationDomain(call_context* th);
@@ -730,7 +730,7 @@ public:
 	/* The current recursion level. Each call increases this by one,
 	 * each return from a call decreases this. */
 	uint32_t cur_recursion;
-	std::vector<std::pair<uint32_t,asAtomR> > stacktrace;
+	std::vector<std::pair<uint32_t,asAtom> > stacktrace;
 
 	struct abc_limits {
 		/* maxmium number of recursion allowed. See ScriptLimitsTag */

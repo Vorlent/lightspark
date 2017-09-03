@@ -92,10 +92,10 @@ ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 	if(argslen==0)
 	{
 		//The uint is already initialized to 0
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	th->val=args[0]->toUInt();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,generator)
@@ -120,8 +120,8 @@ void UInteger::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtomR max_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
-	asAtomR min_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
+	asAtom max_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
+	asAtom min_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(), max_value,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(), min_value,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);

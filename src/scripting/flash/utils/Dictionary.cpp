@@ -73,11 +73,11 @@ Dictionary::dictType::iterator Dictionary::findKey(ASObject *o)
 void Dictionary::setVariableByMultiname_i(const multiname& name, int32_t value)
 {
 	assert_and_throw(implEnable);
-	asAtomR v = _MAR(asAtom(value));
+	asAtom v = _MAR(asAtom(value));
 	Dictionary::setVariableByMultiname(name,v,CONST_NOT_ALLOWED);
 }
 
-void Dictionary::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
+void Dictionary::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
 {
 	assert_and_throw(implEnable);
 	if(name.name_type==multiname::NAME_OBJECT)
@@ -182,7 +182,7 @@ bool Dictionary::deleteVariableByMultiname(const multiname& name)
 	}
 }
 
-asAtomR Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	if((opt & ASObject::SKIP_IMPL)==0 && implEnable)
 	{
@@ -220,7 +220,7 @@ asAtomR Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_O
 				return asAtom::fromObject(it->second.getPtr());
 			}
 			else
-				return asAtomR::invalidAtomR;
+				return asAtom::invalidAtomR;
 		}
 		else
 		{
@@ -308,7 +308,7 @@ uint32_t Dictionary::nextNameIndex(uint32_t cur_index)
 	}
 }
 
-asAtomR Dictionary::nextName(uint32_t index)
+asAtom Dictionary::nextName(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	if(index<=data.size())
@@ -326,7 +326,7 @@ asAtomR Dictionary::nextName(uint32_t index)
 	}
 }
 
-asAtomR Dictionary::nextValue(uint32_t index)
+asAtom Dictionary::nextValue(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	if(index<=data.size())

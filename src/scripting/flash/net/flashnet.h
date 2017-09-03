@@ -47,7 +47,7 @@ private:
 	void validateHeaderName(const tiny_string& headerName) const;
 	ASPROPERTY_GETTER_SETTER(tiny_string,contentType);
 	//TODO ASPROPERTY_GETTER_SETTER(_R<Array>,requestHeaders);
-	ASPROPERTY_GETTER_SETTER(asAtomR,requestHeaders);
+	ASPROPERTY_GETTER_SETTER(asAtom,requestHeaders);
 public:
 	URLRequest(Class_base* c);
 	void finalize();
@@ -119,7 +119,7 @@ public:
 	ASFUNCTION(close);
 	ASFUNCTION(connect);
 	ASFUNCTION(setProperty);
-	ASPROPERTY_GETTER_SETTER(asAtomR,client);
+	ASPROPERTY_GETTER_SETTER(asAtom,client);
 	ASPROPERTY_GETTER(_NR<ASObject>,data);
 	ASFUNCTION(_getDefaultObjectEncoding);
 	ASFUNCTION(_setDefaultObjectEncoding);
@@ -182,8 +182,8 @@ public:
 class Responder: public ASObject
 {
 private:
-	asAtomR result;
-	asAtomR status;
+	asAtom result;
+	asAtom status;
 public:
 	Responder(Class_base* c):ASObject(c){}
 	static void sinit(Class_base*);
@@ -336,7 +336,7 @@ public:
 	ASPROPERTY_GETTER_SETTER(number_t, maxPauseBufferTime);
 	ASPROPERTY_GETTER_SETTER(bool, useHardwareDecoder);
 
-	void sendClientNotification(const tiny_string& name, std::list<asAtomR> &arglist);
+	void sendClientNotification(const tiny_string& name, std::list<asAtom> &arglist);
 
 	//Interface for video
 	/**
@@ -451,7 +451,7 @@ public:
 ASObject* navigateToURL(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* sendToURL(ASObject* obj,ASObject* const* args, const unsigned int argslen);
 ASObject* registerClassAlias(ASObject* obj,ASObject* const* args, const unsigned int argslen);
-asAtomR getClassByAlias(SystemState* sys, asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen);
+asAtom getClassByAlias(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen);
 
 }
 

@@ -37,8 +37,8 @@ private:
 public:
 	IntervalManager();
 	~IntervalManager();
-	uint32_t setInterval(asAtomR& callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR& obj, const uint32_t interval);
-	uint32_t setTimeout(asAtomR& callback, std::vector<asAtomR>& args, const unsigned int argslen, asAtomR& obj, const uint32_t interval);
+	uint32_t setInterval(asAtom& callback, std::vector<asAtom>& args, const unsigned int argslen, asAtom& obj, const uint32_t interval);
+	uint32_t setTimeout(asAtom& callback, std::vector<asAtom>& args, const unsigned int argslen, asAtom& obj, const uint32_t interval);
 	uint32_t getFreeID();
 	void clearInterval(uint32_t id, IntervalRunner::INTERVALTYPE type, bool removeJob);
 };

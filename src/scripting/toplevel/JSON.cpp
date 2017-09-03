@@ -46,10 +46,10 @@ ASFUNCTIONBODY(JSON,_constructor)
 ASFUNCTIONBODY_ATOM(JSON,generator)
 {
 	throwError<ArgumentError>(kCoerceArgumentCountError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
-ASObject *JSON::doParse(const tiny_string &jsonstring, asAtomR& reviver)
+ASObject *JSON::doParse(const tiny_string &jsonstring, asAtom& reviver)
 {
 	ASObject* res = NULL;
 	multiname dummy(NULL);
@@ -61,7 +61,7 @@ ASObject *JSON::doParse(const tiny_string &jsonstring, asAtomR& reviver)
 ASFUNCTIONBODY_ATOM(JSON,_parse)
 {
 	tiny_string text;
-	asAtomR reviver;
+	asAtom reviver;
 
 	if (argslen > 0 && (args[0]->is<Null>() ||args[0]->is<Undefined>()))
 		throwError<SyntaxError>(kJSONInvalidParseInput);
@@ -81,7 +81,7 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 	ARG_UNPACK_ATOM_MORE_ALLOWED(value);
 	std::vector<ASObject *> path;
 	tiny_string filter;
-	asAtomR replacer;
+	asAtom replacer;
 	if (argslen > 1 && args[1]->type != T_NULL && args[1]->type != T_UNDEFINED)
 	{
 		if (args[1]->type == T_FUNCTION)
@@ -105,7 +105,7 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 	tiny_string spaces = "";
 	if (argslen > 2)
 	{
-		asAtomR space = args[2];
+		asAtom space = args[2];
 		spaces = "          ";
 		if (space->is<Number>() || space->is<Integer>() || space->is<UInteger>())
 		{
@@ -135,7 +135,7 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 
 	return asAtom::fromObject(abstract_s(sys,res));
 }
-void JSON::parseAll(const tiny_string &jsonstring, ASObject** parent , const multiname& key, asAtomR& reviver)
+void JSON::parseAll(const tiny_string &jsonstring, ASObject** parent , const multiname& key, asAtom& reviver)
 {
 	int len = jsonstring.numChars();
 	int pos = 0;
@@ -152,7 +152,7 @@ void JSON::parseAll(const tiny_string &jsonstring, ASObject** parent , const mul
 			pos++;
 	}
 }
-int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , const multiname& key, asAtomR& reviver)
+int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , const multiname& key, asAtom& reviver)
 {
 	while (jsonstring.charAt(pos) == ' ' ||
 		   jsonstring.charAt(pos) == '\t' ||
@@ -204,7 +204,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 	if (reviver->type != T_INVALID)
 	{
 		bool haskey = key.name_type!= multiname::NAME_OBJECT;
-		std::vector<asAtomR> params(2);
+		std::vector<asAtom> params(2);
 		
 		if (haskey)
 		{
@@ -222,7 +222,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 			params[1] = asAtom::fromObject(*parent);
 		}
 
-		asAtomR funcret=reviver->callFunction(asAtomR::nullAtomR, params, 2,true);
+		asAtom funcret=reviver->callFunction(asAtom::nullAtomR, params, 2,true);
 		if(funcret->type != T_INVALID)
 		{
 			if (haskey)
@@ -257,7 +257,7 @@ int JSON::parseTrue(const tiny_string &jsonstring, int pos,ASObject** parent,con
 				*parent = abstract_b(getSys(),true);
 			else
 			{
-				asAtomR v = _MAR(asAtom(true));
+				asAtom v = _MAR(asAtom(true));
 				(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 			}
 		}
@@ -284,7 +284,7 @@ int JSON::parseFalse(const tiny_string &jsonstring, int pos,ASObject** parent,co
 				*parent = abstract_b(getSys(),false);
 			else 
 			{
-				asAtomR v = _MAR(asAtom(false));
+				asAtom v = _MAR(asAtom(false));
 				(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 			}
 		}
@@ -309,7 +309,7 @@ int JSON::parseNull(const tiny_string &jsonstring, int pos,ASObject** parent,con
 			if (*parent == NULL)
 				*parent = getSys()->getNullRef();
 			else
-				(*parent)->setVariableByMultiname(key,asAtomR::nullAtomR,ASObject::CONST_NOT_ALLOWED);
+				(*parent)->setVariableByMultiname(key,asAtom::nullAtomR,ASObject::CONST_NOT_ALLOWED);
 		}
 		else
 			throwError<SyntaxError>(kJSONInvalidParseInput);
@@ -430,7 +430,7 @@ int JSON::parseString(const tiny_string &jsonstring, int pos,ASObject** parent,c
 			*parent = abstract_s(getSys(),res);
 		else 
 		{
-			asAtomR v = asAtom::fromObject(abstract_s(getSys(),res));
+			asAtom v = asAtom::fromObject(abstract_s(getSys(),res));
 			(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 		}
 	}
@@ -481,12 +481,12 @@ int JSON::parseNumber(const tiny_string &jsonstring, int pos, ASObject** parent,
 		*parent = abstract_d(getSys(),num);
 	else 
 	{
-		asAtomR v = _MAR(asAtom(num));
+		asAtom v = _MAR(asAtom(num));
 		(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 	}
 	return pos;
 }
-int JSON::parseObject(const tiny_string &jsonstring, int pos, ASObject** parent, const multiname& key, asAtomR& reviver)
+int JSON::parseObject(const tiny_string &jsonstring, int pos, ASObject** parent, const multiname& key, asAtom& reviver)
 {
 	int len = jsonstring.numChars();
 	pos++; // ignore '{' or ','
@@ -495,7 +495,7 @@ int JSON::parseObject(const tiny_string &jsonstring, int pos, ASObject** parent,
 		*parent = subobj;
 	else 
 	{
-		asAtomR v = asAtom::fromObject(subobj);
+		asAtom v = asAtom::fromObject(subobj);
 		(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 	}
 	multiname name(NULL);
@@ -556,7 +556,7 @@ int JSON::parseObject(const tiny_string &jsonstring, int pos, ASObject** parent,
 	return pos;
 }
 
-int JSON::parseArray(const tiny_string &jsonstring, int pos, ASObject** parent, const multiname& key, asAtomR& reviver)
+int JSON::parseArray(const tiny_string &jsonstring, int pos, ASObject** parent, const multiname& key, asAtom& reviver)
 {
 	int len = jsonstring.numChars();
 	pos++; // ignore '['
@@ -565,7 +565,7 @@ int JSON::parseArray(const tiny_string &jsonstring, int pos, ASObject** parent, 
 		*parent = subobj;
 	else 
 	{
-		asAtomR v = asAtom::fromObject(subobj);
+		asAtom v = asAtom::fromObject(subobj);
 		(*parent)->setVariableByMultiname(key,v,ASObject::CONST_NOT_ALLOWED);
 	}
 	multiname name(NULL);

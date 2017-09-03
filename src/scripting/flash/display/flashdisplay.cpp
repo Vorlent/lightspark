@@ -220,7 +220,7 @@ void LoaderInfo::setURL(const tiny_string& _url, bool setParameters)
 ASFUNCTIONBODY_ATOM(LoaderInfo,_constructor)
 {
 	//LoaderInfo* th=static_cast<LoaderInfo*>(obj);
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return EventDispatcher::_constructor(sys,obj,empty,0);
 }
 
@@ -238,8 +238,8 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getContent)
 		return _MAR(asAtom::undefinedAtom);
 	else
 	{
-		std::vector<asAtomR> empty;
-		asAtomR a = asAtom::fromObject(th->loader.getPtr());
+		std::vector<asAtom> empty;
+		asAtom a = asAtom::fromObject(th->loader.getPtr());
 		return Loader::_getContent(sys,a,empty,0);
 	}
 }
@@ -248,7 +248,7 @@ ASFUNCTIONBODY_ATOM(LoaderInfo,_getLoader)
 {
 	LoaderInfo* th=obj->as<LoaderInfo>();
 	if(th->loader.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	else
 	{
 		return asAtom::fromObject(th->loader.getPtr());
@@ -418,11 +418,11 @@ void LoaderThread::execute()
 ASFUNCTIONBODY_ATOM(Loader,_constructor)
 {
 	Loader* th=obj->as<Loader>();
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	DisplayObjectContainer::_constructor(sys,obj,empty,0);
 	th->contentLoaderInfo->setLoaderURL(th->getSystemState()->mainClip->getOrigin().getParsedURL());
 	th->uncaughtErrorEvents = Class<UncaughtErrorEvents>::getInstanceS(sys);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Loader,_getContent)
@@ -431,7 +431,7 @@ ASFUNCTIONBODY_ATOM(Loader,_getContent)
 	SpinlockLocker l(th->spinlock);
 	_NR<ASObject> ret=th->content;
 	if(ret.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	return asAtom::fromObject(ret.getPtr());
 }
@@ -449,7 +449,7 @@ ASFUNCTIONBODY_ATOM(Loader,close)
 	for (auto j=th->jobs.begin(); j!=th->jobs.end(); j++)
 		(*j)->threadAbort();
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Loader,load)
@@ -510,7 +510,7 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 	{
 		//Notify an error during loading
 		sys->currentVm->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(sys));
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 
 	SecurityManager::checkURLStaticAndThrow(th->url, ~(SecurityManager::LOCAL_WITH_FILE),
@@ -535,7 +535,7 @@ ASFUNCTIONBODY_ATOM(Loader,load)
 	th->jobs.push_back(thread);
 	sys->addJob(thread);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Loader,loadBytes)
@@ -572,14 +572,14 @@ ASFUNCTIONBODY_ATOM(Loader,loadBytes)
 	}
 	else
 		LOG(LOG_INFO, "Empty ByteArray passed to Loader.loadBytes");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Loader,_unload)
 {
 	Loader* th=obj->as<Loader>();
 	th->unload();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(Loader,_unloadAndStop)
 {
@@ -595,7 +595,7 @@ ASFUNCTIONBODY_ATOM(Loader,_unloadAndStop)
 	Movie clips are stopped.
 	*/
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void Loader::unload()
@@ -740,14 +740,14 @@ ASFUNCTIONBODY_ATOM(Sprite,_startDrag)
 	}
 
 	sys->getInputThread()->startDrag(_IMR(th), bounds, offset);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Sprite,_stopDrag)
 {
 	Sprite* th=obj->as<Sprite>();
 	sys->getInputThread()->stopDrag(th);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER(Sprite, hitArea);
@@ -767,7 +767,7 @@ ASFUNCTIONBODY_ATOM(Sprite,_setter_hitArea)
 		th->hitArea->hitTarget = _IMNR(th);
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 bool DisplayObjectContainer::boundsRect(number_t& xmin, number_t& xmax, number_t& ymin, number_t& ymax) const
@@ -928,7 +928,7 @@ _NR<DisplayObject> Sprite::hitTestImpl(_NR<DisplayObject>, number_t x, number_t 
 ASFUNCTIONBODY_ATOM(Sprite,_constructor)
 {
 	//Sprite* th=Class<Sprite>::cast(obj);
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return DisplayObjectContainer::_constructor(sys,obj,empty,0);
 }
 
@@ -1022,7 +1022,7 @@ ASFUNCTIONBODY_ATOM(Scene,_getLabels)
 	ret->resize(th->labels.size());
 	for(size_t i=0; i<th->labels.size(); ++i)
 	{
-		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,th->labels[i]));
+		asAtom v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,th->labels[i]));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1220,17 +1220,17 @@ ASFUNCTIONBODY_ATOM(MovieClip,addFrameScript)
 		if(args[i+1]->type !=T_FUNCTION)
 		{
 			LOG(LOG_ERROR,_("Not a function"));
-			return asAtomR::invalidAtomR;
+			return asAtom::invalidAtomR;
 		}
 		th->frameScripts[frame]=args[i+1];
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,swapDepths)
 {
 	LOG(LOG_NOT_IMPLEMENTED,_("Called swapDepths"));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,stop)
@@ -1238,17 +1238,17 @@ ASFUNCTIONBODY_ATOM(MovieClip,stop)
 	MovieClip* th=obj->as<MovieClip>();
 	th->state.stop_FP=true;
 	th->state.next_FP=th->state.FP;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,play)
 {
 	MovieClip* th=obj->as<MovieClip>();
 	th->state.stop_FP=false;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
-asAtomR MovieClip::gotoAnd(std::vector<asAtomR>& args, const unsigned int argslen, bool stop)
+asAtom MovieClip::gotoAnd(std::vector<asAtom>& args, const unsigned int argslen, bool stop)
 {
 	uint32_t next_FP;
 	tiny_string sceneName;
@@ -1272,7 +1272,7 @@ asAtomR MovieClip::gotoAnd(std::vector<asAtomR>& args, const unsigned int argsle
 	{
 		uint32_t inFrameNo = args[0]->toInt();
 		if(inFrameNo == 0)
-			return asAtomR::invalidAtomR; /*this behavior was observed by testing */
+			return asAtom::invalidAtomR; /*this behavior was observed by testing */
 
 		next_FP = getFrameIdByNumber(inFrameNo-1, sceneName);
 		if(next_FP > getFramesLoaded())
@@ -1287,7 +1287,7 @@ asAtomR MovieClip::gotoAnd(std::vector<asAtomR>& args, const unsigned int argsle
 	state.next_FP = next_FP;
 	state.explicit_FP = true;
 	state.stop_FP = stop;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,gotoAndStop)
@@ -1313,7 +1313,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,nextFrame)
 		th->advanceFrame();
 		th->initFrame();
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,prevFrame)
@@ -1327,7 +1327,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,prevFrame)
 		th->advanceFrame();
 		th->initFrame();
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(MovieClip,_getFramesLoaded)
@@ -1354,7 +1354,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getScenes)
 			numFrames = th->totalFrames_unreliable - th->scenes[i].startframe;
 		else
 			numFrames = th->scenes[i].startframe - th->scenes[i+1].startframe;
-		asAtomR v = asAtom::fromObject(Class<Scene>::getInstanceSRaw(sys,th->scenes[i],numFrames));
+		asAtom v = asAtom::fromObject(Class<Scene>::getInstanceSRaw(sys,th->scenes[i],numFrames));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1437,7 +1437,7 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentLabels)
 	ret->resize(sc.labels.size());
 	for(size_t i=0; i<sc.labels.size(); ++i)
 	{
-		asAtomR v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,sc.labels[i]));
+		asAtom v = asAtom::fromObject(Class<FrameLabel>::getInstanceSRaw(sys,sc.labels[i]));
 		ret->set(i, v);
 	}
 	return asAtom::fromObject(ret);
@@ -1445,11 +1445,11 @@ ASFUNCTIONBODY_ATOM(MovieClip,_getCurrentLabels)
 
 ASFUNCTIONBODY_ATOM(MovieClip,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	Sprite::_constructor(sys,obj,empty,0);
 /*	th->setVariableByQName("swapDepths","",Class<IFunction>::getFunction(c->getSystemState(),swapDepths));
 	th->setVariableByQName("createEmptyMovieClip","",Class<IFunction>::getFunction(c->getSystemState(),createEmptyMovieClip));*/
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void MovieClip::addScene(uint32_t sceneNo, uint32_t startframe, const tiny_string& name)
@@ -1546,7 +1546,7 @@ void DisplayObjectContainer::insertLegacyChildAt(uint32_t depth, DisplayObject* 
 		objName.name_type=multiname::NAME_STRING;
 		objName.name_s_id=getSystemState()->getUniqueStringId(obj->name);
 		objName.ns.emplace_back(getSystemState(),BUILTIN_STRINGS::EMPTY,NAMESPACE);
-		asAtomR v = asAtom::fromObject(obj);
+		asAtom v = asAtom::fromObject(obj);
 		setVariableByMultiname(objName,v,ASObject::CONST_NOT_ALLOWED);
 	}
 
@@ -1596,13 +1596,13 @@ InteractiveObject::~InteractiveObject()
 ASFUNCTIONBODY_ATOM(InteractiveObject,_constructor)
 {
 	InteractiveObject* th=obj->as<InteractiveObject>();
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
 	//Object registered very early are not supported this way (Stage for example)
 	if(sys->getInputThread())
 		sys->getInputThread()->addListener(th);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(InteractiveObject,_setMouseEnabled)
@@ -1610,7 +1610,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setMouseEnabled)
 	InteractiveObject* th=obj->as<InteractiveObject>();
 	assert_and_throw(argslen==1);
 	th->mouseEnabled=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(InteractiveObject,_getMouseEnabled)
@@ -1624,7 +1624,7 @@ ASFUNCTIONBODY_ATOM(InteractiveObject,_setDoubleClickEnabled)
 	InteractiveObject* th=obj->as<InteractiveObject>();
 	assert_and_throw(argslen==1);
 	th->doubleClickEnabled=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(InteractiveObject,_getDoubleClickEnabled)
@@ -1713,7 +1713,7 @@ void DisplayObjectContainer::setOnStage(bool staged)
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return InteractiveObject::_constructor(sys,obj,empty,0);
 }
 
@@ -1734,7 +1734,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setMouseChildren)
 	DisplayObjectContainer* th=obj->as<DisplayObjectContainer>();
 	assert_and_throw(argslen==1);
 	th->mouseChildren=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void DisplayObjectContainer::requestInvalidation(InvalidateQueue* q)
@@ -1930,7 +1930,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,removeChildren)
 			endindex = (uint32_t)th->dynamicDisplayList.size();
 		th->dynamicDisplayList.erase(th->dynamicDisplayList.begin()+beginindex,th->dynamicDisplayList.begin()+endindex);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 {
@@ -1945,7 +1945,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 	int curIndex = th->getChildIndex(child);
 
 	if(curIndex == index)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	Locker l(th->mutexDisplayList);
 
@@ -1957,11 +1957,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 		if(i++ == index)
 		{
 			th->dynamicDisplayList.insert(it, _IMR(child.getPtr()));
-			return asAtomR::invalidAtomR;
+			return asAtom::invalidAtomR;
 		}
 
 	th->dynamicDisplayList.push_back(_IMR(child.getPtr()));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildren)
@@ -1977,7 +1977,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildren)
 	{
 		// Must return, otherwise crashes trying to erase the
 		// same object twice
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 
 	//Cast to object
@@ -1994,7 +1994,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildren)
 		std::iter_swap(it1, it2);
 	}
 	
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildrenAt)
@@ -2009,7 +2009,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildrenAt)
 		throwError<RangeError>(kParamRangeError);
 	if (index1 == index2)
 	{
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 
 	{
@@ -2017,7 +2017,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,swapChildrenAt)
 		std::iter_swap(th->dynamicDisplayList.begin() + index1, th->dynamicDisplayList.begin() + index2);
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 //Only from VM context
@@ -2037,7 +2037,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,getChildByName)
 		}
 	}
 	if(!ret)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	return asAtom::fromObject(ret);
 }
 
@@ -2109,7 +2109,7 @@ void DisplayObjectContainer::getObjectsFromPoint(Point* point, Array *ar)
 			(*it)->getBounds(xmin,xmax,ymin,ymax,m);
 			if (xmin <= point->getX() && xmax >= point->getX()
 					&& ymin <= point->getY() && ymax >= point->getY()) {
-				asAtomR element = asAtom::fromObject((*it).getPtr());
+				asAtom element = asAtom::fromObject((*it).getPtr());
 				ar->push(element);
 			}
 			if ((*it)->is<DisplayObjectContainer>())
@@ -2147,7 +2147,7 @@ void Shape::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(Shape,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return DisplayObject::_constructor(sys,obj,empty,0);
 }
 
@@ -2287,7 +2287,7 @@ _NR<Stage> Stage::getStage()
 
 ASFUNCTIONBODY_ATOM(Stage,_constructor)
 {
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 _NR<DisplayObject> Stage::hitTestImpl(_NR<DisplayObject> last, number_t x, number_t y, DisplayObject::HIT_TYPE type)
@@ -2342,8 +2342,8 @@ ASFUNCTIONBODY_ATOM(Stage,_getStageHeight)
 
 ASFUNCTIONBODY_ATOM(Stage,_getLoaderInfo)
 {
-	asAtomR a = asAtom::fromObject(sys->mainClip.getPtr());
-	std::vector<asAtomR> empty;
+	asAtom a = asAtom::fromObject(sys->mainClip.getPtr());
+	std::vector<asAtom> empty;
 	return RootMovieClip::_getLoaderInfo(sys,a,empty,0);
 }
 
@@ -2361,7 +2361,7 @@ ASFUNCTIONBODY_ATOM(Stage,_getScaleMode)
 		case SystemState::NO_SCALE:
 			return asAtom::fromString(sys,"noScale");
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_setScaleMode)
@@ -2379,7 +2379,7 @@ ASFUNCTIONBODY_ATOM(Stage,_setScaleMode)
 
 	RenderThread* rt=sys->getRenderThread();
 	rt->requestResize(rt->windowWidth, rt->windowHeight, true);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getStageVideos)
@@ -2413,7 +2413,7 @@ ASFUNCTIONBODY_ATOM(Stage,_getFocus)
 	_NR<InteractiveObject> focus = th->getFocusTarget();
 	if (focus.isNull())
 	{
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	else
 	{
@@ -2427,7 +2427,7 @@ ASFUNCTIONBODY_ATOM(Stage,_setFocus)
 	_NR<InteractiveObject> focus;
 	ARG_UNPACK_ATOM(focus);
 	th->setFocusTarget(focus);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_setTabChildren)
@@ -2435,7 +2435,7 @@ ASFUNCTIONBODY_ATOM(Stage,_setTabChildren)
 	// The specs says that Stage.tabChildren should throw
 	// IllegalOperationError, but testing shows that instead of
 	// throwing this simply ignores the value.
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getFrameRate)
@@ -2456,7 +2456,7 @@ ASFUNCTIONBODY_ATOM(Stage,_setFrameRate)
 	_NR<RootMovieClip> root = th->getRoot();
 	if (!root.isNull())
 		root->setFrameRate(frameRate);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Stage,_getAllowFullScreen)
@@ -2485,7 +2485,7 @@ ASFUNCTIONBODY_ATOM(Stage,_invalidate)
 	//Stage* th=obj->as<Stage>();
 	//_R<FlushInvalidationQueueEvent> event=_MR(new (sys->unaccountedMemory) FlushInvalidationQueueEvent());
 	//getVm()->addEvent(_MR(th),event);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(Stage,_getColor)
 {
@@ -2506,17 +2506,17 @@ ASFUNCTIONBODY_ATOM(Stage,_setColor)
 	_NR<RootMovieClip> root = th->getRoot();
 	if (!root.isNull())
 		root->setBackground(rgb);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 
 void StageScaleMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR exactFit = asAtom::fromString(c->getSystemState(),"exactFit");
-	asAtomR noBorder = asAtom::fromString(c->getSystemState(),"noBorder");
-	asAtomR noScale = asAtom::fromString(c->getSystemState(),"noScale");
-	asAtomR showAll = asAtom::fromString(c->getSystemState(),"showAll");
+	asAtom exactFit = asAtom::fromString(c->getSystemState(),"exactFit");
+	asAtom noBorder = asAtom::fromString(c->getSystemState(),"noBorder");
+	asAtom noScale = asAtom::fromString(c->getSystemState(),"noScale");
+	asAtom showAll = asAtom::fromString(c->getSystemState(),"showAll");
 	c->setVariableAtomByQName("EXACT_FIT",nsNameAndKind(),exactFit,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NO_BORDER",nsNameAndKind(),noBorder,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NO_SCALE",nsNameAndKind(),noScale,CONSTANT_TRAIT);
@@ -2526,14 +2526,14 @@ void StageScaleMode::sinit(Class_base* c)
 void StageAlign::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR b = asAtom::fromString(c->getSystemState(),"B");
-	asAtomR bl = asAtom::fromString(c->getSystemState(),"BL");
-	asAtomR br = asAtom::fromString(c->getSystemState(),"BR");
-	asAtomR l = asAtom::fromString(c->getSystemState(),"L");
-	asAtomR r = asAtom::fromString(c->getSystemState(),"R");
-	asAtomR t = asAtom::fromString(c->getSystemState(),"T");
-	asAtomR tl = asAtom::fromString(c->getSystemState(),"TL");
-	asAtomR tr = asAtom::fromString(c->getSystemState(),"TR");
+	asAtom b = asAtom::fromString(c->getSystemState(),"B");
+	asAtom bl = asAtom::fromString(c->getSystemState(),"BL");
+	asAtom br = asAtom::fromString(c->getSystemState(),"BR");
+	asAtom l = asAtom::fromString(c->getSystemState(),"L");
+	asAtom r = asAtom::fromString(c->getSystemState(),"R");
+	asAtom t = asAtom::fromString(c->getSystemState(),"T");
+	asAtom tl = asAtom::fromString(c->getSystemState(),"TL");
+	asAtom tr = asAtom::fromString(c->getSystemState(),"TR");
 	c->setVariableAtomByQName("BOTTOM",nsNameAndKind(),b,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("BOTTOM_LEFT",nsNameAndKind(),bl,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("BOTTOM_RIGHT",nsNameAndKind(),br,CONSTANT_TRAIT);
@@ -2547,10 +2547,10 @@ void StageAlign::sinit(Class_base* c)
 void StageQuality::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR best = asAtom::fromString(c->getSystemState(),"best");
-	asAtomR high = asAtom::fromString(c->getSystemState(),"high");
-	asAtomR low = asAtom::fromString(c->getSystemState(),"low");
-	asAtomR medium = asAtom::fromString(c->getSystemState(),"medium");
+	asAtom best = asAtom::fromString(c->getSystemState(),"best");
+	asAtom high = asAtom::fromString(c->getSystemState(),"high");
+	asAtom low = asAtom::fromString(c->getSystemState(),"low");
+	asAtom medium = asAtom::fromString(c->getSystemState(),"medium");
 	c->setVariableAtomByQName("BEST",nsNameAndKind(),best,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("HIGH",nsNameAndKind(),high,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("LOW",nsNameAndKind(),low,CONSTANT_TRAIT);
@@ -2560,9 +2560,9 @@ void StageQuality::sinit(Class_base* c)
 void StageDisplayState::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR fullScreen = asAtom::fromString(c->getSystemState(),"fullScreen");
-	asAtomR fullScreenInteractive = asAtom::fromString(c->getSystemState(),"fullScreenInteractive");
-	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
+	asAtom fullScreen = asAtom::fromString(c->getSystemState(),"fullScreen");
+	asAtom fullScreenInteractive = asAtom::fromString(c->getSystemState(),"fullScreenInteractive");
+	asAtom normal = asAtom::fromString(c->getSystemState(),"normal");
 	c->setVariableAtomByQName("FULL_SCREEN",nsNameAndKind(),fullScreen,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("FULL_SCREEN_INTERACTIVE",nsNameAndKind(),fullScreenInteractive,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),normal,CONSTANT_TRAIT);
@@ -2650,7 +2650,7 @@ ASFUNCTIONBODY_ATOM(Bitmap,_constructor)
 	Bitmap* th = obj->as<Bitmap>();
 	ARG_UNPACK_ATOM(_bitmapData, NullRef)(_pixelSnapping, "auto")(th->smoothing, false);
 
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	DisplayObject::_constructor(sys,obj,empty,0);
 
 	if(_pixelSnapping!="auto")
@@ -2664,7 +2664,7 @@ ASFUNCTIONBODY_ATOM(Bitmap,_constructor)
 		th->updatedData();
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void Bitmap::onBitmapData(_NR<BitmapData> old)
@@ -2841,7 +2841,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_constructor)
 	/* This _must_ not call the DisplayObjectContainer
 	 * see note at the class declaration.
 	 */
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	InteractiveObject::_constructor(sys,obj,empty,0);
 	SimpleButton* th=obj->as<SimpleButton>();
 	_NR<DisplayObject> upState;
@@ -2861,7 +2861,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_constructor)
 
 	th->reflectState();
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void SimpleButton::reflectState()
@@ -2893,7 +2893,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUpState)
 	SimpleButton* th=obj->as<SimpleButton>();
 	th->upState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_getHitTestState)
@@ -2910,7 +2910,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setHitTestState)
 	assert_and_throw(argslen == 1);
 	SimpleButton* th=obj->as<SimpleButton>();
 	th->hitTestState = _IMNR(args[0]->as<DisplayObject>());
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_getOverState)
@@ -2928,7 +2928,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setOverState)
 	SimpleButton* th=obj->as<SimpleButton>();
 	th->overState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_getDownState)
@@ -2946,7 +2946,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setDownState)
 	SimpleButton* th=obj->as<SimpleButton>();
 	th->downState = _IMNR(args[0]->as<DisplayObject>());
 	th->reflectState();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_setEnabled)
@@ -2954,7 +2954,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setEnabled)
 	SimpleButton* th=obj->as<SimpleButton>();
 	assert_and_throw(argslen==1);
 	th->enabled=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_getEnabled)
@@ -2968,7 +2968,7 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_setUseHandCursor)
 	SimpleButton* th=obj->as<SimpleButton>();
 	assert_and_throw(argslen==1);
 	th->useHandCursor=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(SimpleButton,_getUseHandCursor)
@@ -2980,8 +2980,8 @@ ASFUNCTIONBODY_ATOM(SimpleButton,_getUseHandCursor)
 void GradientType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR linear = asAtom::fromString(c->getSystemState(),"linear");
-	asAtomR radial = asAtom::fromString(c->getSystemState(),"radial");
+	asAtom linear = asAtom::fromString(c->getSystemState(),"linear");
+	asAtom radial = asAtom::fromString(c->getSystemState(),"radial");
 	c->setVariableAtomByQName("LINEAR",nsNameAndKind(),linear,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("RADIAL",nsNameAndKind(),radial,CONSTANT_TRAIT);
 }
@@ -2989,20 +2989,20 @@ void GradientType::sinit(Class_base* c)
 void BlendMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR add = asAtom::fromString(c->getSystemState(),"add");
-	asAtomR alpha = asAtom::fromString(c->getSystemState(),"alpha");
-	asAtomR darken = asAtom::fromString(c->getSystemState(),"darken");
-	asAtomR difference = asAtom::fromString(c->getSystemState(),"difference");
-	asAtomR erase = asAtom::fromString(c->getSystemState(),"erase");
-	asAtomR hardlight = asAtom::fromString(c->getSystemState(),"hardlight");
-	asAtomR invert = asAtom::fromString(c->getSystemState(),"invert");
-	asAtomR layer = asAtom::fromString(c->getSystemState(),"layer");
-	asAtomR lighten = asAtom::fromString(c->getSystemState(),"lighten");
-	asAtomR multiply = asAtom::fromString(c->getSystemState(),"multiply");
-	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
-	asAtomR overlay = asAtom::fromString(c->getSystemState(),"overlay");
-	asAtomR screen = asAtom::fromString(c->getSystemState(),"screen");
-	asAtomR subtract = asAtom::fromString(c->getSystemState(),"subtract");
+	asAtom add = asAtom::fromString(c->getSystemState(),"add");
+	asAtom alpha = asAtom::fromString(c->getSystemState(),"alpha");
+	asAtom darken = asAtom::fromString(c->getSystemState(),"darken");
+	asAtom difference = asAtom::fromString(c->getSystemState(),"difference");
+	asAtom erase = asAtom::fromString(c->getSystemState(),"erase");
+	asAtom hardlight = asAtom::fromString(c->getSystemState(),"hardlight");
+	asAtom invert = asAtom::fromString(c->getSystemState(),"invert");
+	asAtom layer = asAtom::fromString(c->getSystemState(),"layer");
+	asAtom lighten = asAtom::fromString(c->getSystemState(),"lighten");
+	asAtom multiply = asAtom::fromString(c->getSystemState(),"multiply");
+	asAtom normal = asAtom::fromString(c->getSystemState(),"normal");
+	asAtom overlay = asAtom::fromString(c->getSystemState(),"overlay");
+	asAtom screen = asAtom::fromString(c->getSystemState(),"screen");
+	asAtom subtract = asAtom::fromString(c->getSystemState(),"subtract");
 
 	c->setVariableAtomByQName("ADD",nsNameAndKind(),add,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),alpha,CONSTANT_TRAIT);
@@ -3023,9 +3023,9 @@ void BlendMode::sinit(Class_base* c)
 void SpreadMethod::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR pad = asAtom::fromString(c->getSystemState(),"pad");
-	asAtomR reflect = asAtom::fromString(c->getSystemState(),"reflect");
-	asAtomR repeat = asAtom::fromString(c->getSystemState(),"repeat");
+	asAtom pad = asAtom::fromString(c->getSystemState(),"pad");
+	asAtom reflect = asAtom::fromString(c->getSystemState(),"reflect");
+	asAtom repeat = asAtom::fromString(c->getSystemState(),"repeat");
 	c->setVariableAtomByQName("PAD",nsNameAndKind(),pad,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("REFLECT",nsNameAndKind(),reflect,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("REPEAT",nsNameAndKind(),repeat,CONSTANT_TRAIT);
@@ -3034,8 +3034,8 @@ void SpreadMethod::sinit(Class_base* c)
 void InterpolationMethod::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR rgb = asAtom::fromString(c->getSystemState(),"rgb");
-	asAtomR linearRGB = asAtom::fromString(c->getSystemState(),"linearRGB");
+	asAtom rgb = asAtom::fromString(c->getSystemState(),"rgb");
+	asAtom linearRGB = asAtom::fromString(c->getSystemState(),"linearRGB");
 	c->setVariableAtomByQName("RGB",nsNameAndKind(),rgb,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("LINEAR_RGB",nsNameAndKind(),linearRGB,CONSTANT_TRAIT);
 }
@@ -3043,13 +3043,13 @@ void InterpolationMethod::sinit(Class_base* c)
 void GraphicsPathCommand::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR cubic_curve_to = _MAR(asAtom(6));
-	asAtomR curve_to = _MAR(asAtom(3));
-	asAtomR line_to = _MAR(asAtom(2));
-	asAtomR move_to = _MAR(asAtom(1));
-	asAtomR no_op = _MAR(asAtom(0));
-	asAtomR wide_line_to = _MAR(asAtom(5));
-	asAtomR wide_move_to = _MAR(asAtom(4));
+	asAtom cubic_curve_to = _MAR(asAtom(6));
+	asAtom curve_to = _MAR(asAtom(3));
+	asAtom line_to = _MAR(asAtom(2));
+	asAtom move_to = _MAR(asAtom(1));
+	asAtom no_op = _MAR(asAtom(0));
+	asAtom wide_line_to = _MAR(asAtom(5));
+	asAtom wide_move_to = _MAR(asAtom(4));
 
 	c->setVariableAtomByQName("CUBIC_CURVE_TO",nsNameAndKind(), cubic_curve_to,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("CURVE_TO",nsNameAndKind(), curve_to,CONSTANT_TRAIT);
@@ -3063,8 +3063,8 @@ void GraphicsPathCommand::sinit(Class_base* c)
 void GraphicsPathWinding::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR evenOdd = asAtom::fromString(c->getSystemState(),"evenOdd");
-	asAtomR nonZero = asAtom::fromString(c->getSystemState(),"nonZero");
+	asAtom evenOdd = asAtom::fromString(c->getSystemState(),"evenOdd");
+	asAtom nonZero = asAtom::fromString(c->getSystemState(),"nonZero");
 	c->setVariableAtomByQName("EVEN_ODD",nsNameAndKind(),evenOdd,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NON_ZERO",nsNameAndKind(),nonZero,CONSTANT_TRAIT);
 }
@@ -3072,9 +3072,9 @@ void GraphicsPathWinding::sinit(Class_base* c)
 void PixelSnapping::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR always = asAtom::fromString(c->getSystemState(),"always");
-	asAtomR _auto = asAtom::fromString(c->getSystemState(),"auto");
-	asAtomR never = asAtom::fromString(c->getSystemState(),"never");
+	asAtom always = asAtom::fromString(c->getSystemState(),"always");
+	asAtom _auto = asAtom::fromString(c->getSystemState(),"auto");
+	asAtom never = asAtom::fromString(c->getSystemState(),"never");
 	c->setVariableAtomByQName("ALWAYS",nsNameAndKind(), always,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("AUTO",nsNameAndKind(),_auto,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NEVER",nsNameAndKind(),never,CONSTANT_TRAIT);
@@ -3165,8 +3165,8 @@ void MovieClip::initFrame()
 	//TODO: check order: child or parent first?
 	if(newFrame && frameScripts.count(state.FP))
 	{
-		std::vector<asAtomR> empty;
-		asAtomR v=frameScripts[state.FP]->callFunction(asAtomR::invalidAtomR,empty,0,false);
+		std::vector<asAtom> empty;
+		asAtom v=frameScripts[state.FP]->callFunction(asAtom::invalidAtomR,empty,0,false);
 	}
 
 }
@@ -3241,7 +3241,7 @@ void AVM1Movie::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(AVM1Movie,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return DisplayObject::_constructor(sys,obj,empty,0);
 }
 
@@ -3253,16 +3253,16 @@ void Shader::sinit(Class_base* c)
 ASFUNCTIONBODY_ATOM(Shader,_constructor)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("Shader class is unimplemented."));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void BitmapDataChannel::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR alpha = _MAR(asAtom((uint32_t)8));
-	asAtomR blue = _MAR(asAtom((uint32_t)4));
-	asAtomR green = _MAR(asAtom((uint32_t)2));
-	asAtomR red = _MAR(asAtom((uint32_t)1));
+	asAtom alpha = _MAR(asAtom((uint32_t)8));
+	asAtom blue = _MAR(asAtom((uint32_t)4));
+	asAtom green = _MAR(asAtom((uint32_t)2));
+	asAtom red = _MAR(asAtom((uint32_t)1));
 	c->setVariableAtomByQName("ALPHA",nsNameAndKind(),alpha,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("BLUE",nsNameAndKind(),blue,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("GREEN",nsNameAndKind(),green,CONSTANT_TRAIT);
@@ -3295,10 +3295,10 @@ unsigned int BitmapDataChannel::channelShift(uint32_t channelConstant)
 void LineScaleMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_SEALED | CLASS_FINAL);
-	asAtomR horizontal = asAtom::fromString(c->getSystemState(),"horizontal");
-	asAtomR none = asAtom::fromString(c->getSystemState(),"none");
-	asAtomR normal = asAtom::fromString(c->getSystemState(),"normal");
-	asAtomR vertical = asAtom::fromString(c->getSystemState(),"vertical");
+	asAtom horizontal = asAtom::fromString(c->getSystemState(),"horizontal");
+	asAtom none = asAtom::fromString(c->getSystemState(),"none");
+	asAtom normal = asAtom::fromString(c->getSystemState(),"normal");
+	asAtom vertical = asAtom::fromString(c->getSystemState(),"vertical");
 	c->setVariableAtomByQName("HORIZONTAL",nsNameAndKind(),horizontal,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NONE",nsNameAndKind(),none,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NORMAL",nsNameAndKind(),normal,CONSTANT_TRAIT);

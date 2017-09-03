@@ -66,7 +66,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface, _setMarshallExceptions)
 {
 	if(sys->extScriptObject != NULL)
 		sys->extScriptObject->setMarshallExceptions(args[0]->Boolean_concrete());
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 

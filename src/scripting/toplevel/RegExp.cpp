@@ -202,10 +202,10 @@ ASObject *RegExp::match(const tiny_string& str)
 	for(int i=0;i<capturingGroups+1;i++)
 	{
 		if(ovector[i*2] >= 0) {
-			asAtomR element = asAtom::fromObject(abstract_s(getSystemState(), str.substr_bytes(ovector[i*2],ovector[i*2+1]-ovector[i*2]) ));
+			asAtom element = asAtom::fromObject(abstract_s(getSystemState(), str.substr_bytes(ovector[i*2],ovector[i*2+1]-ovector[i*2]) ));
 			a->push(element);
 		} else {
-			asAtomR element = asAtom::fromObject(getSystemState()->getUndefinedRef());
+			asAtom element = asAtom::fromObject(getSystemState()->getUndefinedRef());
 			a->push(element);
 		}
 	}
@@ -220,7 +220,7 @@ ASObject *RegExp::match(const tiny_string& str)
 	{
 		nameEntry* entry=reinterpret_cast<nameEntry*>(entries);
 		uint16_t num=GINT16_FROM_BE(entry->number);
-		asAtomR captured=a->at(num);
+		asAtom captured=a->at(num);
 		a->setVariableAtomByQName(getSystemState()->getUniqueStringId(tiny_string(entry->name, true)),nsNameAndKind(BUILTIN_NAMESPACES::EMPTY_NS),captured,DYNAMIC_TRAIT);
 		entries+=namedSize;
 	}

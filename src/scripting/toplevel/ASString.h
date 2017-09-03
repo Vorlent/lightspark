@@ -121,21 +121,21 @@ public:
 };
 
 template<>
-inline asAtomR Class<ASString>::coerce(SystemState* sys, asAtomR& o) const
+inline asAtom Class<ASString>::coerce(SystemState* sys, asAtom& o) const
 {
-	if (o->type == T_STRING)
+	if (o.type == T_STRING)
 		return o;
 	//Special handling for Null and Undefined follows avm2overview's description of 'coerce_s' opcode
-	if(o->type == T_NULL)
+	if(o.type == T_NULL)
 		return o;
-	asAtomR res = asAtomR::nullAtomR;
-	if(o->type == T_UNDEFINED)
+	asAtom res = asAtom::nullAtom;
+	if(o.type == T_UNDEFINED)
 	{
 		return res;
 	}
-	if(!o->isConstructed())
+	if(!o.isConstructed())
 		return o;
-	res = asAtom::fromObject(lightspark::abstract_s(sys,o->toString()));
+	res = asAtom::fromObject(lightspark::abstract_s(sys,o.toString()));
 	return res;
 }
 

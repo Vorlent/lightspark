@@ -68,7 +68,7 @@ ASFUNCTIONBODY_ATOM(GraphicsStroke, _constructor)
 		(th->miterLimit, 3.0)
 		(th->fill, NullRef);
 	th->validateFill(NullRef);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsStroke, caps);

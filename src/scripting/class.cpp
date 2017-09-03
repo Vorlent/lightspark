@@ -68,13 +68,13 @@ Class_inherit::Class_inherit(const QName& name, MemoryAccount* m, const traits_i
 	subtype = SUBTYPE_INHERIT;
 }
 
-asAtomR Class_inherit::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class_inherit::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	//We override the classdef
 	if(realClass==NULL)
 		realClass=this;
 
-	asAtomR ret;
+	asAtom ret;
 	if(tag)
 	{
 		ret=asAtom::fromObject(tag->instance(realClass));
@@ -83,7 +83,7 @@ asAtomR Class_inherit::getInstance(bool construct, std::vector<asAtomR>& args, c
 	{
 		assert_and_throw(super);
 		//Our super should not construct, we are going to do it ourselves
-		std::vector<asAtomR> empty;
+		std::vector<asAtom> empty;
 		ret=super->getInstance(false,empty,0,realClass);
 	}
 	if(construct)
@@ -142,10 +142,10 @@ void Class_inherit::describeClassMetadata(pugi::xml_node &root) const
 
 
 template<>
-asAtomR Class<Global>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class<Global>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	throwError<TypeError>(kConstructOfNonFunctionError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tiny_string& interfaceNs)
@@ -178,7 +178,7 @@ void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tin
 	}
 }
 
-asAtomR Class<ASObject>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class<ASObject>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	if (construct && argslen == 1 && this == Class<ASObject>::getClass(this->getSystemState()))
 	{
@@ -199,7 +199,7 @@ asAtomR Class<ASObject>::getInstance(bool construct, std::vector<asAtomR>& args,
 	}
 	if(realClass==NULL)
 		realClass=this;
-	asAtomR ret=asAtom::fromObject(new (realClass->memoryAccount) ASObject(realClass));
+	asAtom ret=asAtom::fromObject(new (realClass->memoryAccount) ASObject(realClass));
 	if(construct)
 		handleConstruction(ret,args,argslen,true);
 	return ret;

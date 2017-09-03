@@ -287,11 +287,11 @@ void Number::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtomR negative_infinity = _MAR(asAtom(-numeric_limits<double>::infinity()));
-	asAtomR positive_infinity = _MAR(asAtom(numeric_limits<double>::infinity()));
-	asAtomR max = _MAR(asAtom(numeric_limits<double>::max()));
-	asAtomR min = _MAR(asAtom(numeric_limits<double>::min()));
-	asAtomR nan = _MAR(asAtom(numeric_limits<double>::quiet_NaN()));
+	asAtom negative_infinity = _MAR(asAtom(-numeric_limits<double>::infinity()));
+	asAtom positive_infinity = _MAR(asAtom(numeric_limits<double>::infinity()));
+	asAtom max = _MAR(asAtom(numeric_limits<double>::max()));
+	asAtom min = _MAR(asAtom(numeric_limits<double>::min()));
+	asAtom nan = _MAR(asAtom(numeric_limits<double>::quiet_NaN()));
 	c->setVariableAtomByQName("NEGATIVE_INFINITY",nsNameAndKind(),negative_infinity,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("POSITIVE_INFINITY",nsNameAndKind(),positive_infinity,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(),max,CONSTANT_TRAIT);
@@ -312,14 +312,14 @@ void Number::sinit(Class_base* c)
 	// if needed add AVMPLUS definitions
 	if(c->getSystemState()->flashMode==SystemState::AVMPLUS)
 	{
-		asAtomR e = _MAR(asAtom(2.71828182845905));
-		asAtomR ln10 = _MAR(asAtom(2.302585092994046));
-		asAtomR ln2 = _MAR(asAtom(0.6931471805599453));
-		asAtomR log10e = _MAR(asAtom(0.4342944819032518));
-		asAtomR log2e = _MAR(asAtom(1.442695040888963387));
-		asAtomR pi = _MAR(asAtom(3.141592653589793));
-		asAtomR sqrt12 = _MAR(asAtom(0.7071067811865476));
-		asAtomR sqrt2 = _MAR(asAtom(1.4142135623730951));
+		asAtom e = _MAR(asAtom(2.71828182845905));
+		asAtom ln10 = _MAR(asAtom(2.302585092994046));
+		asAtom ln2 = _MAR(asAtom(0.6931471805599453));
+		asAtom log10e = _MAR(asAtom(0.4342944819032518));
+		asAtom log2e = _MAR(asAtom(1.442695040888963387));
+		asAtom pi = _MAR(asAtom(3.141592653589793));
+		asAtom sqrt12 = _MAR(asAtom(0.7071067811865476));
+		asAtom sqrt2 = _MAR(asAtom(1.4142135623730951));
 
 		c->setVariableAtomByQName("E",nsNameAndKind(),e,CONSTANT_TRAIT,false);
 		c->setVariableAtomByQName("LN10",nsNameAndKind(),ln10,CONSTANT_TRAIT,false);
@@ -362,7 +362,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->ival = 0;
 			th->isfloat =false;
 		}
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	switch (args[0]->type)
 	{
@@ -377,7 +377,7 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 			th->isfloat = true;
 			break;
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Number,toFixed)

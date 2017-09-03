@@ -61,13 +61,13 @@ void Math::sinit(Class_base* c)
 ASFUNCTIONBODY_ATOM(Math,_constructor)
 {
 	throwError<TypeError>(kMathNotConstructorError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Math,generator)
 {
 	throwError<TypeError>(kMathNotFunctionError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(Math,atan2)
@@ -175,7 +175,7 @@ ASFUNCTIONBODY_ATOM(Math,tan)
 
 ASFUNCTIONBODY_ATOM(Math,abs)
 {
-	asAtomR a;
+	asAtom a;
 	ARG_UNPACK_ATOM (a);
 	switch (a->type)
 	{

@@ -209,7 +209,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setTransform)
 		th->setMatrix(trans->owner->matrix);
 		th->colorTransform = trans->owner->colorTransform;
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 void DisplayObject::buildTraits(ASObject* o)
@@ -492,7 +492,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setAlpha)
 		if(th->onStage)
 			th->requestInvalidation(sys);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getAlpha)
@@ -523,7 +523,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setMask)
 	else
 		th->setMask(NullRef);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleX)
@@ -553,7 +553,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleX)
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleX(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleY)
@@ -583,7 +583,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleY)
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleY(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleZ)
@@ -614,7 +614,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleZ)
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleZ(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getX)
@@ -676,7 +676,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setX)
 	assert_and_throw(argslen==1);
 	number_t val=args[0]->toNumber();
 	th->setX(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getY)
@@ -691,7 +691,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setY)
 	assert_and_throw(argslen==1);
 	number_t val=args[0]->toNumber();
 	th->setY(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getZ)
@@ -706,7 +706,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setZ)
 	assert_and_throw(argslen==1);
 	number_t val=args[0]->toNumber();
 	th->setZ(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getBounds)
@@ -827,7 +827,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setBlendMode)
 			val = "normal";
 	LOG(LOG_NOT_IMPLEMENTED, "blendmode is set but is not respected during drawing:"<<val);
 	th->blendMode = val;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,localToGlobal)
@@ -874,7 +874,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setRotation)
 		if(th->onStage)
 			th->requestInvalidation(sys);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setName)
@@ -882,7 +882,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setName)
 	DisplayObject* th=obj->as<DisplayObject>();
 	assert_and_throw(argslen==1);
 	th->name=args[0]->toString();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getName)
@@ -940,7 +940,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setVisible)
 	DisplayObject* th=obj->as<DisplayObject>();
 	assert_and_throw(argslen==1);
 	th->visible=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getVisible)
@@ -994,11 +994,11 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setWidth)
 
 	number_t xmin,xmax,y1,y2;
 	if(!th->boundsRect(xmin,xmax,y1,y2))
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	number_t width=xmax-xmin;
 	if(width==0) //Cannot scale, nothing to do (See Reference)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	
 	if(width*th->sx!=newwidth) //If the width is changing, calculate new scale
 	{
@@ -1006,7 +1006,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setWidth)
 			th->useLegacyMatrix=false;
 		th->setScaleX(newwidth/width);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getHeight)
@@ -1022,11 +1022,11 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setHeight)
 
 	number_t x1,x2,ymin,ymax;
 	if(!th->boundsRect(x1,x2,ymin,ymax))
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	number_t height=ymax-ymin;
 	if(height==0) //Cannot scale, nothing to do (See Reference)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 
 	if(height*th->sy!=newheight) //If the height is changing, calculate new scale
 	{
@@ -1034,7 +1034,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setHeight)
 			th->useLegacyMatrix=false;
 		th->setScaleY(newheight/height);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 Vector2f DisplayObject::getLocalMousePos()
@@ -1091,8 +1091,8 @@ void DisplayObject::initFrame()
 {
 	if(!isConstructed() && getClass())
 	{
-		asAtomR o = asAtom::fromObject(this);
-		std::vector<asAtomR> emtpy;
+		asAtom o = asAtom::fromObject(this);
+		std::vector<asAtom> emtpy;
 		getClass()->handleConstruction(o,emtpy,0,true);
 
 		/*

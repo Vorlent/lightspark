@@ -127,7 +127,7 @@ void Undefined::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& strin
 		out->writeByte(undefined_marker);
 }
 
-void Undefined::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
+void Undefined::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
 {
 	LOG(LOG_ERROR,"trying to set variable on undefined:"<<name <<" "<<o->toDebugString());
 	throwError<TypeError>(kConvertUndefinedToObjectError);
@@ -168,8 +168,8 @@ ASFUNCTIONBODY_ATOM(IFunction,apply)
 	IFunction* th=obj->as<IFunction>();
 	assert_and_throw(argslen<=2);
 
-	asAtomR newObj;
-	std::vector<asAtomR> newArgs;
+	asAtom newObj;
+	std::vector<asAtom> newArgs;
 	int newArgsLen=0;
 	//Validate parameters
 	if(argslen==0 || args[0]->is<Null>() || args[0]->is<Undefined>())
@@ -195,11 +195,11 @@ ASFUNCTIONBODY_ATOM(IFunction,apply)
 		newArgs.reserve(newArgsLen);
 		for(int i=0;i<newArgsLen;i++)
 		{
-			asAtomR val = array->at(i);
+			asAtom val = array->at(i);
 			newArgs.push_back(val);
 		}
 	}
-	asAtomR ret=obj->callFunction(newObj,newArgs,newArgsLen,false);
+	asAtom ret=obj->callFunction(newObj,newArgs,newArgsLen,false);
 	return ret;
 }
 
@@ -207,8 +207,8 @@ ASFUNCTIONBODY_ATOM(IFunction,_call)
 {
 	/* This function never changes the 'this' pointer of a method closure */
 	IFunction* th=static_cast<IFunction*>(obj->getObject());
-	asAtomR newObj;
-	std::vector<asAtomR> newArgs;
+	asAtom newObj;
+	std::vector<asAtom> newArgs;
 	uint32_t newArgsLen=0;
 	if(argslen==0 || args[0]->is<Null>() || args[0]->is<Undefined>())
 	{
@@ -243,7 +243,7 @@ ASFUNCTIONBODY(IFunction,_toString)
 	return abstract_s(obj->getSystemState(),"function Function() {}");
 }
 
-asAtomR Class<IFunction>::generator(std::vector<asAtomR>& args, const unsigned int argslen)
+asAtom Class<IFunction>::generator(std::vector<asAtom>& args, const unsigned int argslen)
 {
 	if (argslen > 0)
 		throwError<EvalError>(kFunctionConstructorError);
@@ -282,7 +282,7 @@ SyntheticFunction::SyntheticFunction(Class_base* c,method_info* m):IFunction(c,S
  * by ABCVm::executeFunction() or through JIT.
  * It consumes one reference of obj and one of each arg
  */
-asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32_t numArgs)
+asAtom SyntheticFunction::call(asAtom& obj, std::vector<asAtom>& args, uint32_t numArgs)
 {
 	const uint32_t opt_hit_threshold=1;
 	const uint32_t jit_hit_threshold=20;
@@ -365,7 +365,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 			argumentsArray->set(j,args[j]);
 		}
 		//Add ourself as the callee property
-		asAtomR value = asAtom::fromObject(this);
+		asAtom value = asAtom::fromObject(this);
 		argumentsArray->setVariableAtomByQName("callee",nsNameAndKind(),value,DECLARED_TRAIT);
 	}
 
@@ -377,10 +377,10 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 	cc.locals_size=mi->body->local_count+1;
 	cc.locals.reserve(cc.locals_size);
 	for(uint32_t i=0;i<cc.locals_size;++i)
-		cc.locals.push_back(asAtomR::invalidAtomR);
+		cc.locals.push_back(asAtom::invalidAtomR);
 	cc.max_stack = mi->body->max_stack;
 	//asAtom* stack = g_newa(asAtom, cc.max_stack);
-	cc.stack=std::vector<asAtomR>(cc.max_stack);
+	cc.stack=std::vector<asAtom>(cc.max_stack);
 	cc.stack_index=0;
 	cc.context=mi->context;
 	//cc.code= new istringstream(mi->body->code);
@@ -393,7 +393,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 	cc.scope_stack_dynamic=g_newa(bool, cc.max_scope_stack);
 	
 	for(uint32_t i=0;i<cc.max_scope_stack;++i)
-		cc.scope_stack.push_back(asAtomR::invalidAtomR);
+		cc.scope_stack.push_back(asAtom::invalidAtomR);
 	cc.stack_index=0;
 	
 	call_context* saved_cc = getVm(getSystemState())->currentCallContext;
@@ -424,7 +424,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 		int iOptional = mi->numOptions()-args_len+i;
 		if(iOptional >= 0)
 		{
-			asAtomR v = mi->getOptional(iOptional);
+			asAtom v = mi->getOptional(iOptional);
 			cc.locals[i+1]=mi->paramTypes[i]->coerce(getSystemState(),v);
 		} else {
 			assert(mi->paramTypes[i] == Type::anyType);
@@ -455,7 +455,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 	}
 	//Parameters are ready
 
-	asAtomR ret;
+	asAtom ret;
 	//obtain a local reference to this function, as it may delete itself
 	_NR<SyntheticFunction> keep = _IMNR(this);
 
@@ -463,7 +463,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
 #ifndef NDEBUG
 	Log::calls_indent++;
 #endif
-	getVm(getSystemState())->stacktrace.push_back(std::pair<uint32_t,asAtomR>(this->functionname,obj));
+	getVm(getSystemState())->stacktrace.push_back(std::pair<uint32_t,asAtom>(this->functionname,obj));
 	while (true)
 	{
 		try
@@ -551,7 +551,7 @@ asAtomR SyntheticFunction::call(asAtomR& obj, std::vector<asAtomR>& args, uint32
  * This executes a C++ function.
  * It consumes _no_ references of obj and args
  */
-asAtomR Function::call(asAtomR& obj, std::vector<asAtomR>& args, uint32_t num_args)
+asAtom Function::call(asAtom& obj, std::vector<asAtom>& args, uint32_t num_args)
 {
 	/*
 	 * We do not enforce ABCVm::limits.max_recursion here.
@@ -560,7 +560,7 @@ asAtomR Function::call(asAtomR& obj, std::vector<asAtomR>& args, uint32_t num_ar
 	 * Additionally, we still need to run builtin code (such as the ASError constructor) when
 	 * ABCVm::limits.max_recursion is reached in SyntheticFunction::call.
 	 */
-	asAtomR ret;
+	asAtom ret;
 	assert_and_throw(obj->type != T_INVALID);
 	if (val_atom)
 	{
@@ -673,11 +673,11 @@ int32_t Null::getVariableByMultiname_i(const multiname& name)
 	return 0;
 }
 
-asAtomR Null::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom Null::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	LOG(LOG_ERROR,"trying to get variable on null:"<<name);
 	throwError<TypeError>(kConvertNullToObjectError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 int32_t Null::toInt()
@@ -699,13 +699,13 @@ void Null::serialize(ByteArray* out, std::map<tiny_string, uint32_t>& stringMap,
 		out->writeByte(null_marker);
 }
 
-void Null::setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst)
+void Null::setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst)
 {
 	LOG(LOG_ERROR,"trying to set variable on null:"<<name<<" value:"<<o->toDebugString());
 	throwError<TypeError>(kConvertNullToObjectError);
 }
 
-asAtomR Void::coerce(SystemState* sys, asAtomR& o) const
+asAtom Void::coerce(SystemState* sys, asAtom& o) const
 {
 	if(o->type != T_UNDEFINED)
 		throw Class<TypeError>::getInstanceS(sys,"Trying to coerce o!=undefined to void");
@@ -841,12 +841,12 @@ void Class_base::initStandardProps()
 }
 
 
-asAtomR Class_base::coerce(SystemState* sys, asAtomR& o) const
+asAtom Class_base::coerce(SystemState* sys, asAtom& o) const
 {
 	switch (o->type)
 	{
 		case T_UNDEFINED:
-			return asAtomR::nullAtomR;
+			return asAtom::nullAtomR;
 		case T_NULL:
 			return o;
 		case T_INTEGER:
@@ -915,7 +915,7 @@ Class_base::~Class_base()
 {
 }
 
-asAtomR Class_base::_getter_constructorprop(SystemState* sys, asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen)
+asAtom Class_base::_getter_constructorprop(SystemState* sys, asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen)
 {
 	Class_base* th = NULL;
 	if(obj->is<Class_base>())
@@ -927,7 +927,7 @@ asAtomR Class_base::_getter_constructorprop(SystemState* sys, asAtomR& obj, std:
 	return th->constructorprop;
 }
 
-asAtomR Class_base::_getter_prototype(SystemState* sys,asAtomR& obj, std::vector<asAtomR>& args, const unsigned int argslen)
+asAtom Class_base::_getter_prototype(SystemState* sys,asAtom& obj, std::vector<asAtom>& args, const unsigned int argslen)
 {
 	if(!obj->is<Class_base>())
 		throw Class<ArgumentError>::getInstanceS(sys,"Function applied to wrong object");
@@ -938,9 +938,9 @@ asAtomR Class_base::_getter_prototype(SystemState* sys,asAtomR& obj, std::vector
 }
 ASFUNCTIONBODY_GETTER(Class_base, length);
 
-asAtomR Class_base::generator(std::vector<asAtomR>& args, const unsigned int argslen)
+asAtom Class_base::generator(std::vector<asAtom>& args, const unsigned int argslen)
 {
-	asAtomR ret=ASObject::generator(getSystemState(),asAtomR::invalidAtomR, args, argslen);
+	asAtom ret=ASObject::generator(getSystemState(),asAtom::invalidAtomR, args, argslen);
 	return ret;
 }
 
@@ -968,7 +968,7 @@ void Class_base::setConstructor(IFunction* c)
 	constructor=c;
 }
 
-void Class_base::handleConstruction(asAtomR& target, std::vector<asAtomR>& args, unsigned int argslen, bool buildAndLink)
+void Class_base::handleConstruction(asAtom& target, std::vector<asAtom>& args, unsigned int argslen, bool buildAndLink)
 {
 	if(buildAndLink)
 	{
@@ -982,7 +982,7 @@ void Class_base::handleConstruction(asAtomR& target, std::vector<asAtomR>& args,
 	if(constructor)
 	{
 		//ASATOM_INCREF(target);
-		asAtomR ret=asAtom::fromObject(constructor)->callFunction(target,args,argslen,true);
+		asAtom ret=asAtom::fromObject(constructor)->callFunction(target,args,argslen,true);
 		target->getObject()->constructIndicator = true;
 		assert_and_throw(ret->type == T_UNDEFINED);
 		//target = asAtom::fromObject(target.getObject());
@@ -1107,9 +1107,9 @@ void Class_base::linkInterface(Class_base* c) const
 	if(constructor)
 	{
 		LOG_CALL(_("Calling interface init for ") << class_name);
-		asAtomR v = asAtom::fromObject(c);
-		std::vector<asAtomR> empty;
-		asAtomR ret=asAtom::fromObject(constructor)->callFunction(v,empty,0,false);
+		asAtom v = asAtom::fromObject(c);
+		std::vector<asAtom> empty;
+		asAtom ret=asAtom::fromObject(constructor)->callFunction(v,empty,0,false);
 		assert_and_throw(ret->type == T_INVALID);
 	}
 }
@@ -1626,8 +1626,8 @@ ASFUNCTIONBODY_ATOM(ASQName,generator)
 	ASQName* th=Class<ASQName>::getInstanceSRaw(getSys());
 	assert_and_throw(argslen<3);
 
-	asAtomR nameval;
-	asAtomR namespaceval;
+	asAtom nameval;
+	asAtom namespaceval;
 
 	if(argslen==0)
 	{
@@ -1639,7 +1639,7 @@ ASFUNCTIONBODY_ATOM(ASQName,generator)
 	if(argslen==1)
 	{
 		nameval=args[0];
-		namespaceval=asAtomR::invalidAtomR;
+		namespaceval=asAtom::invalidAtomR;
 	}
 	else if(argslen==2)
 	{
@@ -1759,7 +1759,7 @@ uint32_t ASQName::nextNameIndex(uint32_t cur_index)
 	}
 }
 
-asAtomR ASQName::nextName(uint32_t index)
+asAtom ASQName::nextName(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	switch(index)
@@ -1773,7 +1773,7 @@ asAtomR ASQName::nextName(uint32_t index)
 	}
 }
 
-asAtomR ASQName::nextValue(uint32_t index)
+asAtom ASQName::nextValue(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	switch(index)
@@ -1817,20 +1817,20 @@ void Namespace::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 {
-	asAtomR urival;
-	asAtomR prefixval;
+	asAtom urival;
+	asAtom prefixval;
 	Namespace* th=obj->as<Namespace>();
 	assert_and_throw(argslen<3);
 
 	if (argslen == 0)
 	{
 		//Return before resetting the value to preserve those eventually set by the C++ constructor
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtomR;
 	}
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = asAtomR::invalidAtomR;
+		prefixval = asAtom::invalidAtomR;
 	}
 	else
 	{
@@ -1900,13 +1900,13 @@ ASFUNCTIONBODY_ATOM(Namespace,_constructor)
 		}
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 ASFUNCTIONBODY_ATOM(Namespace,generator)
 {
 	Namespace* th=Class<Namespace>::getInstanceSRaw(getSys());
-	asAtomR urival;
-	asAtomR prefixval;
+	asAtom urival;
+	asAtom prefixval;
 	assert_and_throw(argslen<3);
 
 	if (argslen == 0)
@@ -1919,7 +1919,7 @@ ASFUNCTIONBODY_ATOM(Namespace,generator)
 	else if (argslen == 1)
 	{
 		urival = args[0];
-		prefixval = asAtomR::invalidAtomR;
+		prefixval = asAtom::invalidAtomR;
 	}
 	else
 	{
@@ -2077,7 +2077,7 @@ uint32_t Namespace::nextNameIndex(uint32_t cur_index)
 	}
 }
 
-asAtomR Namespace::nextName(uint32_t index)
+asAtom Namespace::nextName(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	switch(index)
@@ -2091,7 +2091,7 @@ asAtomR Namespace::nextName(uint32_t index)
 	}
 }
 
-asAtomR Namespace::nextValue(uint32_t index)
+asAtom Namespace::nextValue(uint32_t index)
 {
 	assert_and_throw(implEnable);
 	switch(index)
@@ -2113,7 +2113,7 @@ ASObject* ASNop(ASObject* obj, ASObject* const* args, const unsigned int argslen
 	return obj->getSystemState()->getUndefinedRef();
 }
 
-asAtomR Class<IFunction>::getNopFunction()
+asAtom Class<IFunction>::getNopFunction()
 {
 	IFunction* ret=new (this->memoryAccount) Function(this, ASNop);
 	//Similarly to newFunction, we must create a prototype object
@@ -2122,11 +2122,11 @@ asAtomR Class<IFunction>::getNopFunction()
 	return asAtom::fromObject(ret);
 }
 
-asAtomR Class<IFunction>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class<IFunction>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	if (argslen > 0)
 		throwError<EvalError>(kFunctionConstructorError);
-	asAtomR ret = getNopFunction();
+	asAtom ret = getNopFunction();
 	if (construct)
 		ret->getObject()->setConstructIndicator();
 	return ret;
@@ -2183,16 +2183,16 @@ void Global::sinit(Class_base* c)
 	c->setSuper(Class<ASObject>::getRef(c->getSystemState()));
 }
 
-asAtomR Global::getVariableByMultinameOpportunistic(const multiname& name)
+asAtom Global::getVariableByMultinameOpportunistic(const multiname& name)
 {
-	asAtomR ret = ASObject::getVariableByMultiname(name, NONE);
+	asAtom ret = ASObject::getVariableByMultiname(name, NONE);
 	//Do not attempt to define the variable now in any case
 	return ret;
 }
 
-asAtomR Global::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom Global::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
-	asAtomR ret = ASObject::getVariableByMultiname(name, opt);
+	asAtom ret = ASObject::getVariableByMultiname(name, opt);
 	/*
 	 * All properties are registered by now, even if the script init has
 	 * not been run. Thus if ret == NULL, we don't have to run the script init.
@@ -2200,14 +2200,14 @@ asAtomR Global::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTIO
 	if(ret->type == T_INVALID || !context || context->hasRunScriptInit[scriptId])
 		return ret;
 	LOG_CALL("Access to " << name << ", running script init");
-	asAtomR v = asAtom::fromObject(this);
+	asAtom v = asAtom::fromObject(this);
 	context->runScriptInit(scriptId,v);
 	return ASObject::getVariableByMultiname(name, opt);
 }
 
 void Global::registerBuiltin(const char* name, const char* ns, _R<ASObject> o)
 {
-	asAtomR value = asAtom::fromObject(o.getPtr());
+	asAtom value = asAtom::fromObject(o.getPtr());
 	setVariableAtomByQName(name,nsNameAndKind(getSystemState(),ns,NAMESPACE),value,CONSTANT_TRAIT);
 	//setVariableByQName(name,nsNameAndKind(ns,PACKAGE_NAMESPACE),o.getPtr(),DECLARED_TRAIT);
 }
@@ -2369,7 +2369,7 @@ ASFUNCTIONBODY(lightspark,trace)
 	return NULL;
 }
 
-bool lightspark::isXMLName(SystemState* sys, asAtomR& obj)
+bool lightspark::isXMLName(SystemState* sys, asAtom& obj)
 {
 	tiny_string name;
 
@@ -2585,16 +2585,16 @@ bool ObjectPrototype::isEqual(ASObject* r)
 	return ASObject::isEqual(r);
 }
 
-asAtomR ObjectPrototype::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom ObjectPrototype::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
-	asAtomR ret=ASObject::getVariableByMultiname(name, opt);
+	asAtom ret=ASObject::getVariableByMultiname(name, opt);
 	if(ret->type != T_INVALID || prevPrototype.isNull())
 		return ret;
 
 	return prevPrototype->getObj()->getVariableByMultiname(name, opt);
 }
 
-void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtomR& o, ASObject::CONST_ALLOWED_FLAG allowConst)
+void ObjectPrototype::setVariableByMultiname(const multiname &name, asAtom& o, ASObject::CONST_ALLOWED_FLAG allowConst)
 {
 	if (this->isSealed && this->hasPropertyByMultiname(name,false,true))
 		throwError<ReferenceError>(kCannotAssignToMethodError, name.normalizedNameUnresolved(getSystemState()), "");
@@ -2607,7 +2607,7 @@ ObjectConstructor::ObjectConstructor(Class_base* c,uint32_t length) : ASObject(c
 	this->prototype = Class<ASObject>::getRef(c->getSystemState())->prototype;
 }
 
-asAtomR ObjectConstructor::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom ObjectConstructor::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
 	if (name.normalizedName(getSystemState()) == "prototype")
 	{
@@ -2632,9 +2632,9 @@ FunctionPrototype::FunctionPrototype(Class_base* c, _NR<Prototype> p) : Function
 	obj = this;
 }
 
-asAtomR FunctionPrototype::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom FunctionPrototype::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
-	asAtomR ret=Function::getVariableByMultiname(name, opt);
+	asAtom ret=Function::getVariableByMultiname(name, opt);
 	if(ret->type != T_INVALID || prevPrototype.isNull())
 		return ret;
 
@@ -2648,9 +2648,9 @@ Function_object::Function_object(Class_base* c, _R<ASObject> p) : ASObject(c,T_O
 	constructorCallComplete = true;
 }
 
-asAtomR Function_object::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
+asAtom Function_object::getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt)
 {
-	asAtomR ret=ASObject::getVariableByMultiname(name, opt);
+	asAtom ret=ASObject::getVariableByMultiname(name, opt);
 	assert(!functionPrototype.isNull());
 	if(ret->type != T_INVALID)
 		return ret;

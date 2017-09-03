@@ -38,11 +38,11 @@ ASFUNCTIONBODY_GETTER(FileStream, isSupported);
 
 ASFUNCTIONBODY_ATOM(FileStream, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//FileStream* th=Class<FileStream>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"FileStream is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }
 
 ASFile::ASFile(Class_base* c):
@@ -59,9 +59,9 @@ ASFUNCTIONBODY_GETTER(ASFile, exists);
 
 ASFUNCTIONBODY_ATOM(ASFile, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	FileReference::_constructor(sys,obj, empty, 0);
 	//ASFile* th=Class<FileReference>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"File is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtomR;
 }

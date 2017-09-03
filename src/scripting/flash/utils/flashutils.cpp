@@ -191,7 +191,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setInterval)
 	assert_and_throw(argslen >= 2 && args[0]->type==T_FUNCTION);
 
 	//Build arguments array
-	std::vector<asAtomR> callbackArgs(argslen-2);
+	std::vector<asAtom> callbackArgs(argslen-2);
 	uint32_t i;
 	for(i=0; i<argslen-2; i++)
 	{
@@ -201,7 +201,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setInterval)
 
 	//Add interval through manager
 	uint32_t id = sys->intervalManager->setInterval(args[0], callbackArgs, argslen-2,
-			asAtomR::nullAtomR, args[1]->toInt());
+			asAtom::nullAtomR, args[1]->toInt());
 	return _MAR(asAtom((int32_t)id));
 }
 
@@ -210,7 +210,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setTimeout)
 	assert_and_throw(argslen >= 2);
 
 	//Build arguments array
-	std::vector<asAtomR> callbackArgs(argslen-2);
+	std::vector<asAtom> callbackArgs(argslen-2);
 	uint32_t i;
 	for(i=0; i<argslen-2; i++)
 	{
@@ -221,7 +221,7 @@ ASFUNCTIONBODY_ATOM(lightspark,setTimeout)
 	//incRef the function
 	//Add timeout through manager
 	uint32_t id = sys->intervalManager->setTimeout(args[0], callbackArgs, argslen-2,
-			asAtomR::nullAtomR, args[1]->toInt());
+			asAtom::nullAtomR, args[1]->toInt());
 	return _MAR(asAtom((int32_t)id));
 }
 
