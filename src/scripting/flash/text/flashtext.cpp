@@ -59,9 +59,9 @@ void ASFont::SetFont(tiny_string& fontname,bool is_bold,bool is_italic, bool is_
 					"device");
 }
 
-std::vector<asAtomR> *ASFont::getFontList()
+std::vector<asAtom> *ASFont::getFontList()
 {
-	static std::vector<asAtomR> fontlist;
+	static std::vector<asAtom> fontlist;
 	return &fontlist;
 }
 ASFUNCTIONBODY_GETTER(ASFont, fontName);
@@ -76,7 +76,7 @@ ASFUNCTIONBODY_ATOM(ASFont,enumerateFonts)
 	if (enumerateDeviceFonts)
 		LOG(LOG_NOT_IMPLEMENTED,"Font::enumerateFonts: flag enumerateDeviceFonts is not handled");
 	Array* ret = Class<Array>::getInstanceSNoArgs(getSys());
-	std::vector<asAtomR>* fontlist = getFontList();
+	std::vector<asAtom>* fontlist = getFontList();
 	for(auto i = fontlist->begin(); i != fontlist->end(); ++i)
 	{
 		ret->push(*i);
@@ -86,12 +86,12 @@ ASFUNCTIONBODY_ATOM(ASFont,enumerateFonts)
 ASFUNCTIONBODY_ATOM(ASFont,registerFont)
 {
 	getFontList()->push_back(args[0]);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 ASFUNCTIONBODY_ATOM(ASFont,hasGlyphs)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"Font.hasGlyphs always returns true");
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 TextField::TextField(Class_base* c, const TextData& textData, bool _selectable, bool readOnly)
 	: InteractiveObject(c), TextData(textData), TokenContainer(this), type(ET_READ_ONLY),
@@ -241,24 +241,24 @@ _NR<DisplayObject> TextField::hitTestImpl(_NR<DisplayObject> last, number_t x, n
 
 ASFUNCTIONBODY_ATOM(TextField,_getWordWrap)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->wordWrap));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->wordWrap);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setWordWrap)
 {
-	TextField* th= obj->as<TextField>();
+	TextField* th= obj.as<TextField>();
 	ARG_UNPACK_ATOM(th->wordWrap);
 	th->setSizeAndPositionFromAutoSize();
 	th->hasChanged=true;
 	if(th->onStage && th->isVisible())
 		th->requestInvalidation(th->getSystemState());
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getAutoSize)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	switch(th->autoSize)
 	{
 		case AS_NONE:
@@ -270,12 +270,12 @@ ASFUNCTIONBODY_ATOM(TextField,_getAutoSize)
 		case AS_CENTER:
 			return asAtom::fromString(sys,"center");
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setAutoSize)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	tiny_string autoSizeString;
 	ARG_UNPACK_ATOM(autoSizeString);
 
@@ -300,7 +300,7 @@ ASFUNCTIONBODY_ATOM(TextField,_setAutoSize)
 			th->requestInvalidation(th->getSystemState());
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void TextField::setSizeAndPositionFromAutoSize()
@@ -332,42 +332,42 @@ void TextField::setSizeAndPositionFromAutoSize()
 
 ASFUNCTIONBODY_ATOM(TextField,_getWidth)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->width));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->width);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setWidth)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	assert_and_throw(argslen==1);
 	//The width needs to be updated only if autoSize is off or wordWrap is on TODO:check this, adobe's behavior is not clear
 	if(((th->autoSize == AS_NONE)||(th->wordWrap == true))
-			&& (th->width != args[0]->toUInt()))
+			&& (th->width != args[0].toUInt()))
 	{
-		th->width=args[0]->toUInt();
+		th->width=args[0].toUInt();
 		th->hasChanged=true;
 		if(th->onStage && th->isVisible())
 			th->requestInvalidation(sys);
 		else
 			th->updateSizes();
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getHeight)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->height));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->height);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setHeight)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	assert_and_throw(argslen==1);
 	if((th->autoSize == AS_NONE)
-		&& (th->height != args[0]->toUInt()))
+		&& (th->height != args[0].toUInt()))
 	{
-		th->height=args[0]->toUInt();
+		th->height=args[0].toUInt();
 		th->hasChanged=true;
 		if(th->onStage && th->isVisible())
 			th->requestInvalidation(th->getSystemState());
@@ -375,64 +375,64 @@ ASFUNCTIONBODY_ATOM(TextField,_setHeight)
 			th->updateSizes();
 	}
 	//else do nothing as the height is determined by autoSize
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextWidth)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->textWidth));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->textWidth);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextHeight)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->textHeight));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->textHeight);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getHtmlText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	return asAtom::fromObject(abstract_s(sys,th->toHtmlText()));
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setHtmlText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	tiny_string value;
 	ARG_UNPACK_ATOM(value);
 	th->setHtmlText(value);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	return asAtom::fromObject(abstract_s(sys,th->text));
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_setText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	assert_and_throw(argslen==1);
-	th->updateText(args[0]->toString());
-	return asAtomR::invalidAtomR;
+	th->updateText(args[0].toString());
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField, appendText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	assert_and_throw(argslen==1);
-	th->updateText(th->text + args[0]->toString());
-	return asAtomR::invalidAtomR;
+	th->updateText(th->text + args[0].toString());
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextFormat)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	TextFormat *format=Class<TextFormat>::getInstanceSRaw(sys);
 
-	format->color= _MAR(asAtom(th->textColor.toUInt()));
+	format->color= asAtom(th->textColor.toUInt());
 	format->font = th->font;
 	format->size = th->fontSize;
 
@@ -443,7 +443,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getTextFormat)
 
 ASFUNCTIONBODY_ATOM(TextField,_setTextFormat)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	_NR<TextFormat> tf;
 	int beginIndex;
 	int endIndex;
@@ -453,19 +453,19 @@ ASFUNCTIONBODY_ATOM(TextField,_setTextFormat)
 	if(beginIndex!=-1 || endIndex!=-1)
 		LOG(LOG_NOT_IMPLEMENTED,"setTextFormat with beginIndex or endIndex");
 
-	if(tf->color->type != T_NULL)
-		th->textColor = tf->color->toUInt();
+	if(tf->color.type != T_NULL)
+		th->textColor = tf->color.toUInt();
 	if (tf->font != "")
 		th->font = tf->font;
 	th->fontSize = tf->size;
 
 	LOG(LOG_NOT_IMPLEMENTED,"setTextFormat does not read all fields of TextFormat");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getDefaultTextFormat)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	
 	TextFormat* tf = Class<TextFormat>::getInstanceSRaw(sys);
 	tf->font = th->font;
@@ -475,23 +475,23 @@ ASFUNCTIONBODY_ATOM(TextField,_getDefaultTextFormat)
 
 ASFUNCTIONBODY_ATOM(TextField,_setDefaultTextFormat)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	_NR<TextFormat> tf;
 
 	ARG_UNPACK_ATOM(tf);
 
-	if(tf->color->type != T_NULL)
-		th->textColor = tf->color->toUInt();
+	if(tf->color.type != T_NULL)
+		th->textColor = tf->color.toUInt();
 	if (tf->font != "")
 		th->font = tf->font;
 	th->fontSize = tf->size;
 	LOG(LOG_NOT_IMPLEMENTED,"setDefaultTextFormat does not set all fields of TextFormat");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField, _getter_type)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	if (th->type == ET_READ_ONLY)
 		return asAtom::fromString(sys,"dynamic");
 	else
@@ -500,7 +500,7 @@ ASFUNCTIONBODY_ATOM(TextField, _getter_type)
 
 ASFUNCTIONBODY_ATOM(TextField, _setter_type)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 
 	tiny_string value;
 	ARG_UNPACK_ATOM(value);
@@ -512,12 +512,12 @@ ASFUNCTIONBODY_ATOM(TextField, _setter_type)
 	else
 		throwError<ArgumentError>(kInvalidEnumError, "type");
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineIndexAtPoint)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	number_t x;
 	number_t y;
 	ARG_UNPACK_ATOM(x) (y);
@@ -529,20 +529,20 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineIndexAtPoint)
 	{
 		if (x > it->extents.Xmin && x <= it->extents.Xmax &&
 		    y > it->extents.Ymin && y <= it->extents.Ymax)
-			return _MAR(asAtom(i));
+			return asAtom(i);
 	}
 
-	return _MAR(asAtom(-1));
+	return asAtom(-1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineIndexOfChar)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t charIndex;
 	ARG_UNPACK_ATOM(charIndex);
 
 	if (charIndex < 0)
-		return _MAR(asAtom(-1));
+		return asAtom(-1);
 
 	std::vector<LineData> lines = CairoPangoRenderer::getLineData(*th);
 	std::vector<LineData>::const_iterator it;
@@ -551,17 +551,17 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineIndexOfChar)
 	{
 		if (charIndex >= it->firstCharOffset &&
 		    charIndex < it->firstCharOffset + it->length)
-			return _MAR(asAtom(i));
+			return asAtom(i);
 	}
 
 	// testing shows that returns -1 on invalid index instead of
 	// throwing RangeError
-	return _MAR(asAtom(-1));
+	return asAtom(-1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineLength)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t  lineIndex;
 	ARG_UNPACK_ATOM(lineIndex);
 
@@ -569,12 +569,12 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineLength)
 	if (lineIndex < 0 || lineIndex >= (int32_t)lines.size())
 		throwError<RangeError>(kParamRangeError);
 
-	return _MAR(asAtom(lines[lineIndex].length));
+	return asAtom(lines[lineIndex].length);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineMetrics)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t  lineIndex;
 	ARG_UNPACK_ATOM(lineIndex);
 
@@ -593,7 +593,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineMetrics)
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineOffset)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t  lineIndex;
 	ARG_UNPACK_ATOM(lineIndex);
 
@@ -601,12 +601,12 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineOffset)
 	if (lineIndex < 0 || lineIndex >= (int32_t)lines.size())
 		throwError<RangeError>(kParamRangeError);
 
-	return _MAR(asAtom(lines[lineIndex].firstCharOffset));
+	return asAtom(lines[lineIndex].firstCharOffset);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLineText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t  lineIndex;
 	ARG_UNPACK_ATOM(lineIndex);
 
@@ -621,7 +621,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getLineText)
 
 ASFUNCTIONBODY_ATOM(TextField,_getAntiAliasType)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	if (th->antiAliasType == AA_NORMAL)
 		return asAtom::fromString(sys,"normal");
 	else
@@ -630,7 +630,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getAntiAliasType)
 
 ASFUNCTIONBODY_ATOM(TextField,_setAntiAliasType)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	tiny_string value;
 	ARG_UNPACK_ATOM(value);
 
@@ -643,12 +643,12 @@ ASFUNCTIONBODY_ATOM(TextField,_setAntiAliasType)
 		th->antiAliasType = AA_NORMAL;
 
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getGridFitType)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	if (th->gridFitType == GF_NONE)
 		return asAtom::fromString(sys,"none");
 	else if (th->gridFitType == GF_PIXEL)
@@ -659,7 +659,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getGridFitType)
 
 ASFUNCTIONBODY_ATOM(TextField,_setGridFitType)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	tiny_string value;
 	ARG_UNPACK_ATOM(value);
 
@@ -672,51 +672,51 @@ ASFUNCTIONBODY_ATOM(TextField,_setGridFitType)
 
 	LOG(LOG_NOT_IMPLEMENTED, "TextField gridFitType not implemented");
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getLength)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->text.numChars()));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->text.numChars());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getNumLines)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom((int32_t)CairoPangoRenderer::getLineData(*th).size()));
+	TextField* th=obj.as<TextField>();
+	return asAtom((int32_t)CairoPangoRenderer::getLineData(*th).size());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getMaxScrollH)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->getMaxScrollH()));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->getMaxScrollH());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getMaxScrollV)
 {
-	TextField* th=obj->as<TextField>();
-	return _MAR(asAtom(th->getMaxScrollV()));
+	TextField* th=obj.as<TextField>();
+	return asAtom(th->getMaxScrollV());
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getBottomScrollV)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	std::vector<LineData> lines = CairoPangoRenderer::getLineData(*th);
 	for (unsigned int k=0; k<lines.size()-1; k++)
 	{
 		if (lines[k+1].extents.Ymin >= (int)th->height)
-			return _MAR(asAtom((int32_t)k + 1));
+			return asAtom((int32_t)k + 1);
 	}
 
-	return _MAR(asAtom((int32_t)lines.size() + 1));
+	return asAtom((int32_t)lines.size() + 1);
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getRestrict)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	if (th->restrictChars.isNull())
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	else
 	{
 		return asAtom::fromObject(th->restrictChars.getPtr());
@@ -725,16 +725,16 @@ ASFUNCTIONBODY_ATOM(TextField,_getRestrict)
 
 ASFUNCTIONBODY_ATOM(TextField,_setRestrict)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	ARG_UNPACK_ATOM(th->restrictChars);
 	if (!th->restrictChars.isNull())
 		LOG(LOG_NOT_IMPLEMENTED, "TextField restrict property");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_getTextInteractionMode)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	if (th->textInteractionMode == TI_NORMAL)
 		return asAtom::fromString(sys,"normal");
 	else
@@ -743,7 +743,7 @@ ASFUNCTIONBODY_ATOM(TextField,_getTextInteractionMode)
 
 ASFUNCTIONBODY_ATOM(TextField,_setSelection)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	ARG_UNPACK_ATOM(th->selectionBeginIndex) (th->selectionEndIndex);
 
 	if (th->selectionBeginIndex < 0)
@@ -760,27 +760,27 @@ ASFUNCTIONBODY_ATOM(TextField,_setSelection)
 
 	LOG(LOG_NOT_IMPLEMENTED, "TextField selection will not be rendered");
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_replaceSelectedText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	tiny_string newText;
 	ARG_UNPACK_ATOM(newText);
 	th->replaceText(th->selectionBeginIndex, th->selectionEndIndex, newText);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextField,_replaceText)
 {
-	TextField* th=obj->as<TextField>();
+	TextField* th=obj.as<TextField>();
 	int32_t begin;
 	int32_t end;
 	tiny_string newText;
 	ARG_UNPACK_ATOM(begin) (end) (newText);
 	th->replaceText(begin, end, newText);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void TextField::replaceText(unsigned int begin, unsigned int end, const tiny_string& newText)
@@ -1148,10 +1148,10 @@ uint32_t TextField::HtmlTextParser::parseFontSize(const Glib::ustring& sizestr,
 void TextFieldAutoSize::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR center = asAtom::fromString(c->getSystemState(),"center");
-	asAtomR left = asAtom::fromString(c->getSystemState(),"left");
-	asAtomR none = asAtom::fromString(c->getSystemState(),"none");
-	asAtomR right = asAtom::fromString(c->getSystemState(),"right");
+	asAtom center = asAtom::fromString(c->getSystemState(),"center");
+	asAtom left = asAtom::fromString(c->getSystemState(),"left");
+	asAtom none = asAtom::fromString(c->getSystemState(),"none");
+	asAtom right = asAtom::fromString(c->getSystemState(),"right");
 	c->setVariableAtomByQName("CENTER",nsNameAndKind(),center,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("LEFT",nsNameAndKind(),left,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("NONE",nsNameAndKind(),none,CONSTANT_TRAIT);
@@ -1161,8 +1161,8 @@ void TextFieldAutoSize::sinit(Class_base* c)
 void TextFieldType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR dynamic = asAtom::fromString(c->getSystemState(),"dynamic");
-	asAtomR input = asAtom::fromString(c->getSystemState(),"input");
+	asAtom dynamic = asAtom::fromString(c->getSystemState(),"dynamic");
+	asAtom input = asAtom::fromString(c->getSystemState(),"input");
 	c->setVariableAtomByQName("DYNAMIC",nsNameAndKind(),dynamic,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("INPUT",nsNameAndKind(),input,CONSTANT_TRAIT);
 }
@@ -1170,12 +1170,12 @@ void TextFieldType::sinit(Class_base* c)
 void TextFormatAlign::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR center = asAtom::fromString(c->getSystemState(),"center");
-	asAtomR end = asAtom::fromString(c->getSystemState(),"end");
-	asAtomR justify = asAtom::fromString(c->getSystemState(),"justify");
-	asAtomR left = asAtom::fromString(c->getSystemState(),"left");
-	asAtomR right = asAtom::fromString(c->getSystemState(),"right");
-	asAtomR start = asAtom::fromString(c->getSystemState(),"start");
+	asAtom center = asAtom::fromString(c->getSystemState(),"center");
+	asAtom end = asAtom::fromString(c->getSystemState(),"end");
+	asAtom justify = asAtom::fromString(c->getSystemState(),"justify");
+	asAtom left = asAtom::fromString(c->getSystemState(),"left");
+	asAtom right = asAtom::fromString(c->getSystemState(),"right");
+	asAtom start = asAtom::fromString(c->getSystemState(),"start");
 	c->setVariableAtomByQName("CENTER",nsNameAndKind(), center, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("END",nsNameAndKind(), end, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("JUSTIFY",nsNameAndKind(), justify,CONSTANT_TRAIT);
@@ -1210,38 +1210,38 @@ void TextFormat::sinit(Class_base* c)
 void TextFormat::finalize()
 {
 	ASObject::finalize();
-	blockIndent = _MAR(asAtom::nullAtom);
-	bold = _MAR(asAtom::nullAtom);
-	bullet = _MAR(asAtom::nullAtom);
-	color = _MAR(asAtom::nullAtom);
-	indent = _MAR(asAtom::nullAtom);
-	italic = _MAR(asAtom::nullAtom);
-	kerning = _MAR(asAtom::nullAtom);
-	leading = _MAR(asAtom::nullAtom);
-	leftMargin = _MAR(asAtom::nullAtom);
-	letterSpacing = _MAR(asAtom::nullAtom);
-	rightMargin = _MAR(asAtom::nullAtom);
+	blockIndent = asAtom::nullAtom;
+	bold = asAtom::nullAtom;
+	bullet = asAtom::nullAtom;
+	color = asAtom::nullAtom;
+	indent = asAtom::nullAtom;
+	italic = asAtom::nullAtom;
+	kerning = asAtom::nullAtom;
+	leading = asAtom::nullAtom;
+	leftMargin = asAtom::nullAtom;
+	letterSpacing = asAtom::nullAtom;
+	rightMargin = asAtom::nullAtom;
 	tabStops.reset();
-	underline = _MAR(asAtom::nullAtom);
+	underline = asAtom::nullAtom;
 }
 
 ASFUNCTIONBODY_ATOM(TextFormat,_constructor)
 {
-	TextFormat* th=obj->as<TextFormat>();
+	TextFormat* th=obj.as<TextFormat>();
 	ARG_UNPACK_ATOM (th->font, "")
 		(th->size, 12)
-		(th->color,_MAR(asAtom::nullAtom))
-		(th->bold,_MAR(asAtom::nullAtom))
-		(th->italic,_MAR(asAtom::nullAtom))
-		(th->underline,_MAR(asAtom::nullAtom))
+		(th->color,asAtom::nullAtom)
+		(th->bold,asAtom::nullAtom)
+		(th->italic,asAtom::nullAtom)
+		(th->underline,asAtom::nullAtom)
 		(th->url,"")
 		(th->target,"")
 		(th->align,"left")
-		(th->leftMargin,_MAR(asAtom::nullAtom))
-		(th->rightMargin,_MAR(asAtom::nullAtom))
-		(th->indent,_MAR(asAtom::nullAtom))
-		(th->leading,_MAR(asAtom::nullAtom));
-	return asAtomR::invalidAtomR;
+		(th->leftMargin,asAtom::nullAtom)
+		(th->rightMargin,asAtom::nullAtom)
+		(th->indent,asAtom::nullAtom)
+		(th->leading,asAtom::nullAtom);
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER_CB(TextFormat,align,onAlign);
@@ -1297,25 +1297,25 @@ void StyleSheet::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(StyleSheet,setStyle)
 {
-	StyleSheet* th=obj->as<StyleSheet>();
+	StyleSheet* th=obj.as<StyleSheet>();
 	assert_and_throw(argslen==2);
-	const tiny_string& arg0=args[0]->toString();
+	const tiny_string& arg0=args[0].toString();
 	//ASATOM_INCREF(args[1]); TODO: should make a copy, see reference
-	map<tiny_string, asAtomR>::iterator it=th->styles.find(arg0);
+	map<tiny_string, asAtom>::iterator it=th->styles.find(arg0);
 	//NOTE: we cannot use the [] operator as References cannot be non initialized
 	if(it!=th->styles.end()) //Style already exists
 		it->second=args[1];
 	else
 		th->styles.insert(make_pair(arg0,args[1]));
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(StyleSheet,getStyle)
 {
-	StyleSheet* th=obj->as<StyleSheet>();
+	StyleSheet* th=obj.as<StyleSheet>();
 	assert_and_throw(argslen==1);
-	const tiny_string& arg0=args[0]->toString();
-	map<tiny_string, asAtomR>::iterator it=th->styles.find(arg0);
+	const tiny_string& arg0=args[0].toString();
+	map<tiny_string, asAtom>::iterator it=th->styles.find(arg0);
 	if(it!=th->styles.end()) //Style already exists
 	{
 		//TODO: should make a copy, see reference
@@ -1328,17 +1328,17 @@ ASFUNCTIONBODY_ATOM(StyleSheet,getStyle)
 		// instead of Null as is said in the documentation
 		return asAtom::fromObject(Class<ASObject>::getInstanceS(sys));
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(StyleSheet,_getStyleNames)
 {
-	StyleSheet* th=obj->as<StyleSheet>();
+	StyleSheet* th=obj.as<StyleSheet>();
 	assert_and_throw(argslen==0);
 	Array* ret=Class<Array>::getInstanceSNoArgs(sys);
-	map<tiny_string, asAtomR>::const_iterator it=th->styles.begin();
+	map<tiny_string, asAtom>::const_iterator it=th->styles.begin();
 	for(;it!=th->styles.end();++it) {
-		asAtomR element = asAtom::fromObject(abstract_s(sys,it->first));
+		asAtom element = asAtom::fromObject(abstract_s(sys,it->first));
 		ret->push(element);
 	}
 	return asAtom::fromObject(ret);
@@ -1362,10 +1362,10 @@ ASFUNCTIONBODY_ATOM(StaticText,_getText)
 void FontStyle::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR bold = asAtom::fromString(c->getSystemState(),"bold");
-	asAtomR boldItalic = asAtom::fromString(c->getSystemState(),"boldItalic");
-	asAtomR italic = asAtom::fromString(c->getSystemState(),"italic");
-	asAtomR regular = asAtom::fromString(c->getSystemState(),"regular");
+	asAtom bold = asAtom::fromString(c->getSystemState(),"bold");
+	asAtom boldItalic = asAtom::fromString(c->getSystemState(),"boldItalic");
+	asAtom italic = asAtom::fromString(c->getSystemState(),"italic");
+	asAtom regular = asAtom::fromString(c->getSystemState(),"regular");
 	c->setVariableAtomByQName("BOLD",nsNameAndKind(), bold, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("BOLD_ITALIC",nsNameAndKind(), boldItalic, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("ITALIC",nsNameAndKind(), italic, CONSTANT_TRAIT);
@@ -1375,9 +1375,9 @@ void FontStyle::sinit(Class_base* c)
 void FontType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR device = asAtom::fromString(c->getSystemState(),"device");
-	asAtomR embedded = asAtom::fromString(c->getSystemState(),"embedded");
-	asAtomR embeddedCFF = asAtom::fromString(c->getSystemState(),"embeddedCFF");
+	asAtom device = asAtom::fromString(c->getSystemState(),"device");
+	asAtom embedded = asAtom::fromString(c->getSystemState(),"embedded");
+	asAtom embeddedCFF = asAtom::fromString(c->getSystemState(),"embeddedCFF");
 	c->setVariableAtomByQName("DEVICE",nsNameAndKind(), device, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("EMBEDDED",nsNameAndKind(), embedded, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("EMBEDDED_CFF",nsNameAndKind(), embeddedCFF, CONSTANT_TRAIT);
@@ -1386,9 +1386,9 @@ void FontType::sinit(Class_base* c)
 void TextDisplayMode::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR crt = asAtom::fromString(c->getSystemState(),"crt");
-	asAtomR _default = asAtom::fromString(c->getSystemState(),"default");
-	asAtomR lcd = asAtom::fromString(c->getSystemState(),"lcd");
+	asAtom crt = asAtom::fromString(c->getSystemState(),"crt");
+	asAtom _default = asAtom::fromString(c->getSystemState(),"default");
+	asAtom lcd = asAtom::fromString(c->getSystemState(),"lcd");
 	c->setVariableAtomByQName("CRT",nsNameAndKind(),crt,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("DEFAULT",nsNameAndKind(),_default,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("LCD",nsNameAndKind(),lcd,CONSTANT_TRAIT);
@@ -1397,8 +1397,8 @@ void TextDisplayMode::sinit(Class_base* c)
 void TextColorType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR dark = asAtom::fromString(c->getSystemState(),"dark");
-	asAtomR light = asAtom::fromString(c->getSystemState(),"light");
+	asAtom dark = asAtom::fromString(c->getSystemState(),"dark");
+	asAtom light = asAtom::fromString(c->getSystemState(),"light");
 	c->setVariableAtomByQName("DARK_COLOR",nsNameAndKind(), dark, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("LIGHT_COLOR",nsNameAndKind(), light, CONSTANT_TRAIT);
 }
@@ -1406,9 +1406,9 @@ void TextColorType::sinit(Class_base* c)
 void GridFitType::sinit(Class_base* c)
 {
 	CLASS_SETUP_NO_CONSTRUCTOR(c, ASObject, CLASS_FINAL | CLASS_SEALED);
-	asAtomR none = asAtom::fromString(c->getSystemState(), "none");
-	asAtomR pixel = asAtom::fromString(c->getSystemState(), "pixel");
-	asAtomR subpixel = asAtom::fromString(c->getSystemState(), "subpixel");
+	asAtom none = asAtom::fromString(c->getSystemState(), "none");
+	asAtom pixel = asAtom::fromString(c->getSystemState(), "pixel");
+	asAtom subpixel = asAtom::fromString(c->getSystemState(), "subpixel");
 	c->setVariableAtomByQName("NONE",nsNameAndKind(), none, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("PIXEL",nsNameAndKind(), pixel, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("SUBPIXEL",nsNameAndKind(), subpixel, CONSTANT_TRAIT);
@@ -1417,8 +1417,8 @@ void GridFitType::sinit(Class_base* c)
 void TextInteractionMode::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_FINAL | CLASS_SEALED);
-	asAtomR normal = asAtom::fromString(c->getSystemState(), "normal");
-	asAtomR selection = asAtom::fromString(c->getSystemState(), "selection");
+	asAtom normal = asAtom::fromString(c->getSystemState(), "normal");
+	asAtom selection = asAtom::fromString(c->getSystemState(), "selection");
 	c->setVariableAtomByQName("NORMAL",nsNameAndKind(), normal, CONSTANT_TRAIT);
 	c->setVariableAtomByQName("SELECTION",nsNameAndKind(), selection, CONSTANT_TRAIT);
 }
@@ -1440,12 +1440,12 @@ ASFUNCTIONBODY_ATOM(TextLineMetrics, _constructor)
 	{
 		//Assume that the values were initialized by the C++
 		//constructor
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 
-	TextLineMetrics* th=obj->as<TextLineMetrics>();
+	TextLineMetrics* th=obj.as<TextLineMetrics>();
 	ARG_UNPACK_ATOM (th->x) (th->width) (th->height) (th->ascent) (th->descent) (th->leading);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(TextLineMetrics, ascent);

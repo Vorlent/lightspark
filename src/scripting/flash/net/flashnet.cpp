@@ -147,16 +147,16 @@ void URLRequest::validateHeaderName(const tiny_string& headerName) const
 std::list<tiny_string> URLRequest::getHeaders()
 {
 	list<tiny_string> headers;
-	Array* requestHeadersArr = requestHeaders->as<Array>();
+	Array* requestHeadersArr = requestHeaders.as<Array>();
 	int headerTotalLen = 0;
 	for (unsigned i=0; i<requestHeadersArr->size(); i++)
 	{
-		asAtomR headerObject = requestHeadersArr->at(i);
+		asAtom headerObject = requestHeadersArr->at(i);
 
 		// Validate
-		if (!headerObject->is<URLRequestHeader>())
-			throwError<TypeError>(kCheckTypeFailedError, headerObject->toObject(getSystemState())->getClassName(), "URLRequestHeader");
-		URLRequestHeader *header = headerObject->as<URLRequestHeader>();
+		if (!headerObject.is<URLRequestHeader>())
+			throwError<TypeError>(kCheckTypeFailedError, headerObject.toObject(getSystemState())->getClassName(), "URLRequestHeader");
+		URLRequestHeader *header = headerObject.as<URLRequestHeader>();
 		tiny_string headerName = header->name;
 		validateHeaderName(headerName);
 		if ((header->value.strchr('\r') != NULL) ||
@@ -267,7 +267,7 @@ ASFUNCTIONBODY(URLRequest,_getMethod)
 
 ASFUNCTIONBODY_ATOM(URLRequest,_getData)
 {
-	URLRequest* th=obj->as<URLRequest>();
+	URLRequest* th=obj.as<URLRequest>();
 	if(th->data.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
 
@@ -483,20 +483,20 @@ void URLLoader::setBytesLoaded(uint32_t b)
 
 ASFUNCTIONBODY_ATOM(URLLoader,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
-	if(argslen==1 && args[0]->is<URLRequest>())
+	if(argslen==1 && args[0].is<URLRequest>())
 	{
 		//URLRequest* urlRequest=Class<URLRequest>::dyncast(args[0]);
 		load(sys, obj, args, argslen);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(URLLoader,load)
 {
-	URLLoader* th=obj->as<URLLoader>();
-	ASObject* arg=args[0]->getObject();
+	URLLoader* th=obj.as<URLLoader>();
+	ASObject* arg=args[0].getObject();
 	URLRequest* urlRequest=Class<URLRequest>::dyncast(arg);
 	assert_and_throw(urlRequest);
 
@@ -511,7 +511,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	{
 		//Notify an error during loading
 		th->getSystemState()->currentVm->addEvent(_IMR(th),Class<IOErrorEvent>::getInstanceS(th->getSystemState()));
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
 
 	//TODO: support the right events (like SecurityErrorEvent)
@@ -525,7 +525,7 @@ ASFUNCTIONBODY_ATOM(URLLoader,load)
 	URLLoaderThread *job=new URLLoaderThread(_IMR(urlRequest), _IMR(th));
 	getSys()->addJob(job);
 	th->job=job;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(URLLoader,close)
@@ -558,7 +558,7 @@ ASFUNCTIONBODY(URLLoader,_getDataFormat)
 
 ASFUNCTIONBODY_ATOM(URLLoader,_getData)
 {
-	URLLoader* th=obj->as<URLLoader>();
+	URLLoader* th=obj.as<URLLoader>();
 	SpinlockLocker l(th->spinlock);
 	if(th->data.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
@@ -784,11 +784,11 @@ void NetConnection::finalize()
 
 ASFUNCTIONBODY_ATOM(NetConnection, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
-	NetConnection* th=Class<NetConnection>::cast(obj->getObject());
+	NetConnection* th=Class<NetConnection>::cast(obj.getObject());
 	th->objectEncoding = getSys()->staticNetConnectionDefaultObjectEncoding;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(NetConnection,call)
@@ -818,7 +818,7 @@ ASFUNCTIONBODY(NetConnection,call)
 	_R<Array> rest=_MR(Class<Array>::getInstanceSNoArgs(obj->getSystemState()));
 	for(uint32_t i=2;i<argslen;i++)
 	{
-		asAtomR argi = asAtom::fromObject(args[i]);
+		asAtom argi = asAtom::fromObject(args[i]);
 		rest->push(argi);
 	}
 
@@ -1248,7 +1248,7 @@ ASFUNCTIONBODY(NetStream,_getInfo)
 
 ASFUNCTIONBODY_ATOM(NetStream,_getClient)
 {
-	NetStream* th=obj->as<NetStream>();
+	NetStream* th=obj.as<NetStream>();
 	if(th->client.isNull())
 		return asAtom::fromObject(getSys()->getUndefinedRef());
 	return asAtom::fromObject(th->client.getPtr());
@@ -1285,9 +1285,9 @@ ASFUNCTIONBODY(NetStream,_setCheckPolicyFile)
 
 ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
-	NetStream* th=obj->as<NetStream>();
+	NetStream* th=obj.as<NetStream>();
 
 	LOG(LOG_CALLS,_("NetStream constructor"));
 	tiny_string value;
@@ -1303,7 +1303,7 @@ ASFUNCTIONBODY_ATOM(NetStream,_constructor)
 	th->connection=netConnection;
 	th->client = _IMNR<ASObject>(th);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(NetStream,play)
@@ -1969,7 +1969,7 @@ void NetStream::threadAbort()
 	}
 }
 
-void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtomR>& arglist)
+void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtom>& arglist)
 {
 	if (client.isNull())
 		return;
@@ -1978,18 +1978,18 @@ void NetStream::sendClientNotification(const tiny_string& name, std::list<asAtom
 	callbackName.name_type=multiname::NAME_STRING;
 	callbackName.name_s_id=getSys()->getUniqueStringId(name);
 	callbackName.ns.push_back(nsNameAndKind(getSystemState(),"",NAMESPACE));
-	asAtomR callback = client->getVariableByMultiname(callbackName);
-	if(callback->type == T_FUNCTION)
+	asAtom callback = client->getVariableByMultiname(callbackName);
+	if(callback.type == T_FUNCTION)
 	{
-		std::vector<asAtomR> callbackArgs;
+		std::vector<asAtom> callbackArgs;
 		callbackArgs.reserve(arglist.size());
 
 		for (auto it = arglist.cbegin();it != arglist.cend(); it++)
 		{
-			asAtomR arg = (*it);
+			asAtom arg = (*it);
 			callbackArgs.push_back(arg);
 		}
-		asAtomR clientAtom = asAtom::fromObject(client.getPtr());
+		asAtom clientAtom = asAtom::fromObject(client.getPtr());
 		_R<FunctionEvent> event(new (getSys()->unaccountedMemory) FunctionEvent(callback,
 				clientAtom, callbackArgs, arglist.size()));
 		getVm(getSystemState())->addEvent(NullRef,event);
@@ -2135,27 +2135,27 @@ void URLVariables::decode(const tiny_string& s)
 			propName.name_type=multiname::NAME_STRING;
 			propName.name_s_id=getSys()->getUniqueStringId(tiny_string(name,true));
 			propName.ns.push_back(nsNameAndKind(getSystemState(),"",NAMESPACE));
-			asAtomR curValue=getVariableByMultiname(propName);
-			if(curValue->type != T_INVALID)
+			asAtom curValue=getVariableByMultiname(propName);
+			if(curValue.type != T_INVALID)
 			{
 				//If the variable already exists we have to create an Array of values
 				Array* arr=NULL;
-				if(curValue->type!=T_ARRAY)
+				if(curValue.type!=T_ARRAY)
 				{
 					arr=Class<Array>::getInstanceSNoArgs(getSystemState());
 					arr->push(curValue);
-					asAtomR v = asAtom::fromObject(arr);
+					asAtom v = asAtom::fromObject(arr);
 					setVariableByMultiname(propName,v,ASObject::CONST_NOT_ALLOWED);
 				}
 				else
-					arr=Class<Array>::cast(curValue->getObject());
+					arr=Class<Array>::cast(curValue.getObject());
 
-				asAtomR ele = asAtom::fromObject(abstract_s(getSystemState(),value));
+				asAtom ele = asAtom::fromObject(abstract_s(getSystemState(),value));
 				arr->push(ele);
 			}
 			else
 			{
-				asAtomR v = asAtom::fromObject(abstract_s(getSystemState(),value));
+				asAtom v = asAtom::fromObject(abstract_s(getSystemState(),value));
 				setVariableByMultiname(propName,v,ASObject::CONST_NOT_ALLOWED);
 			}
 
@@ -2217,12 +2217,12 @@ tiny_string URLVariables::toString_priv()
 		const tiny_string& name=getNameAt(i);
 		//TODO: check if the allow_unicode flag should be true or false in g_uri_escape_string
 
-		asAtomR val=getValueAt(i);
-		if(val->type==T_ARRAY)
+		asAtom val=getValueAt(i);
+		if(val.type==T_ARRAY)
 		{
 			//Print using multiple properties
 			//Ex. ["foo","bar"] -> prop1=foo&prop1=bar
-			Array* arr=Class<Array>::cast(val->getObject());
+			Array* arr=Class<Array>::cast(val.getObject());
 			for(uint32_t j=0;j<arr->size();j++)
 			{
 				//Escape the name
@@ -2232,7 +2232,7 @@ tiny_string URLVariables::toString_priv()
 				tmp+="=";
 
 				//Escape the value
-				const tiny_string& value=arr->at(j)->toString();
+				const tiny_string& value=arr->at(j).toString();
 				char* escapedValue=g_uri_escape_string(value.raw_buf(),NULL, false);
 				tmp+=escapedValue;
 				g_free(escapedValue);
@@ -2250,7 +2250,7 @@ tiny_string URLVariables::toString_priv()
 			tmp+="=";
 
 			//Escape the value
-			const tiny_string& value=val->toString();
+			const tiny_string& value=val.toString();
 			char* escapedValue=g_uri_escape_string(value.raw_buf(),NULL, false);
 			tmp+=escapedValue;
 			g_free(escapedValue);
@@ -2353,26 +2353,26 @@ void Responder::finalize()
 
 ASFUNCTIONBODY_ATOM(Responder, _constructor)
 {
-	Responder* th=Class<Responder>::cast(obj->getObject());
+	Responder* th=Class<Responder>::cast(obj.getObject());
 	assert_and_throw(argslen==1 || argslen==2);
-	assert_and_throw(args[0]->type==T_FUNCTION);
+	assert_and_throw(args[0].type==T_FUNCTION);
 	th->result = args[0];
-	if(argslen==2 && args[1]->type==T_FUNCTION)
+	if(argslen==2 && args[1].type==T_FUNCTION)
 	{
 		th->status = args[1];
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(Responder, onResult)
 {
-	Responder* th=Class<Responder>::cast(obj->getObject());
+	Responder* th=Class<Responder>::cast(obj.getObject());
 	assert_and_throw(argslen==1);
-	std::vector<asAtomR> arg0;
+	std::vector<asAtom> arg0;
 	arg0.reserve(1);
 	arg0.push_back(args[0]);
-	asAtomR ret=th->result->callFunction(asAtomR::nullAtomR, arg0, argslen,false);
-	return asAtomR::invalidAtomR;
+	asAtom ret=th->result.callFunction(asAtom::nullAtom, arg0, argslen,false);
+	return asAtom::invalidAtom;
 }
 
 LocalConnection::LocalConnection(Class_base* c):
@@ -2397,12 +2397,12 @@ ASFUNCTIONBODY_GETTER_SETTER(LocalConnection, client);
 
 ASFUNCTIONBODY_ATOM(LocalConnection, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
-	LocalConnection* th=Class<LocalConnection>::cast(obj->getObject());
+	LocalConnection* th=Class<LocalConnection>::cast(obj.getObject());
 	th->client = _IMNR<LocalConnection>(th);
 	LOG(LOG_NOT_IMPLEMENTED,"LocalConnection is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 ASFUNCTIONBODY(LocalConnection, domain)
 {
@@ -2458,11 +2458,11 @@ void NetGroup::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(NetGroup, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//NetGroup* th=Class<NetGroup>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"NetGroup is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 FileReference::FileReference(Class_base* c):
@@ -2477,11 +2477,11 @@ void FileReference::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(FileReference, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//FileReference* th=Class<FileReference>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"FileReference is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASSocket::ASSocket(Class_base* c):
@@ -2496,11 +2496,11 @@ void ASSocket::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(ASSocket, _constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj, empty, 0);
 	//ASSocket* th=Class<ASSocket>::cast(obj);
 	LOG(LOG_NOT_IMPLEMENTED,"ASSocket is not implemented");
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 DRMManager::DRMManager(Class_base* c):
@@ -2526,8 +2526,8 @@ ASFUNCTIONBODY(lightspark,registerClassAlias)
 
 ASFUNCTIONBODY_ATOM(lightspark,getClassByAlias)
 {
-	assert_and_throw(argslen==1 && args[0]->getObject()->getObjectType()==T_STRING);
-	const tiny_string& arg0 = args[0]->toString();
+	assert_and_throw(argslen==1 && args[0].getObject()->getObjectType()==T_STRING);
+	const tiny_string& arg0 = args[0].toString();
 	auto it=getSys()->aliasMap.find(arg0);
 	if(it==getSys()->aliasMap.end())
 		throwError<ReferenceError>(kClassNotFoundError, arg0);

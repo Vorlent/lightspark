@@ -62,7 +62,7 @@ void GraphicsGradientFill::finalize()
 
 ASFUNCTIONBODY_ATOM(GraphicsGradientFill, _constructor)
 {
-	GraphicsGradientFill* th = obj->as<GraphicsGradientFill>();
+	GraphicsGradientFill* th = obj.as<GraphicsGradientFill>();
 	ARG_UNPACK_ATOM (th->type, "linear")
 		(th->colors, NullRef)
 		(th->alphas, NullRef)
@@ -71,7 +71,7 @@ ASFUNCTIONBODY_ATOM(GraphicsGradientFill, _constructor)
 		(th->spreadMethod, "pad")
 		(th->interpolationMethod, "rgb")
 		(th->focalPointRatio, 0);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsGradientFill, alphas);

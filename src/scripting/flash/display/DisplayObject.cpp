@@ -194,14 +194,14 @@ bool DisplayObject::computeCacheAsBitmap() const
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getTransform)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	
 	return asAtom::fromObject(Class<Transform>::getInstanceSRaw(sys,_IMR(th)));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setTransform)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	_NR<Transform> trans;
 	ARG_UNPACK_ATOM(trans);
 	if (!trans.isNull())
@@ -209,7 +209,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setTransform)
 		th->setMatrix(trans->owner->matrix);
 		th->colorTransform = trans->owner->colorTransform;
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void DisplayObject::buildTraits(ASObject* o)
@@ -479,7 +479,7 @@ void DisplayObject::setOnStage(bool staged)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setAlpha)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	number_t val;
 	ARG_UNPACK_ATOM (val);
 	
@@ -492,44 +492,44 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setAlpha)
 		if(th->onStage)
 			th->requestInvalidation(sys);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getAlpha)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->alpha));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->alpha);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getMask)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	if(th->mask.isNull())
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(th->mask.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setMask)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	if(args[0]->is<DisplayObject>())
+	if(args[0].is<DisplayObject>())
 	{
 		//We received a valid mask object
-		DisplayObject* newMask=args[0]->as<DisplayObject>();
+		DisplayObject* newMask=args[0].as<DisplayObject>();
 		th->setMask(_IMR(newMask));
 	}
 	else
 		th->setMask(NullRef);
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleX)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->sx));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->sx);
 }
 
 void DisplayObject::setScaleX(number_t val)
@@ -546,20 +546,20 @@ void DisplayObject::setScaleX(number_t val)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleX)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	//Stop using the legacy matrix
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleX(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleY)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->sy));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->sy);
 }
 
 void DisplayObject::setScaleY(number_t val)
@@ -576,20 +576,20 @@ void DisplayObject::setScaleY(number_t val)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleY)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	//Stop using the legacy matrix
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleY(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScaleZ)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->sz));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->sz);
 }
 
 void DisplayObject::setScaleZ(number_t val)
@@ -607,20 +607,20 @@ void DisplayObject::setScaleZ(number_t val)
 ASFUNCTIONBODY_ATOM(DisplayObject,_setScaleZ)
 {
 	LOG(LOG_NOT_IMPLEMENTED,"DisplayObject.scaleZ is set, but not used anywhere");
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	//Stop using the legacy matrix
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
 	th->setScaleZ(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getX)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->tx));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->tx);
 }
 
 void DisplayObject::setX(number_t val)
@@ -672,54 +672,54 @@ void DisplayObject::setZ(number_t val)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setX)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	th->setX(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getY)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->ty));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->ty);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setY)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	th->setY(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getZ)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->tz));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->tz);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setZ)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	th->setZ(val);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getBounds)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
 
-	if(args[0]->is<Undefined>() || args[0]->is<Null>())
+	if(args[0].is<Undefined>() || args[0].is<Null>())
 		return asAtom::fromObject(Class<Rectangle>::getInstanceSRaw(sys));
-	if (!args[0]->is<DisplayObject>())
-		LOG(LOG_ERROR,"DisplayObject.getBounds invalid type:"<<args[0]->toDebugString());
-	assert_and_throw(args[0]->is<DisplayObject>());
-	DisplayObject* target=args[0]->as<DisplayObject>();
+	if (!args[0].is<DisplayObject>())
+		LOG(LOG_ERROR,"DisplayObject.getBounds invalid type:"<<args[0].toDebugString());
+	assert_and_throw(args[0].is<DisplayObject>());
+	DisplayObject* target=args[0].as<DisplayObject>();
 	//Compute the transformation matrix
 	MATRIX m;
 	DisplayObject* cur=th;
@@ -762,7 +762,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getBounds)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getLoaderInfo)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 
 	/* According to tests returning root.loaderInfo is the correct
 	 * behaviour, even though the documentation states that only
@@ -774,36 +774,36 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getLoaderInfo)
 		r = sys->mainClip;
 	}
 	if(r.isNull() || r->loaderInfo.isNull())
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 	
 	return asAtom::fromObject(r->loaderInfo.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getStage)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	_NR<Stage> ret=th->getStage();
 	if(ret.isNull())
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 
 	return asAtom::fromObject(ret.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getScale9Grid)
 {
-	//DisplayObject* th=obj->as<DisplayObject>();
+	//DisplayObject* th=obj.as<DisplayObject>();
 	LOG(LOG_NOT_IMPLEMENTED,"DispalyObject.Scale9Grid");
-	return _MAR(asAtom::undefinedAtom);
+	return asAtom::undefinedAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getBlendMode)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	return asAtom::fromString(sys,th->blendMode);
 }
 ASFUNCTIONBODY_ATOM(DisplayObject,_setBlendMode)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	tiny_string val;
 	ARG_UNPACK_ATOM(val);
 
@@ -827,15 +827,15 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setBlendMode)
 			val = "normal";
 	LOG(LOG_NOT_IMPLEMENTED, "blendmode is set but is not respected during drawing:"<<val);
 	th->blendMode = val;
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,localToGlobal)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen == 1);
 
-	Point* pt=args[0]->as<Point>();
+	Point* pt=args[0].as<Point>();
 
 	number_t tempx, tempy;
 
@@ -846,10 +846,10 @@ ASFUNCTIONBODY_ATOM(DisplayObject,localToGlobal)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,globalToLocal)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen == 1);
 
-	Point* pt=args[0]->as<Point>();
+	Point* pt=args[0].as<Point>();
 
 	number_t tempx, tempy;
 
@@ -860,9 +860,9 @@ ASFUNCTIONBODY_ATOM(DisplayObject,globalToLocal)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setRotation)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	number_t val=args[0]->toNumber();
+	number_t val=args[0].toNumber();
 	//Stop using the legacy matrix
 	if(th->useLegacyMatrix)
 		th->useLegacyMatrix=false;
@@ -874,20 +874,20 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setRotation)
 		if(th->onStage)
 			th->requestInvalidation(sys);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setName)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	th->name=args[0]->toString();
-	return asAtomR::invalidAtomR;
+	th->name=args[0].toString();
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getName)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	return asAtom::fromObject(abstract_s(sys,th->name));
 }
 
@@ -904,16 +904,16 @@ void DisplayObject::setParent(_NR<DisplayObjectContainer> p)
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getParent)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	if(th->parent.isNull())
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 
 	return asAtom::fromObject(th->parent.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getRoot)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	_NR<DisplayObject> ret;
 	
 	if (th->isLoadedRootObject())
@@ -924,29 +924,29 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_getRoot)
 	else
 		ret =th->getRoot();
 	if(ret.isNull())
-		return _MAR(asAtom::undefinedAtom);
+		return asAtom::undefinedAtom;
 
 	return asAtom::fromObject(ret.getPtr());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getRotation)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->rotation));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->rotation);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setVisible)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	assert_and_throw(argslen==1);
-	th->visible=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	th->visible=args[0].Boolean_concrete();
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getVisible)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->visible));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->visible);
 }
 
 number_t DisplayObject::computeHeight()
@@ -983,22 +983,22 @@ _NR<Stage> DisplayObject::getStage()
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getWidth)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->computeWidth()));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->computeWidth());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setWidth)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	number_t newwidth=args[0]->toNumber();
+	DisplayObject* th=obj.as<DisplayObject>();
+	number_t newwidth=args[0].toNumber();
 
 	number_t xmin,xmax,y1,y2;
 	if(!th->boundsRect(xmin,xmax,y1,y2))
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 
 	number_t width=xmax-xmin;
 	if(width==0) //Cannot scale, nothing to do (See Reference)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	
 	if(width*th->sx!=newwidth) //If the width is changing, calculate new scale
 	{
@@ -1006,27 +1006,27 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setWidth)
 			th->useLegacyMatrix=false;
 		th->setScaleX(newwidth/width);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getHeight)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->computeHeight()));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->computeHeight());
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_setHeight)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	number_t newheight=args[0]->toNumber();
+	DisplayObject* th=obj.as<DisplayObject>();
+	number_t newheight=args[0].toNumber();
 
 	number_t x1,x2,ymin,ymax;
 	if(!th->boundsRect(x1,x2,ymin,ymax))
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 
 	number_t height=ymax-ymin;
 	if(height==0) //Cannot scale, nothing to do (See Reference)
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 
 	if(height*th->sy!=newheight) //If the height is changing, calculate new scale
 	{
@@ -1034,7 +1034,7 @@ ASFUNCTIONBODY_ATOM(DisplayObject,_setHeight)
 			th->useLegacyMatrix=false;
 		th->setScaleY(newheight/height);
 	}
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 Vector2f DisplayObject::getLocalMousePos()
@@ -1044,14 +1044,14 @@ Vector2f DisplayObject::getLocalMousePos()
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getMouseX)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->getLocalMousePos().x));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->getLocalMousePos().x);
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,_getMouseY)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
-	return _MAR(asAtom(th->getLocalMousePos().y));
+	DisplayObject* th=obj.as<DisplayObject>();
+	return asAtom(th->getLocalMousePos().y);
 }
 
 _NR<DisplayObject> DisplayObject::hitTest(_NR<DisplayObject> last, number_t x, number_t y, HIT_TYPE type)
@@ -1091,8 +1091,8 @@ void DisplayObject::initFrame()
 {
 	if(!isConstructed() && getClass())
 	{
-		asAtomR o = asAtom::fromObject(this);
-		std::vector<asAtomR> emtpy;
+		asAtom o = asAtom::fromObject(this);
+		std::vector<asAtom> emtpy;
 		getClass()->handleConstruction(o,emtpy,0,true);
 
 		/*
@@ -1232,30 +1232,30 @@ bool DisplayObject::boundsRectGlobal(number_t& xmin, number_t& xmax, number_t& y
 
 ASFUNCTIONBODY_ATOM(DisplayObject,hitTestObject)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	_NR<DisplayObject> another;
 	ARG_UNPACK_ATOM(another);
 
 	number_t xmin, xmax, ymin, ymax;
 	if (!th->boundsRectGlobal(xmin, xmax, ymin, ymax))
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	number_t xmin2, xmax2, ymin2, ymax2;
 	if (!another->boundsRectGlobal(xmin2, xmax2, ymin2, ymax2))
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	number_t intersect_xmax = dmin(xmax, xmax2);
 	number_t intersect_xmin = dmax(xmin, xmin2);
 	number_t intersect_ymax = dmin(ymax, ymax2);
 	number_t intersect_ymin = dmax(ymin, ymin2);
 
-	return _MAR(asAtom((intersect_xmax > intersect_xmin) &&
-			  (intersect_ymax > intersect_ymin)));
+	return asAtom((intersect_xmax > intersect_xmin) &&
+			  (intersect_ymax > intersect_ymin));
 }
 
 ASFUNCTIONBODY_ATOM(DisplayObject,hitTestPoint)
 {
-	DisplayObject* th=obj->as<DisplayObject>();
+	DisplayObject* th=obj.as<DisplayObject>();
 	number_t x;
 	number_t y;
 	bool shapeFlag;
@@ -1263,18 +1263,18 @@ ASFUNCTIONBODY_ATOM(DisplayObject,hitTestPoint)
 
 	number_t xmin, xmax, ymin, ymax;
 	if (!th->boundsRectGlobal(xmin, xmax, ymin, ymax))
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 
 	bool insideBoundingBox = (xmin <= x) && (x < xmax) && (ymin <= y) && (y < ymax);
 
 	if (!shapeFlag)
 	{
-		return _MAR(asAtom(insideBoundingBox));
+		return asAtom(insideBoundingBox);
 	}
 	else
 	{
 		if (!insideBoundingBox)
-			return _MAR(asAtom::falseAtom);
+			return asAtom::falseAtom;
 
 		number_t localX;
 		number_t localY;
@@ -1285,6 +1285,6 @@ ASFUNCTIONBODY_ATOM(DisplayObject,hitTestPoint)
 		_NR<DisplayObject> hit = th->hitTest(_IMR(th), localX, localY,
 						     HIT_TYPE::GENERIC_HIT_INVISIBLE);
 
-		return _MAR(asAtom(hit.getPtr() == th));
+		return asAtom(hit.getPtr() == th);
 	}
 }

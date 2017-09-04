@@ -30,8 +30,8 @@ using namespace std;
 using namespace lightspark;
 
 
-IntervalRunner::IntervalRunner(IntervalRunner::INTERVALTYPE _type, uint32_t _id, asAtomR& _callback, std::vector<asAtomR> _args,
-		const unsigned int _argslen, asAtomR& _obj, uint32_t _interval):
+IntervalRunner::IntervalRunner(IntervalRunner::INTERVALTYPE _type, uint32_t _id, asAtom& _callback, std::vector<asAtom> _args,
+		const unsigned int _argslen, asAtom& _obj, uint32_t _interval):
 	EventDispatcher(NULL),type(_type), id(_id), callback(_callback),args(_args),obj(_obj),argslen(_argslen),interval(_interval)
 {
 	/*args = new asAtom[argslen];

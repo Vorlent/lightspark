@@ -37,7 +37,7 @@ void ExternalInterface::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getAvailable)
 {
-	return _MAR(asAtom(sys->extScriptObject != NULL));
+	return asAtom(sys->extScriptObject != NULL);
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
@@ -57,44 +57,44 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,_getObjectID)
 ASFUNCTIONBODY_ATOM(ExternalInterface, _getMarshallExceptions)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 	else
-		return _MAR(asAtom(sys->extScriptObject->getMarshallExceptions()));
+		return asAtom(sys->extScriptObject->getMarshallExceptions());
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface, _setMarshallExceptions)
 {
 	if(sys->extScriptObject != NULL)
-		sys->extScriptObject->setMarshallExceptions(args[0]->Boolean_concrete());
-	return asAtomR::invalidAtomR;
+		sys->extScriptObject->setMarshallExceptions(args[0].Boolean_concrete());
+	return asAtom::invalidAtom;
 }
 
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,addCallback)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen == 2);
 
-	if(args[1]->type == T_NULL)
-		sys->extScriptObject->removeMethod(args[0]->toString().raw_buf());
+	if(args[1].type == T_NULL)
+		sys->extScriptObject->removeMethod(args[0].toString().raw_buf());
 	else
 	{
-		sys->extScriptObject->setMethod(args[0]->toString().raw_buf(), new ExtASCallback(args[1]));
+		sys->extScriptObject->setMethod(args[0].toString().raw_buf(), new ExtASCallback(args[1]));
 	}
-	return _MAR(asAtom::trueAtom);
+	return asAtom::trueAtom;
 }
 
 ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 {
 	if(sys->extScriptObject == NULL)
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 //		throw Class<ASError>::getInstanceS("Container doesn't support callbacks");
 
 	assert_and_throw(argslen >= 1);
-	const tiny_string& arg0=args[0]->toString();
+	const tiny_string& arg0=args[0].toString();
 
 	// TODO: Check security constraints & throw SecurityException
 
@@ -119,7 +119,7 @@ ASFUNCTIONBODY_ATOM(ExternalInterface,call)
 		assert(asobjResult==NULL);
 		LOG(LOG_INFO, "External function failed, returning null: " << arg0);
 		// If the call fails, return null
-		return _MAR(asAtom::nullAtom);
+		return asAtom::nullAtom;
 	}
 
 	return asAtom::fromObject(asobjResult);

@@ -209,11 +209,11 @@ ASFUNCTIONBODY_ATOM(XMLSocket, _constructor)
 	int port;
 	ARG_UNPACK_ATOM (host, "") (port, 0);
 
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	EventDispatcher::_constructor(sys,obj,empty,0);
 
-	XMLSocket* th=obj->as<XMLSocket>();
-	host_is_null = argslen > 0 && args[0]->is<Null>();
+	XMLSocket* th=obj.as<XMLSocket>();
+	host_is_null = argslen > 0 && args[0].is<Null>();
 	if (port != 0)
 	{
 		if (host_is_null)
@@ -222,7 +222,7 @@ ASFUNCTIONBODY_ATOM(XMLSocket, _constructor)
 			th->connect(host, port);
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(XMLSocket, _close)

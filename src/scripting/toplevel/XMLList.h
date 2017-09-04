@@ -94,8 +94,8 @@ public:
 	ASFUNCTION(processingInstructions);
 	ASFUNCTION(_propertyIsEnumerable);
 	ASFUNCTION(_prependChild);
-	asAtomR getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
-	void setVariableByMultiname(const multiname& name, asAtomR& o, CONST_ALLOWED_FLAG allowConst);
+	asAtom getVariableByMultiname(const multiname& name, GET_VARIABLE_OPTION opt);
+	void setVariableByMultiname(const multiname& name, asAtom& o, CONST_ALLOWED_FLAG allowConst);
 	bool hasPropertyByMultiname(const multiname& name, bool considerDynamic, bool considerPrototype);
 	bool deleteVariableByMultiname(const multiname& name);
 	void getDescendantsByQName(const tiny_string& name, uint32_t ns, bool bIsAttribute, XML::XMLVector& ret);
@@ -113,8 +113,8 @@ public:
 	number_t toNumber();
 	bool isEqual(ASObject* r);
 	uint32_t nextNameIndex(uint32_t cur_index);
-	asAtomR nextName(uint32_t index);
-	asAtomR nextValue(uint32_t index);
+	asAtom nextName(uint32_t index);
+	asAtom nextValue(uint32_t index);
 	_R<XML> reduceToXML() const;
 	void appendNodesTo(XML *dest) const;
 	void prependNodesTo(XML *dest) const;

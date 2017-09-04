@@ -72,9 +72,9 @@ bool lightspark::Boolean_concrete(const ASObject* o)
 ASFUNCTIONBODY_ATOM(Boolean,generator)
 {
 	if(argslen==1)
-		return _MAR(asAtom(args[0]->Boolean_concrete()));
+		return asAtom(args[0].Boolean_concrete());
 	else
-		return _MAR(asAtom::falseAtom);
+		return asAtom::falseAtom;
 }
 
 void Boolean::sinit(Class_base* c)
@@ -88,14 +88,14 @@ void Boolean::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(Boolean,_constructor)
 {
-	Boolean* th=static_cast<Boolean*>(obj->getObject());
+	Boolean* th=static_cast<Boolean*>(obj.getObject());
 	if(argslen==0)
 	{
 		//No need to handle default argument. The object is initialized to false anyway
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
-	th->val=args[0]->Boolean_concrete();
-	return asAtomR::invalidAtomR;
+	th->val=args[0].Boolean_concrete();
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY(Boolean,_toString)

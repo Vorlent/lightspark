@@ -68,13 +68,13 @@ Class_inherit::Class_inherit(const QName& name, MemoryAccount* m, const traits_i
 	subtype = SUBTYPE_INHERIT;
 }
 
-asAtomR Class_inherit::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class_inherit::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	//We override the classdef
 	if(realClass==NULL)
 		realClass=this;
 
-	asAtomR ret;
+	asAtom ret;
 	if(tag)
 	{
 		ret=asAtom::fromObject(tag->instance(realClass));
@@ -83,7 +83,7 @@ asAtomR Class_inherit::getInstance(bool construct, std::vector<asAtomR>& args, c
 	{
 		assert_and_throw(super);
 		//Our super should not construct, we are going to do it ourselves
-		std::vector<asAtomR> empty;
+		std::vector<asAtom> empty;
 		ret=super->getInstance(false,empty,0,realClass);
 	}
 	if(construct)
@@ -142,10 +142,10 @@ void Class_inherit::describeClassMetadata(pugi::xml_node &root) const
 
 
 template<>
-asAtomR Class<Global>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class<Global>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	throwError<TypeError>(kConstructOfNonFunctionError);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tiny_string& interfaceNs)
@@ -161,29 +161,29 @@ void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tin
 		cur=cur->super.getPtr();
 	}
 	assert_and_throw(var);
-	if(var->var->type != T_INVALID)
+	if(var->var.type != T_INVALID)
 	{
-		assert_and_throw(var->var->type==T_FUNCTION);
+		assert_and_throw(var->var.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->var,NORMAL_METHOD,true);
 	}
-	if(var->getter->type != T_INVALID)
+	if(var->getter.type != T_INVALID)
 	{
-		assert_and_throw(var->getter->type==T_FUNCTION);
+		assert_and_throw(var->getter.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->getter,GETTER_METHOD,true);
 	}
-	if(var->setter->type != T_INVALID)
+	if(var->setter.type != T_INVALID)
 	{
-		assert_and_throw(var->setter->type==T_FUNCTION);
+		assert_and_throw(var->setter.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->setter,SETTER_METHOD,true);
 	}
 }
 
-asAtomR Class<ASObject>::getInstance(bool construct, std::vector<asAtomR>& args, const unsigned int argslen, Class_base* realClass)
+asAtom Class<ASObject>::getInstance(bool construct, std::vector<asAtom>& args, const unsigned int argslen, Class_base* realClass)
 {
 	if (construct && argslen == 1 && this == Class<ASObject>::getClass(this->getSystemState()))
 	{
 		// Construction according to ECMA 15.2.2.1
-		switch(args[0]->type)
+		switch(args[0].type)
 		{
 			case T_BOOLEAN:
 			case T_NUMBER:
@@ -199,7 +199,7 @@ asAtomR Class<ASObject>::getInstance(bool construct, std::vector<asAtomR>& args,
 	}
 	if(realClass==NULL)
 		realClass=this;
-	asAtomR ret=asAtom::fromObject(new (realClass->memoryAccount) ASObject(realClass));
+	asAtom ret=asAtom::fromObject(new (realClass->memoryAccount) ASObject(realClass));
 	if(construct)
 		handleConstruction(ret,args,argslen,true);
 	return ret;

@@ -39,7 +39,7 @@ void NativeApplication::buildTraits(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(NativeApplication,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return EventDispatcher::_constructor(sys,obj, empty, 0);
 }
 
@@ -51,14 +51,14 @@ ASFUNCTIONBODY_ATOM(NativeApplication, _getNativeApplication)
 
 ASFUNCTIONBODY_ATOM(NativeApplication, addEventListener)
 {
-	EventDispatcher* th = obj->as<EventDispatcher>();
+	EventDispatcher* th = obj.as<EventDispatcher>();
 	EventDispatcher::addEventListener(sys,obj, args, argslen);
-	if (args[0]->toString() == "invoke")
+	if (args[0].toString() == "invoke")
 	{
 		getVm(th->getSystemState())->addEvent(_IMR(th), Class<InvokeEvent>::getInstanceS(sys));
 	}
 
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 void NativeDragManager::sinit(Class_base* c)

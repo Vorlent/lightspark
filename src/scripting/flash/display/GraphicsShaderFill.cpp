@@ -51,9 +51,9 @@ void GraphicsShaderFill::finalize()
 
 ASFUNCTIONBODY_ATOM(GraphicsShaderFill, _constructor)
 {
-	GraphicsShaderFill* th = obj->as<GraphicsShaderFill>();
+	GraphicsShaderFill* th = obj.as<GraphicsShaderFill>();
 	ARG_UNPACK_ATOM (th->shader, NullRef) (th->matrix, NullRef);
-	return asAtomR::invalidAtomR;
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_GETTER_SETTER(GraphicsShaderFill, matrix);

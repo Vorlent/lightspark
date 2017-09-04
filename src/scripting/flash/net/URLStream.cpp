@@ -165,7 +165,7 @@ void URLStream::threadFinished(IThreadJob* finishedJob)
 
 ASFUNCTIONBODY_ATOM(URLStream,_constructor)
 {
-	std::vector<asAtomR> empty;
+	std::vector<asAtom> empty;
 	return EventDispatcher::_constructor(sys,obj,empty,0);
 }
 
@@ -283,8 +283,8 @@ ASFUNCTIONBODY(URLStream,readMultiByte) {
 }
 
 ASFUNCTIONBODY_ATOM(URLStream,readObject) {
-	URLStream* th=obj->as<URLStream>();
-	asAtomR v = asAtom::fromObject(th->data.getPtr());
+	URLStream* th=obj.as<URLStream>();
+	asAtom v = asAtom::fromObject(th->data.getPtr());
 	return ByteArray::readObject(sys,v, args, argslen);
 }
 

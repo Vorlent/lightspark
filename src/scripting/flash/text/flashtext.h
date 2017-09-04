@@ -39,7 +39,7 @@ public:
 class ASFont: public ASObject
 {
 private:
-	static std::vector<asAtomR>* getFontList();
+	static std::vector<asAtom>* getFontList();
 public:
 	ASFont(Class_base* c):ASObject(c),fontType("device"){}
 	void SetFont(tiny_string& fontname,bool is_bold,bool is_italic, bool is_Embedded, bool is_EmbeddedCFF);
@@ -55,7 +55,7 @@ public:
 class StyleSheet: public EventDispatcher
 {
 private:
-	std::map<tiny_string, asAtomR > styles;
+	std::map<tiny_string, asAtom > styles;
 public:
 	StyleSheet(Class_base* c):EventDispatcher(c){}
 	void finalize();
@@ -196,22 +196,22 @@ public:
 	static void buildTraits(ASObject* o);
 	ASFUNCTION_ATOM(_constructor);
 	ASPROPERTY_GETTER_SETTER(tiny_string,align);
-	ASPROPERTY_GETTER_SETTER(asAtomR,blockIndent);
-	ASPROPERTY_GETTER_SETTER(asAtomR,bold);
-	ASPROPERTY_GETTER_SETTER(asAtomR,bullet);
-	ASPROPERTY_GETTER_SETTER(asAtomR,color);
+	ASPROPERTY_GETTER_SETTER(asAtom,blockIndent);
+	ASPROPERTY_GETTER_SETTER(asAtom,bold);
+	ASPROPERTY_GETTER_SETTER(asAtom,bullet);
+	ASPROPERTY_GETTER_SETTER(asAtom,color);
 	ASPROPERTY_GETTER_SETTER(tiny_string,font);
-	ASPROPERTY_GETTER_SETTER(asAtomR,indent);
-	ASPROPERTY_GETTER_SETTER(asAtomR,italic);
-	ASPROPERTY_GETTER_SETTER(asAtomR,kerning);
-	ASPROPERTY_GETTER_SETTER(asAtomR,leading);
-	ASPROPERTY_GETTER_SETTER(asAtomR,leftMargin);
-	ASPROPERTY_GETTER_SETTER(asAtomR,letterSpacing);
-	ASPROPERTY_GETTER_SETTER(asAtomR,rightMargin);
+	ASPROPERTY_GETTER_SETTER(asAtom,indent);
+	ASPROPERTY_GETTER_SETTER(asAtom,italic);
+	ASPROPERTY_GETTER_SETTER(asAtom,kerning);
+	ASPROPERTY_GETTER_SETTER(asAtom,leading);
+	ASPROPERTY_GETTER_SETTER(asAtom,leftMargin);
+	ASPROPERTY_GETTER_SETTER(asAtom,letterSpacing);
+	ASPROPERTY_GETTER_SETTER(asAtom,rightMargin);
 	ASPROPERTY_GETTER_SETTER(int32_t,size);
 	ASPROPERTY_GETTER_SETTER(_NR<Array>,tabStops);
 	ASPROPERTY_GETTER_SETTER(tiny_string,target);
-	ASPROPERTY_GETTER_SETTER(asAtomR,underline);
+	ASPROPERTY_GETTER_SETTER(asAtom,underline);
 	ASPROPERTY_GETTER_SETTER(tiny_string,url);
 };
 

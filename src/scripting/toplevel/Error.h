@@ -48,7 +48,7 @@ private:
 protected:
 	ASPROPERTY_GETTER_SETTER(tiny_string, message);
 	void setErrorID(int32_t id) { errorID=id; }
-	static void errorGenerator(ASError *obj, std::vector<asAtomR> &args, const unsigned int argslen);
+	static void errorGenerator(ASError *obj, std::vector<asAtom> &args, const unsigned int argslen);
 public:
 	ASError(Class_base* c, const tiny_string& error_message = "", int id = 0, const tiny_string& error_name="Error");
 	ASFUNCTION(_constructor);

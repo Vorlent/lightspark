@@ -178,7 +178,7 @@ void GradientGlowFilter::sinit(Class_base* c)
 
 ASFUNCTIONBODY(GradientGlowFilter, _constructor)
 {
-	//GradientGlowFilter *th = obj->as<GradientGlowFilter>();
+	//GradientGlowFilter *th = obj.as<GradientGlowFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"GradientGlowFilter is not implemented");
 	return NULL;
 }
@@ -224,7 +224,7 @@ ASFUNCTIONBODY_GETTER_SETTER_NOT_IMPLEMENTED(BevelFilter,type);
  
 ASFUNCTIONBODY(BevelFilter, _constructor)
 {
-	//BevelFilter *th = obj->as<BevelFilter>();
+	//BevelFilter *th = obj.as<BevelFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"GradientGlowFilter is not implemented");
 	return NULL;
 }
@@ -307,7 +307,7 @@ void ConvolutionFilter::sinit(Class_base* c)
 
 ASFUNCTIONBODY(ConvolutionFilter, _constructor)
 {
-	//ConvolutionFilter *th = obj->as<ConvolutionFilter>();
+	//ConvolutionFilter *th = obj.as<ConvolutionFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"ConvolutionFilter is not implemented");
 	return NULL;
 }
@@ -329,7 +329,7 @@ void DisplacementMapFilter::sinit(Class_base* c)
 
 ASFUNCTIONBODY(DisplacementMapFilter, _constructor)
 {
-	//DisplacementMapFilter *th = obj->as<DisplacementMapFilter>();
+	//DisplacementMapFilter *th = obj.as<DisplacementMapFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"DisplacementMapFilter is not implemented");
 	return NULL;
 }
@@ -351,7 +351,7 @@ void GradientBevelFilter::sinit(Class_base* c)
 
 ASFUNCTIONBODY(GradientBevelFilter, _constructor)
 {
-	//GradientBevelFilter *th = obj->as<GradientBevelFilter>();
+	//GradientBevelFilter *th = obj.as<GradientBevelFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"GradientBevelFilter is not implemented");
 	return NULL;
 }
@@ -373,7 +373,7 @@ void ShaderFilter::sinit(Class_base* c)
 
 ASFUNCTIONBODY(ShaderFilter, _constructor)
 {
-	//ShaderFilter *th = obj->as<ShaderFilter>();
+	//ShaderFilter *th = obj.as<ShaderFilter>();
 	LOG(LOG_NOT_IMPLEMENTED,"ShaderFilter is not implemented");
 	return NULL;
 }

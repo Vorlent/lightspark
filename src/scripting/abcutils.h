@@ -32,13 +32,13 @@ class ABCContext;
 class ASObject;
 class Class_base;
 class asAtom;
-class asAtomR;
+class asAtom;
 
 struct scope_entry
 {
-	asAtomR object;
+	asAtom object;
 	bool considerDynamic;
-	scope_entry(asAtomR& o, bool c):object(o),considerDynamic(c)
+	scope_entry(asAtom& o, bool c):object(o),considerDynamic(c)
 	{
 	}
 };
@@ -56,8 +56,8 @@ struct call_context
 		uint32_t exec_pos;
 	} PACKED;
 #include "packed_end.h"
-	std::vector<asAtomR> stack;
-	std::vector<asAtomR> locals;
+	std::vector<asAtom> stack;
+	std::vector<asAtom> locals;
 	ABCContext* context;
 	uint32_t locals_size;
 	uint32_t max_stack;
@@ -65,7 +65,7 @@ struct call_context
 	_NR<scope_entry_list> parent_scope_stack;
 	uint32_t max_scope_stack;
 	uint32_t curr_scope_stack;
-	std::vector<asAtomR> scope_stack;
+	std::vector<asAtom> scope_stack;
 	bool* scope_stack_dynamic;
 	method_info* mi;
 	/* This is the function's inClass that is currently executing. It is used
@@ -76,7 +76,7 @@ struct call_context
 	 * Defaults to empty string according to ECMA-357 13.1.1.1
 	 */
 	uint32_t defaultNamespaceUri;
-	asAtomR returnvalue;
+	asAtom returnvalue;
 	bool returning;
 	~call_context();
 	static void handleError(int errorcode);
@@ -87,10 +87,10 @@ struct call_context
 };
 #define RUNTIME_STACK_PUSH(context,val) \
 if(context->stack_index<context->max_stack) \
-	context->stack[context->stack_index++]=_IMAR(val); \
+	context->stack[context->stack_index++]=val; \
 else context->handleError(kStackOverflowError)
 
-inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
+inline void runtime_stack_push_ref(call_context* context, asAtom& val) {
 	if(context->stack_index<context->max_stack) {
 		context->stack[context->stack_index++]=val;
 	} else {
@@ -99,28 +99,22 @@ inline void runtime_stack_push_ref(call_context* context, asAtomR& val) {
 }
 
 #define RUNTIME_STACK_POP_CREATE_REF(context,ret) \
-	_AR ret; \
-	if(context->stack_index) ret=context->stack[--context->stack_index]; \
-	else context->handleError(kStackUnderflowError);
+	if(!context->stack_index) \
+		context->handleError(kStackUnderflowError); \
+	asAtom& ret=context->stack[--context->stack_index]; \
 
 #define RUNTIME_STACK_POP_CREATE_ASOBJECT(context,ret, sys) \
 	ASObject* ret = NULL; \
-	if(context->stack_index) ret=context->stack[--context->stack_index]->toObject(sys); \
+	if(context->stack_index) ret=context->stack[--context->stack_index].toObject(sys); \
 	else context->handleError(kStackUnderflowError);
 
 #define RUNTIME_STACK_PEEK_CREATE_REF(context,ret) \
-	asAtomR ret; \
-	ret= context->stack[context->stack_index-1];
-
-#define RUNTIME_STACK_POINTER_CREATE(context,ret) \
-	asAtomR* ret = NULL; \
-	if(context->stack_index) ret=&context->stack[context->stack_index-1]; \
-	else context->handleError(kStackUnderflowError);
+	asAtom& ret = context->stack[context->stack_index-1];
 
 #define RUNTIME_STACK_POINTER_CREATE_REF(context,ret) \
-	asAtom* ret = nullptr; \
-	if(context->stack_index) ret=context->stack[context->stack_index-1].getPtr(); \
-	else context->handleError(kStackUnderflowError);
+	if(!context->stack_index)  \
+		context->handleError(kStackUnderflowError); \
+	asAtom& ret = context->stack[context->stack_index-1];
 
 }
 #endif /* SCRIPTING_ABCUTILS_H */

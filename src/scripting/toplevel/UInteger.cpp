@@ -88,40 +88,40 @@ TRISTATE UInteger::isLess(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 {
-	UInteger* th=obj->as<UInteger>();
+	UInteger* th=obj.as<UInteger>();
 	if(argslen==0)
 	{
 		//The uint is already initialized to 0
-		return asAtomR::invalidAtomR;
+		return asAtom::invalidAtom;
 	}
-	th->val=args[0]->toUInt();
-	return asAtomR::invalidAtomR;
+	th->val=args[0].toUInt();
+	return asAtom::invalidAtom;
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,generator)
 {
 	if (argslen == 0)
-		return _MAR(asAtom((uint32_t)0));
-	return _MAR(asAtom(args[0]->toUInt()));
+		return asAtom((uint32_t)0);
+	return asAtom(args[0].toUInt());
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,_valueOf)
 {
-	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj->getObject())
-		return _MAR(asAtom((uint32_t)0));
+	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
+		return asAtom((uint32_t)0);
 
-	if(!obj->is<UInteger>())
+	if(!obj.is<UInteger>())
 			throw Class<TypeError>::getInstanceS(sys,"");
 
-	return _MAR(asAtom(obj->as<UInteger>()->val));
+	return asAtom(obj.as<UInteger>()->val);
 }
 
 void UInteger::sinit(Class_base* c)
 {
 	CLASS_SETUP(c, ASObject, _constructor, CLASS_SEALED | CLASS_FINAL);
 	c->isReusable = true;
-	asAtomR max_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
-	asAtomR min_value = _MAR(asAtom((uint32_t)0xFFFFFFFF));
+	asAtom max_value = asAtom((uint32_t)0xFFFFFFFF);
+	asAtom min_value = asAtom((uint32_t)0xFFFFFFFF);
 	c->setVariableAtomByQName("MAX_VALUE",nsNameAndKind(), max_value,CONSTANT_TRAIT);
 	c->setVariableAtomByQName("MIN_VALUE",nsNameAndKind(), min_value,CONSTANT_TRAIT);
 	c->setDeclaredMethodByQName("toString",AS3,Class<IFunction>::getFunction(c->getSystemState(),_toString),NORMAL_METHOD,true);
@@ -138,10 +138,10 @@ void UInteger::sinit(Class_base* c)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toString)
 {
-	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj->getObject())
+	if(Class<UInteger>::getClass(sys)->prototype->getObj() == obj.getObject())
 		return asAtom::fromString(sys,"0");
 
-	UInteger* th=obj->as<UInteger>();
+	UInteger* th=obj.as<UInteger>();
 	uint32_t radix;
 	ARG_UNPACK_ATOM (radix,10);
 
@@ -178,11 +178,11 @@ bool UInteger::isEqual(ASObject* o)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toExponential)
 {
-	UInteger *th=obj->as<UInteger>();
+	UInteger *th=obj.as<UInteger>();
 	double v = (double)th->val;
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 	{
 		if (v == 0)
 			fractionDigits = 1;
@@ -194,7 +194,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toExponential)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toFixed)
 {
-	UInteger *th=obj->as<UInteger>();
+	UInteger *th=obj.as<UInteger>();
 	int fractiondigits;
 	ARG_UNPACK_ATOM (fractiondigits, 0);
 	return asAtom::fromObject(abstract_s(sys,Number::toFixedString(th->val, fractiondigits)));
@@ -202,8 +202,8 @@ ASFUNCTIONBODY_ATOM(UInteger,_toFixed)
 
 ASFUNCTIONBODY_ATOM(UInteger,_toPrecision)
 {
-	UInteger *th=obj->as<UInteger>();
-	if (argslen == 0 || args[0]->is<Undefined>())
+	UInteger *th=obj.as<UInteger>();
+	if (argslen == 0 || args[0].is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,th->toString()));
 	int precision;
 	ARG_UNPACK_ATOM (precision);

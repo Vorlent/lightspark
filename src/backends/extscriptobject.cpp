@@ -178,32 +178,32 @@ ExtVariant::ExtVariant(bool value) :
 	strValue(""), doubleValue(0), intValue(0), type(EV_BOOLEAN), booleanValue(value)
 {
 }
-ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtomR& other) :
+ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& objectsMap, asAtom& other) :
 	strValue(""), doubleValue(0), intValue(0), booleanValue(false)
 {
-	switch(other->getObject()->getObjectType())
+	switch(other.getObject()->getObjectType())
 	{
 	case T_STRING:
-		strValue = other->getObject()->toString().raw_buf();
+		strValue = other.getObject()->toString().raw_buf();
 		type = EV_STRING;
 		break;
 	case T_INTEGER:
-		intValue = other->getObject()->toInt();
+		intValue = other.getObject()->toInt();
 		type = EV_INT32;
 		break;
 	case T_NUMBER:
-		doubleValue = other->getObject()->toNumber();
+		doubleValue = other.getObject()->toNumber();
 		type = EV_DOUBLE;
 		break;
 	case T_BOOLEAN:
-		booleanValue = Boolean_concrete(other->getObject());
+		booleanValue = Boolean_concrete(other.getObject());
 		type = EV_BOOLEAN;
 		break;
 	case T_ARRAY:
 	case T_OBJECT:
 		{
 			type = EV_OBJECT;
-			auto it=objectsMap.find(other->getObject());
+			auto it=objectsMap.find(other.getObject());
 			if(it!=objectsMap.end())
 			{
 				objectValue = it->second.get();
@@ -212,24 +212,24 @@ ExtVariant::ExtVariant(std::map<const ASObject*, std::unique_ptr<ExtObject>>& ob
 			objectValue = new ExtObject();
 			bool allNumericProperties = true;
 
-			objectsMap[other->getObject()] = move(unique_ptr<ExtObject>(objectValue));
+			objectsMap[other.getObject()] = move(unique_ptr<ExtObject>(objectValue));
 
 			unsigned int index = 0;
-			while((index=other->getObject()->nextNameIndex(index))!=0)
+			while((index=other.getObject()->nextNameIndex(index))!=0)
 			{
-				asAtomR nextName=other->getObject()->nextName(index);
-				asAtomR nextValue=other->getObject()->nextValue(index);
+				asAtom nextName=other.getObject()->nextName(index);
+				asAtom nextValue=other.getObject()->nextValue(index);
 
-				if(nextName->type == T_INTEGER)
-					objectValue->setProperty(nextName->toInt(), ExtVariant(objectsMap, nextValue));
+				if(nextName.type == T_INTEGER)
+					objectValue->setProperty(nextName.toInt(), ExtVariant(objectsMap, nextValue));
 				else
 				{
 					allNumericProperties = false;
-					objectValue->setProperty(nextName->toString().raw_buf(), ExtVariant(objectsMap, nextValue));
+					objectValue->setProperty(nextName.toString().raw_buf(), ExtVariant(objectsMap, nextValue));
 				}
 			}
 
-			if(other->getObject()->getObjectType()==T_ARRAY && allNumericProperties)
+			if(other.getObject()->getObjectType()==T_ARRAY && allNumericProperties)
 			{
 				objectValue->setType(ExtObject::EO_ARRAY);
 			}
@@ -280,7 +280,7 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 				for(uint32_t i = 0; i < count; i++)
 				{
 					const ExtVariant& property = objValue->getProperty(i);
-					asAtomR v = asAtom::fromObject(property.getASObject(objectsMap));
+					asAtom v = asAtom::fromObject(property.getASObject(objectsMap));
 					static_cast<Array*>(asobj)->set(i, v);
 				}
 			}
@@ -335,7 +335,7 @@ ASObject* ExtVariant::getASObject(std::map<const lightspark::ExtObject*, lightsp
 }
 
 /* -- ExtASCallback -- */
-ExtASCallback::ExtASCallback(asAtomR& _func):funcWasCalled(false), func(_func), result(_MAR(asAtom::nullAtom)), asArgs(NULL)
+ExtASCallback::ExtASCallback(asAtom& _func):funcWasCalled(false), func(_func), result(asAtom::nullAtom), asArgs(NULL)
 {
 }
 
@@ -367,20 +367,20 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 
 	if(!synchronous)
 	{
-		funcEvent = _IMR(new (func->getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
+		funcEvent = _IMR(new (func.getObject()->getSystemState()->unaccountedMemory) ExternalCallEvent(func, asArgs, argc, &result, &exceptionThrown, &exception));
 		// Add the callback function event to the top of the VM event queue
-		funcWasCalled=getVm(func->getObject()->getSystemState())->prependEvent(NullRef,funcEvent);
+		funcWasCalled=getVm(func.getObject()->getSystemState())->prependEvent(NullRef,funcEvent);
 		if(!funcWasCalled)
 			funcEvent = NullRef;
 		else
-			func->getObject()->getSystemState()->sendMainSignal();
+			func.getObject()->getSystemState()->sendMainSignal();
 	}
 	// The caller indicated the VM is currently suspended, so call synchronously.
 	else
 	{
 		try
 		{
-			std::vector<asAtomR> newArgs;
+			std::vector<asAtom> newArgs;
 			if (argc > 0)
 			{
 				newArgs.reserve(argc);
@@ -391,7 +391,7 @@ void ExtASCallback::call(const ExtScriptObject& so, const ExtIdentifier& id,
 			}
 
 			/* TODO: shouldn't we pass some global object instead of Null? */
-			result = func->callFunction(asAtomR::nullAtomR, newArgs, argc,false);
+			result = func.callFunction(asAtom::nullAtom, newArgs, argc,false);
 		}
 		// Catch AS exceptions and pass them on
 		catch(ASObject* _exception)
@@ -426,9 +426,9 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 	// Did the callback throw an AS exception?
 	if(exceptionThrown)
 	{
-		if(result->getObject()->getObjectType() != T_NULL)
+		if(result.getObject()->getObjectType() != T_NULL)
 		{
-			result = _MAR(asAtom::nullAtom);
+			result = asAtom::nullAtom;
 		}
 
 		// Pass on the exception to the container through the script object
@@ -442,7 +442,7 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 		success = false;
 	}
 	// Did the callback return a non-NULL result?
-	else if(result->getObject()->getObjectType() != T_NULL)
+	else if(result.getObject()->getObjectType() != T_NULL)
 	{
 		// Convert the result
 		*_result = new ExtVariant(objectsMap, result);
@@ -453,7 +453,7 @@ bool ExtASCallback::getResult(std::map<const ASObject*, std::unique_ptr<ExtObjec
 		success = true;
 
 	// Clean up pointers
-	result = _MAR(asAtom::nullAtom);
+	result = asAtom::nullAtom;
 	exceptionThrown = false;
 	exception = "";
 	if (asArgs)
