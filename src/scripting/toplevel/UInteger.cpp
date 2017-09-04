@@ -94,7 +94,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_constructor)
 		//The uint is already initialized to 0
 		return asAtom::invalidAtom;
 	}
-	th->val=args[0]->toUInt();
+	th->val=args[0].toUInt();
 	return asAtom::invalidAtom;
 }
 
@@ -102,7 +102,7 @@ ASFUNCTIONBODY_ATOM(UInteger,generator)
 {
 	if (argslen == 0)
 		return asAtom((uint32_t)0);
-	return asAtom(args[0]->toUInt());
+	return asAtom(args[0].toUInt());
 }
 
 ASFUNCTIONBODY_ATOM(UInteger,_valueOf)
@@ -182,7 +182,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toExponential)
 	double v = (double)th->val;
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 	{
 		if (v == 0)
 			fractionDigits = 1;
@@ -203,7 +203,7 @@ ASFUNCTIONBODY_ATOM(UInteger,_toFixed)
 ASFUNCTIONBODY_ATOM(UInteger,_toPrecision)
 {
 	UInteger *th=obj.as<UInteger>();
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,th->toString()));
 	int precision;
 	ARG_UNPACK_ATOM (precision);

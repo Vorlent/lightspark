@@ -62,7 +62,7 @@ ASFUNCTIONBODY(avmplusFile,readByteArray)
 	ARG_UNPACK(filename);
 	
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.File.readByteArray is unimplemented."));
-	return Class<ByteArray>::getInstanceSRaw(obj.getSystemState());
+	return Class<ByteArray>::getInstanceSRaw(obj->getSystemState());
 }
 ASFUNCTIONBODY(avmplusFile,writeByteArray)
 {
@@ -134,27 +134,27 @@ ASFUNCTIONBODY(avmplusSystem,pauseForGCIfCollectionImminent)
 ASFUNCTIONBODY(avmplusSystem,isDebugger)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.isDebugger is unimplemented."));
-	return abstract_b(obj.getSystemState(),false);
+	return abstract_b(obj->getSystemState(),false);
 }
 ASFUNCTIONBODY(avmplusSystem,isGlobal)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.isDebugger is unimplemented."));
-	return abstract_b(obj.getSystemState(),false);
+	return abstract_b(obj->getSystemState(),false);
 }
 ASFUNCTIONBODY(avmplusSystem,_freeMemory)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.freeMemory is unimplemented."));
-	return abstract_d(obj.getSystemState(),1024);
+	return abstract_d(obj->getSystemState(),1024);
 }
 ASFUNCTIONBODY(avmplusSystem,_totalMemory)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.totalMemory is unimplemented."));
-	return abstract_d(obj.getSystemState(),1024);
+	return abstract_d(obj->getSystemState(),1024);
 }
 ASFUNCTIONBODY(avmplusSystem,_privateMemory)
 {
 	LOG(LOG_NOT_IMPLEMENTED, _("avmplus.System.privateMemory is unimplemented."));
-	return abstract_d(obj.getSystemState(),1024);
+	return abstract_d(obj->getSystemState(),1024);
 }
 ASFUNCTIONBODY(avmplusSystem,argv)
 {
@@ -233,7 +233,7 @@ ASFUNCTIONBODY(avmplusDomain,_getCurrentDomain)
 }
 ASFUNCTIONBODY(avmplusDomain,_getMinDomainMemoryLength)
 {
-	return abstract_ui(obj.getSystemState(),MIN_DOMAIN_MEMORY_LIMIT);
+	return abstract_ui(obj->getSystemState(),MIN_DOMAIN_MEMORY_LIMIT);
 }
 ASFUNCTIONBODY(avmplusDomain,load)
 {
@@ -252,7 +252,7 @@ ASFUNCTIONBODY(avmplusDomain,loadBytes)
 
 	if (swfversion != 0)
 		LOG(LOG_NOT_IMPLEMENTED,"Domain.loadBytes ignores parameter swfVersion");
-	MemoryStreamCache mc(obj.getSystemState());
+	MemoryStreamCache mc(obj->getSystemState());
 	mc.append(bytes->getBuffer(bytes->getLength(),false),bytes->getLength());
 	std::streambuf *sbuf = mc.createReader();
 	std::istream s(sbuf);

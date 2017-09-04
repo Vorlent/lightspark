@@ -63,12 +63,12 @@ ASFUNCTIONBODY_ATOM(JSON,_parse)
 	tiny_string text;
 	asAtom reviver;
 
-	if (argslen > 0 && (args[0]->is<Null>() ||args[0]->is<Undefined>()))
+	if (argslen > 0 && (args[0].is<Null>() ||args[0].is<Undefined>()))
 		throwError<SyntaxError>(kJSONInvalidParseInput);
 	ARG_UNPACK_ATOM_MORE_ALLOWED(text);
 	if (argslen > 1)
 	{
-		if (!args[1]->is<IFunction>())
+		if (!args[1].is<IFunction>())
 			throwError<TypeError>(kCheckTypeFailedError);
 		reviver = args[1];
 	}
@@ -82,19 +82,19 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 	std::vector<ASObject *> path;
 	tiny_string filter;
 	asAtom replacer;
-	if (argslen > 1 && args[1]->type != T_NULL && args[1]->type != T_UNDEFINED)
+	if (argslen > 1 && args[1].type != T_NULL && args[1].type != T_UNDEFINED)
 	{
-		if (args[1]->type == T_FUNCTION)
+		if (args[1].type == T_FUNCTION)
 		{
 			replacer = args[1];
 		}
-		else if (args[1]->type == T_ARRAY)
+		else if (args[1].type == T_ARRAY)
 		{
 			filter = " ";
-			Array* ar = args[1]->as<Array>();
+			Array* ar = args[1].as<Array>();
 			for (uint64_t i = 0; i < ar->size(); i++)
 			{
-				filter += ar->at(i)->toString();
+				filter += ar->at(i).toString();
 				filter += " ";
 			}
 		}
@@ -107,14 +107,14 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 	{
 		asAtom space = args[2];
 		spaces = "          ";
-		if (space->is<Number>() || space->is<Integer>() || space->is<UInteger>())
+		if (space.is<Number>() || space.is<Integer>() || space.is<UInteger>())
 		{
-			int32_t v = space->toInt();
+			int32_t v = space.toInt();
 			if (v < 0) v = 0;
 			if (v > 10) v = 10;
 			spaces = spaces.substr_bytes(0,v);
 		}
-		else if (space->is<Boolean>() || space->is<Null>())
+		else if (space.is<Boolean>() || space.is<Null>())
 		{
 			spaces = "";
 		}
@@ -126,7 +126,7 @@ ASFUNCTIONBODY_ATOM(JSON,_stringify)
 				spaces = ret->toString();
 			}
 			else
-				spaces = space->toString();
+				spaces = space.toString();
 			if (spaces.numBytes() > 10)
 				spaces = spaces.substr_bytes(0,10);
 		}
@@ -201,7 +201,7 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 				throwError<SyntaxError>(kJSONInvalidParseInput);
 		}
 	}
-	if (reviver->type != T_INVALID)
+	if (reviver.type != T_INVALID)
 	{
 		bool haskey = key.name_type!= multiname::NAME_OBJECT;
 		std::vector<asAtom> params(2);
@@ -223,11 +223,11 @@ int JSON::parse(const tiny_string &jsonstring, int pos, ASObject** parent , cons
 		}
 
 		asAtom funcret=reviver.callFunction(asAtom::nullAtom, params, 2,true);
-		if(funcret->type != T_INVALID)
+		if(funcret.type != T_INVALID)
 		{
 			if (haskey)
 			{
-				if (funcret->type == T_UNDEFINED)
+				if (funcret.type == T_UNDEFINED)
 				{
 					(*parent)->deleteVariableByMultiname(key);
 				}

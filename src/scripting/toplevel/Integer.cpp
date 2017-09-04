@@ -300,7 +300,7 @@ ASFUNCTIONBODY_ATOM(Integer,_toExponential)
 	double v = (double)th->val;
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 	{
 		if (v == 0)
 			fractionDigits = 1;
@@ -321,7 +321,7 @@ ASFUNCTIONBODY_ATOM(Integer,_toFixed)
 ASFUNCTIONBODY_ATOM(Integer,_toPrecision)
 {
 	Integer *th=obj.as<Integer>();
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,th->toString()));
 	int precision;
 	ARG_UNPACK_ATOM (precision);

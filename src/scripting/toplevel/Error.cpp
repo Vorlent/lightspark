@@ -160,11 +160,11 @@ void ASError::errorGenerator(ASError* obj, std::vector<asAtom>& args, const unsi
 	assert_and_throw(argslen <= 2);
 	if(argslen >= 1)
 	{
-		obj->message = args[0]->toString();
+		obj->message = args[0].toString();
 	}
 	if(argslen == 2)
 	{
-		obj->errorID = args[1]->toInt();
+		obj->errorID = args[1].toInt();
 	}
 }
 

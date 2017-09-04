@@ -83,7 +83,7 @@ ASFUNCTIONBODY_ATOM(Math,_max)
 
 	for(unsigned int i = 0; i < argslen; i++)
 	{
-		double arg = args[i]->toNumber();
+		double arg = args[i].toNumber();
 		if (std::isnan(arg))
 		{
 			largest = numeric_limits<double>::quiet_NaN();
@@ -103,7 +103,7 @@ ASFUNCTIONBODY_ATOM(Math,_min)
 
 	for(unsigned int i = 0; i < argslen; i++)
 	{
-		double arg = args[i]->toNumber();
+		double arg = args[i].toNumber();
 		if (std::isnan(arg))
 		{
 			smallest = numeric_limits<double>::quiet_NaN();
@@ -177,11 +177,11 @@ ASFUNCTIONBODY_ATOM(Math,abs)
 {
 	asAtom a;
 	ARG_UNPACK_ATOM (a);
-	switch (a->type)
+	switch (a.type)
 	{
 		case T_INTEGER:
 		{
-			int32_t n = a->toInt();
+			int32_t n = a.toInt();
 			if (n == INT32_MIN)
 				return asAtom((uint32_t)n);
 			return asAtom(n < 0 ? -n : n);
@@ -194,7 +194,7 @@ ASFUNCTIONBODY_ATOM(Math,abs)
 			return asAtom((int32_t)0);
 		default:
 		{
-			number_t n = a->toNumber();
+			number_t n = a.toNumber();
 			if (n  == 0.)
 				return asAtom((int32_t)0);
 			return asAtom((number_t)::fabs(n));

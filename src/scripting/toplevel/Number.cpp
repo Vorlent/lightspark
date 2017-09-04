@@ -224,7 +224,7 @@ ASFUNCTIONBODY_ATOM(Number,generator)
 	if(argslen==0)
 		return asAtom(0.);
 
-	return asAtom(args[0]->toNumber());
+	return asAtom(args[0].toNumber());
 }
 
 tiny_string Number::toString()
@@ -364,16 +364,16 @@ ASFUNCTIONBODY_ATOM(Number,_constructor)
 		}
 		return asAtom::invalidAtom;
 	}
-	switch (args[0]->type)
+	switch (args[0].type)
 	{
 		case T_INTEGER:
 		case T_BOOLEAN:
 		case T_UINTEGER:
-			th->ival = args[0]->toInt();
+			th->ival = args[0].toInt();
 			th->isfloat = false;
 			break;
 		default:
-			th->dval=args[0]->toNumber();
+			th->dval=args[0].toNumber();
 			th->isfloat = true;
 			break;
 	}
@@ -428,7 +428,7 @@ ASFUNCTIONBODY_ATOM(Number,toExponential)
 	double v = th->toNumber();
 	int32_t fractionDigits;
 	ARG_UNPACK_ATOM(fractionDigits, 0);
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 		fractionDigits = imin(imax(Number::countSignificantDigits(v)-1, 1), 20);
 	return asAtom::fromObject(abstract_s(sys,toExponentialString(v, fractionDigits)));
 }
@@ -533,7 +533,7 @@ ASFUNCTIONBODY_ATOM(Number,toPrecision)
 {
 	Number* th=obj.as<Number>();
 	double v = th->toNumber();
-	if (argslen == 0 || args[0]->is<Undefined>())
+	if (argslen == 0 || args[0].is<Undefined>())
 		return asAtom::fromObject(abstract_s(sys,toString(v)));
 
 	int32_t precision;

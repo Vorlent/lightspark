@@ -116,7 +116,7 @@ ASFUNCTIONBODY_ATOM(RegExp,generator)
 	{
 		return asAtom::fromObject(Class<RegExp>::getInstanceSRaw(getSys(),""));
 	}
-	else if(args[0]->is<RegExp>())
+	else if(args[0].is<RegExp>())
 	{
 		return args[0];
 	}
@@ -124,7 +124,7 @@ ASFUNCTIONBODY_ATOM(RegExp,generator)
 	{
 		if (argslen > 1)
 			LOG(LOG_NOT_IMPLEMENTED, "RegExp generator: flags argument not implemented");
-		return asAtom::fromObject(Class<RegExp>::getInstanceSRaw(getSys(),args[0]->toString()));
+		return asAtom::fromObject(Class<RegExp>::getInstanceSRaw(getSys(),args[0].toString()));
 	}
 }
 
@@ -140,7 +140,7 @@ ASFUNCTIONBODY_ATOM(RegExp,exec)
 {
 	RegExp* th=static_cast<RegExp*>(obj.getObject());
 	assert_and_throw(argslen==1);
-	const tiny_string& arg0=args[0]->toString();
+	const tiny_string& arg0=args[0].toString();
 	return asAtom::fromObject(th->match(arg0));
 }
 

@@ -161,19 +161,19 @@ void lightspark::lookupAndLink(Class_base* c, const tiny_string& name, const tin
 		cur=cur->super.getPtr();
 	}
 	assert_and_throw(var);
-	if(var->var->type != T_INVALID)
+	if(var->var.type != T_INVALID)
 	{
-		assert_and_throw(var->var->type==T_FUNCTION);
+		assert_and_throw(var->var.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->var,NORMAL_METHOD,true);
 	}
-	if(var->getter->type != T_INVALID)
+	if(var->getter.type != T_INVALID)
 	{
-		assert_and_throw(var->getter->type==T_FUNCTION);
+		assert_and_throw(var->getter.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->getter,GETTER_METHOD,true);
 	}
-	if(var->setter->type != T_INVALID)
+	if(var->setter.type != T_INVALID)
 	{
-		assert_and_throw(var->setter->type==T_FUNCTION);
+		assert_and_throw(var->setter.type==T_FUNCTION);
 		c->setDeclaredMethodAtomByQName(name,interfaceNs,var->setter,SETTER_METHOD,true);
 	}
 }
@@ -183,7 +183,7 @@ asAtom Class<ASObject>::getInstance(bool construct, std::vector<asAtom>& args, c
 	if (construct && argslen == 1 && this == Class<ASObject>::getClass(this->getSystemState()))
 	{
 		// Construction according to ECMA 15.2.2.1
-		switch(args[0]->type)
+		switch(args[0].type)
 		{
 			case T_BOOLEAN:
 			case T_NUMBER:
