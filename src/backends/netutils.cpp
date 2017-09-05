@@ -831,7 +831,7 @@ bool DownloaderThreadBase::createDownloader(_R<StreamCache> cache,
 			return false;
 		if(evaluationResult == SecurityManager::NA_CROSSDOMAIN_POLICY)
 		{
-			getVm(dispatcher->getSystemState())->addEvent(_IMR(dispatcher.getPtr()),Class<SecurityErrorEvent>::getInstanceS(dispatcher->getSystemState(),"SecurityError: "
+			getVm(dispatcher->getSystemState())->addEvent(dispatcher,Class<SecurityErrorEvent>::getInstanceS(dispatcher->getSystemState(),"SecurityError: "
 												 "connection to domain not allowed by securityManager"));
 			return false;
 		}

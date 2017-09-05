@@ -367,19 +367,19 @@ void LoaderThread::execute()
 		if(cache->hasFailed()) //Check to see if the download failed for some reason
 		{
 			LOG(LOG_ERROR, "Loader::execute(): Download of URL failed: " << url);
-			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
-			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+			getVm(loader->getSystemState())->addEvent(loaderInfo,Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+			getVm(loader->getSystemState())->addEvent(loader,Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 			delete sbuf;
 			// downloader will be deleted in jobFence
 			return;
 		}
-		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
+		getVm(loader->getSystemState())->addEvent(loaderInfo,Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 	}
 	else if(source==BYTES)
 	{
 		assert_and_throw(bytes->bytes);
 
-		getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
+		getVm(loader->getSystemState())->addEvent(loaderInfo,Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 		loaderInfo->setBytesTotal(bytes->getLength());
 		loaderInfo->setBytesLoaded(bytes->getLength());
 
@@ -409,7 +409,7 @@ void LoaderThread::execute()
 		// The stream did not contain RootMovieClip or Bitmap
 		if(!threadAborting)
 		{
-			getVm(loader->getSystemState())->addEvent(_IMR(loaderInfo.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+			getVm(loader->getSystemState())->addEvent(loaderInfo,Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 		}
 		return;
 	}
@@ -612,7 +612,7 @@ void Loader::unload()
 	
 	if(loaded)
 	{
-		getVm(getSystemState())->addEvent(_IMR(contentLoaderInfo.getPtr()),Class<Event>::getInstanceS(getSystemState(),"unload"));
+		getVm(getSystemState())->addEvent(contentLoaderInfo,Class<Event>::getInstanceS(getSystemState(),"unload"));
 		loaded=false;
 	}
 
@@ -1847,7 +1847,7 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,addChildAt)
 	th->_addChildAt(d,index);
 
 	//Notify the object
-	getVm(sys)->addEvent(_IMR(d.getPtr()),Class<Event>::getInstanceS(sys,"added"));
+	getVm(sys)->addEvent(d,Class<Event>::getInstanceS(sys,"added"));
 
 	return args[0];
 }
@@ -1956,11 +1956,11 @@ ASFUNCTIONBODY_ATOM(DisplayObjectContainer,_setChildIndex)
 	for(;it != th->dynamicDisplayList.end(); ++it)
 		if(i++ == index)
 		{
-			th->dynamicDisplayList.insert(it, _IMR(child.getPtr()));
+			th->dynamicDisplayList.insert(it, child);
 			return asAtom::invalidAtom;
 		}
 
-	th->dynamicDisplayList.push_back(_IMR(child.getPtr()));
+	th->dynamicDisplayList.push_back(child);
 	return asAtom::invalidAtom;
 }
 

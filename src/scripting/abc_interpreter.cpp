@@ -1179,7 +1179,7 @@ void ABCVm::abc_getlex(call_context* context,memorystream& code)
 	if (cachepos->type == method_body_info_cache::CACHE_TYPE_OBJECT)
 	{
 		code.seekcachepos(cachepos->nextcachepos);
-		asAtom value = asAtom::fromFunction(_IMR(cachepos->obj.getPtr()),cachepos->closure);
+		asAtom value = asAtom::fromFunction(cachepos->obj,cachepos->closure);
 		runtime_stack_push_ref(context, value);
 		return;
 	}

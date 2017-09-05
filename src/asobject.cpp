@@ -2101,14 +2101,14 @@ ASObject *asAtom::toObject(SystemState *sys)
 	{
 		case T_INTEGER:
 			// ints are internally treated as numbers, so create a Number instance
-			objval = _IMNR(abstract_di(sys,intval));
+			objval = _MNR(abstract_di(sys,intval));
 			break;
 		case T_UINTEGER:
 			// uints are internally treated as numbers, so create a Number instance
-			objval = _IMNR(abstract_di(sys,uintval));
+			objval = _MNR(abstract_di(sys,uintval));
 			break;
 		case T_NUMBER:
-			objval = _IMNR(abstract_d(sys,numberval));
+			objval = _MNR(abstract_d(sys,numberval));
 			break;
 		case T_BOOLEAN:
 			return (boolval ? sys->getTrueRef(): sys->getFalseRef());
@@ -2118,7 +2118,7 @@ ASObject *asAtom::toObject(SystemState *sys)
 			return sys->getUndefinedRef();
 		case T_STRING:
 			if (stringID != UINT32_MAX)
-				objval = _IMNR(abstract_s(sys,stringID));
+				objval = _MNR(abstract_s(sys,stringID));
 			break;
 		case T_INVALID:
 			LOG(LOG_ERROR,"calling toObject on invalid asAtom, should not happen");
@@ -2373,7 +2373,7 @@ tiny_string asAtom::toLocaleString()
 			return UInteger::toString(uintval);
 		case T_STRING:
 			if (!objval && stringID != UINT32_MAX)
-				objval = _IMNR(abstract_s(getSys(),stringID));
+				objval = _MNR(abstract_s(getSys(),stringID));
 			assert(objval);
 			return objval->toLocaleString();
 		case T_INVALID:
@@ -2535,7 +2535,7 @@ void asAtom::add(asAtom& v2, SystemState* sys)
 		LOG_CALL("add " << a << '+' << b);
 		type = T_STRING;
 		stringID = UINT32_MAX;
-		objval = _IMNR(abstract_s(sys,a + b));
+		objval = _MNR(abstract_s(sys,a + b));
 	}
 	else
 	{
@@ -2560,7 +2560,7 @@ void asAtom::add(asAtom& v2, SystemState* sys)
 			//The references of val1 and val2 have been passed to the smart references
 			//no decRef is needed
 			type = T_OBJECT;
-			objval = _IMNR(newList);
+			objval = _MNR(newList);
 		}
 		else
 		{//If none of the above apply, convert both to primitives with no hint
@@ -2575,7 +2575,7 @@ void asAtom::add(asAtom& v2, SystemState* sys)
 				LOG_CALL("add " << a << '+' << b);
 				type = T_STRING;
 				stringID = UINT32_MAX;
-				objval = _IMNR(abstract_s(sys,a+b));
+				objval = _MNR(abstract_s(sys,a+b));
 			}
 			else
 			{//Convert both to numbers and add

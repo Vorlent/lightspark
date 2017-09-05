@@ -1756,7 +1756,7 @@ asAtom ABCVm::findPropStrictCache(call_context* th, memorystream& code)
 	{
 		code.seekcachepos(cachepos->nextcachepos);
 		if (cachepos->obj->is<IFunction>())
-			return asAtom::fromFunction(_IMR(cachepos->obj.getPtr()),cachepos->closure);
+			return asAtom::fromFunction(cachepos->obj,cachepos->closure);
 		else
 			return asAtom::fromObject(cachepos->obj.getPtr());
 	}

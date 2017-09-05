@@ -347,7 +347,7 @@ ASFUNCTIONBODY_ATOM(TextBlock, createTextLine)
 		
 	LOG(LOG_NOT_IMPLEMENTED,"splitting textblock in multiple lines not implemented");
 	th->content->as<TextElement>()->text = "";
-	_NR<TextLine> textLine = _NR<TextLine>(Class<TextLine>::getInstanceS(sys,linetext, _IMNR(th)));
+	_NR<TextLine> textLine = Class<TextLine>::getInstanceS(sys,linetext, _IMNR(th));
 	textLine->width = (uint32_t)width;
 	textLine->previousLine = previousLine;
 	textLine->updateSizes();

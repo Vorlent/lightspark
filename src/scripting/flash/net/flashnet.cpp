@@ -334,7 +334,7 @@ void URLRequestMethod::sinit(Class_base* c)
 }
 
 URLLoaderThread::URLLoaderThread(_R<URLRequest> request, _R<URLLoader> ldr)
-  : DownloaderThreadBase(_IMR(request.getPtr()), ldr.getPtr()), loader(ldr)
+  : DownloaderThreadBase(request, ldr.getPtr()), loader(ldr)
 {
 }
 
@@ -352,7 +352,7 @@ void URLLoaderThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
+		getVm(loader->getSystemState())->addEvent(loader,Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
@@ -398,14 +398,14 @@ void URLLoaderThread::execute()
 		//Send a complete event for this object
 		loader->setData(data);
 
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength()));
+		getVm(loader->getSystemState())->addEvent(loader,Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength()));
 		//Send a complete event for this object
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"complete"));
+		getVm(loader->getSystemState())->addEvent(loader,Class<Event>::getInstanceS(loader->getSystemState(),"complete"));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+		getVm(loader->getSystemState())->addEvent(loader,Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 	}
 
 	{

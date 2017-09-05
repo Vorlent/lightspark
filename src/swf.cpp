@@ -262,7 +262,7 @@ SystemState::SystemState(uint32_t fileSize, FLASH_MODE mode):
 	loaderInfo->setBytesTotal(0);
 	mainClip=_MNR(RootMovieClip::getInstance(loaderInfo, applicationDomain, securityDomain));
 	stage=Class<Stage>::getInstanceS(this);
-	stage->_addChildAt(_IMR(mainClip.getPtr()),0);
+	stage->_addChildAt(mainClip,0);
 	//Get starting time
 	startTime=compat_msectiming();
 	

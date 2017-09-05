@@ -34,7 +34,7 @@ using namespace std;
 using namespace lightspark;
 
 URLStreamThread::URLStreamThread(_R<URLRequest> request, _R<URLStream> ldr, _R<ByteArray> bytes)
-  : DownloaderThreadBase(_IMR(request.getPtr()), ldr.getPtr()), loader(ldr), data(bytes),streambuffer(NULL),timestamp_last_progress(0),bytes_total(0)
+  : DownloaderThreadBase(request, ldr.getPtr()), loader(ldr), data(bytes),streambuffer(NULL),timestamp_last_progress(0),bytes_total(0)
 {
 }
 
@@ -52,7 +52,7 @@ void URLStreamThread::setBytesLoaded(uint32_t b)
 		if (cur > timestamp_last_progress+ 40*1000)
 		{
 			timestamp_last_progress = cur;
-			getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total));
+			getVm(loader->getSystemState())->addEvent(loader,Class<ProgressEvent>::getInstanceS(loader->getSystemState(),b,bytes_total));
 		}
 	}
 }
@@ -72,9 +72,9 @@ void URLStreamThread::execute()
 	bool success=false;
 	if(!downloader->hasFailed())
 	{
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"open"));
+		getVm(loader->getSystemState())->addEvent(loader,Class<Event>::getInstanceS(loader->getSystemState(),"open"));
 		streambuffer = cache->createReader();
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total));
+		getVm(loader->getSystemState())->addEvent(loader,Class<ProgressEvent>::getInstanceS(loader->getSystemState(),0,bytes_total));
 		cache->waitForTermination();
 		if(!downloader->hasFailed() && !threadAborting)
 		{
@@ -96,14 +96,14 @@ void URLStreamThread::execute()
 	// Don't send any events if the thread is aborting
 	if(success && !threadAborting)
 	{
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength()));
+		getVm(loader->getSystemState())->addEvent(loader,Class<ProgressEvent>::getInstanceS(loader->getSystemState(),downloader->getLength(),downloader->getLength()));
 		//Send a complete event for this object
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<Event>::getInstanceS(loader->getSystemState(),"complete"));
+		getVm(loader->getSystemState())->addEvent(loader,Class<Event>::getInstanceS(loader->getSystemState(),"complete"));
 	}
 	else if(!success && !threadAborting)
 	{
 		//Notify an error during loading
-		getVm(loader->getSystemState())->addEvent(_IMR(loader.getPtr()),Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
+		getVm(loader->getSystemState())->addEvent(loader,Class<IOErrorEvent>::getInstanceS(loader->getSystemState()));
 	}
 
 	{
