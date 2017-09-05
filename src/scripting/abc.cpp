@@ -256,7 +256,7 @@ void ABCVm::registerClasses()
 	builtin->registerBuiltin("RegExp","",Class<RegExp>::getRef(m_sys));
 	builtin->registerBuiltin("QName","",Class<ASQName>::getRef(m_sys));
 	builtin->registerBuiltin("uint","",Class<UInteger>::getRef(m_sys));
-	builtin->registerBuiltin("Vector","__AS3__.vec",_MR(Template<Vector>::getTemplate(m_sys)));
+	builtin->registerBuiltin("Vector","__AS3__.vec",Template<Vector>::getTemplate(m_sys));
 	builtin->registerBuiltin("Error","",Class<ASError>::getRef(m_sys));
 	builtin->registerBuiltin("SecurityError","",Class<SecurityError>::getRef(m_sys));
 	builtin->registerBuiltin("ArgumentError","",Class<ArgumentError>::getRef(m_sys));

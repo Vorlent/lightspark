@@ -540,14 +540,14 @@ public:
 	static Ref<Class_base> getTemplateInstance(SystemState* sys,const Type* type,_NR<ApplicationDomain> appdomain)
 	{
 		std::vector<const Type*> t(1,type);
-		_NR<Template<T>> templ=_MNR(getTemplate(sys));
+		Ref<Template<T>> templ=getTemplate(sys);
 		Ref<Class_base> ret=_MR(templ->applyType(t, appdomain));
 		return ret;
 	}
 
 	static Ref<Class_base> getTemplateInstance(SystemState* sys,const QName& qname, ABCContext* context,_NR<ApplicationDomain> appdomain)
 	{
-		_NR<Template<T>> templ=_MNR(getTemplate(sys));
+		Ref<Template<T>> templ=getTemplate(sys);
 		Ref<Class_base> ret=_IMR(templ->applyTypeByQName(qname,appdomain));
 		ret->context = context;
 		return ret;
@@ -558,7 +558,7 @@ public:
 		return getTemplateInstance(sys,type,appdomain).getPtr()->getInstance(true,empty,0);
 	}
 
-	static Template<T>* getTemplate(SystemState* sys,const QName& name)
+	static Ref<Template<T>> getTemplate(SystemState* sys,const QName& name)
 	{
 		std::map<QName, Template_base*>::iterator it=sys->templates.find(name);
 		Template<T>* ret=NULL;
@@ -570,11 +570,10 @@ public:
 		else
 			ret=static_cast<Template<T>*>(it->second);
 
-		ret->incRef();
-		return ret;
+		return _IMR(ret);
 	}
 
-	static Template<T>* getTemplate(SystemState* sys)
+	static Ref<Template<T>> getTemplate(SystemState* sys)
 	{
 		return getTemplate(sys,QName(sys->getUniqueStringId(ClassName<T>::name),sys->getUniqueStringId(ClassName<T>::ns)));
 	}

@@ -126,7 +126,7 @@ asAtom Vector::generator(SystemState *sys, asAtom& o_class, std::vector<asAtom> 
 	assert_and_throw(o_class.as<TemplatedClass<Vector>>()->getTypes().size() == 1);
 
 	const Type* type = o_class.as<TemplatedClass<Vector>>()->getTypes()[0];
-
+	Ref<Template<Vector>> templ = Template<Vector>::getTemplate(sys);
 	if(args[0].is<Array>())
 	{
 		//create object without calling _constructor
@@ -142,7 +142,7 @@ asAtom Vector::generator(SystemState *sys, asAtom& o_class, std::vector<asAtom> 
 		}
 		return asAtom::fromObject(ret);
 	}
-	else if(args[0].getObject()->getClass()->getTemplate() == Template<Vector>::getTemplate(sys))
+	else if(args[0].getObject()->getClass()->getTemplate() == templ.getPtr())
 	{
 		Vector* arg = args[0].as<Vector>();
 
