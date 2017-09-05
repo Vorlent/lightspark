@@ -160,9 +160,7 @@ bool Dictionary::deleteVariableByMultiname(const multiname& name)
 			default:
 				break;
 		}
-		_R<ASObject> name_o = _IMR(name.name_o);
-
-		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
+		Dictionary::dictType::iterator it=findKey(name.name_o);
 		if(it != data.end())
 		{
 			data.erase(it);
@@ -212,9 +210,7 @@ asAtom Dictionary::getVariableByMultiname(const multiname& name, GET_VARIABLE_OP
 				default:
 					break;
 			}
-			_R<ASObject> name_o = _IMR(name.name_o);
-
-			Dictionary::dictType::iterator it=findKey(name_o.getPtr());
+			Dictionary::dictType::iterator it=findKey(name.name_o);
 			if(it != data.end())
 			{
 				return asAtom::fromObject(it->second.getPtr());
@@ -275,8 +271,7 @@ bool Dictionary::hasPropertyByMultiname(const multiname& name, bool considerDyna
 				break;
 		}
 
-		_R<ASObject> name_o = _IMR(name.name_o);
-		Dictionary::dictType::iterator it=findKey(name_o.getPtr());
+		Dictionary::dictType::iterator it=findKey(name.name_o);
 		return it != data.end();
 	}
 	else

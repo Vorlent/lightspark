@@ -379,11 +379,11 @@ void XMLSocketThread::execute()
 {
 	if (!sock.connect(hostname, port))
 	{
-		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
+		getVm(owner->getSystemState())->addEvent(owner, Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
 		return;
 	}
 
-	getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<Event>::getInstanceS(owner->getSystemState(),"connect"));
+	getVm(owner->getSystemState())->addEvent(owner, Class<Event>::getInstanceS(owner->getSystemState(),"connect"));
 
 	struct timeval timeout;
 	int maxfd;
@@ -403,7 +403,7 @@ void XMLSocketThread::execute()
 		int status = select(maxfd+1, &readfds, NULL, NULL, &timeout);
 		if (status  < 0)
 		{
-			getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
+			getVm(owner->getSystemState())->addEvent(owner, Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
 			return;
 		}
 
@@ -414,7 +414,7 @@ void XMLSocketThread::execute()
 			ssize_t nbytes = read(signalListener, &cmd, 1);
 			if (nbytes < 0)
 			{
-				getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
+				getVm(owner->getSystemState())->addEvent(owner, Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
 				return;
 			}
 			else if (nbytes == 0)
@@ -445,18 +445,18 @@ void XMLSocketThread::readSocket(const SocketIO& sock)
 	{
 		buf[nbytes] = '\0';
 		tiny_string data(buf, true);
-		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<DataEvent>::getInstanceS(owner->getSystemState(),data));
+		getVm(owner->getSystemState())->addEvent(owner, Class<DataEvent>::getInstanceS(owner->getSystemState(),data));
 	}
 	else if (nbytes == 0)
 	{
 		// The server has closed the socket
-		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<Event>::getInstanceS(owner->getSystemState(),"close"));
+		getVm(owner->getSystemState())->addEvent(owner, Class<Event>::getInstanceS(owner->getSystemState(),"close"));
 		threadAborting = true;
 	}
 	else
 	{
 		// Error
-		getVm(owner->getSystemState())->addEvent(_IMR(owner.getPtr()), Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
+		getVm(owner->getSystemState())->addEvent(owner, Class<IOErrorEvent>::getInstanceS(owner->getSystemState()));
 		threadAborting = true;
 	}
 }

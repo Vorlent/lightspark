@@ -2533,7 +2533,7 @@ void XML::createTree(const pugi::xml_node& rootnode,bool fromXMLList)
 {
 	pugi::xml_node node = rootnode;
 	bool done = false;
-	this->childrenlist = _IMR(Class<XMLList>::getInstanceSNoArgs(getSystemState()));
+	this->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(getSystemState()));
 	if (parentNode.isNull() && !fromXMLList)
 	{
 		while (true)
@@ -2632,7 +2632,7 @@ void XML::fillNode(XML* node, const pugi::xml_node &srcnode)
 {
 	if (node->childrenlist.isNull())
 	{
-		node->childrenlist = _IMR(Class<XMLList>::getInstanceSNoArgs(node->getSystemState()));
+		node->childrenlist = _MR(Class<XMLList>::getInstanceSNoArgs(node->getSystemState()));
 	}
 	node->nodetype = srcnode.type();
 	node->nodename = srcnode.name();

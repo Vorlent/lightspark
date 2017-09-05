@@ -2455,7 +2455,7 @@ void ABCVm::newClass(call_context* th, int n)
 		if(i->first->name_s_id == mname->name_s_id && i->first->ns[0].nsRealId == mname->ns[0].nsRealId)
 		{
 			ret = (Class_inherit*)i->second;
-			ret->incRef();
+			ret->incRefStatic();
 			break;
 		}
 		i++;
